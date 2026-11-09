@@ -74,7 +74,19 @@ live, and High analyzes about 2 frames per second of clip.
 
 ### 🎥 Computer-vision pipeline
 - **Player detection and tracking.** YOLOv8 finds people and ByteTrack keeps a persistent ID for each one across frames.
-  In fixed mode, people standing off the court (spectators, other courts) are filtered out.
+  In fixed mode, everyone near the court is recorded, then the players are picked out of them
+  (`pbv/players.py`):
+  - people more than 1 m past a sideline or 3 m behind a baseline are dropped (refs, benches, other courts)
+  - IDs that stand still beside the court for their whole track are dropped (line judges, spectators)
+  - at most 2 people are kept on each side of the net, preferring those on the court
+  - each one gets one of 4 fixed IDs (`P1`–`P4`). While a player is in view the ID follows them by
+    position, so a ByteTrack ID switch doesn't split one player into several.
+  - **Clothing re-ID** (`pbv/appearance.py`): each ID keeps a colour profile of the player's head (cap or
+    hair), shirt and shorts. A player who walks out of frame or is hidden gets their own ID back
+    when they return, partners who were both lost don't come back swapped, and a stranger walking on
+    court doesn't take a missing player's ID. Players keep their IDs after teams change ends.
+    Players dressed alike (e.g. both in black) are told apart mostly by position, so a long
+    disappearance by both of them can still swap them.
   In POV mode, your own arms, hands and legs are filtered out.
 - **Ball tracking.** YOLO detects the ball every frame. Isolated false detections (heads, shoes, signs) are
   removed, and short gaps are filled by interpolation. Long gaps are left empty: the ball is out of play.
@@ -153,7 +165,7 @@ court through a fisheye lens. So any court-plane number would be wrong.
                          ┌────────────────────────── fixed mode ──────────────────────────┐
 video ─► frames ─┬─► court homography (4+ clicked landmarks) ─► feet → court metres
                  │
-                 ├─► YOLOv8 + ByteTrack ─► players {id: bbox, court xy}
+                 ├─► YOLOv8 + ByteTrack ─► people near the court ─► 4 players {P1–P4: bbox, court xy}
                  ├─► YOLOv8 ─► ball xy (+ paddles in POV)
                  └─► phase correlation ─► camera shift per frame            (POV only)
                                  │
@@ -180,8 +192,16 @@ ball's y-coordinate (it falls, then rises). A far-side hit is a local *minimum* 
 screen toward the far player, then goes back down). A near-side hit is a local maximum right next to a
 near-side player.
 
+**Serves (fixed mode)** are found from the ball itself, not just from hits:
+- the ball is out of play near a player within 3 m of their own baseline for 1 s: held or bounced
+  at their body (not their head, since caps get detected as balls), or not seen at all while they
+  stand still (a ball in a far server's hand is too small to detect)
+- then it's hit below head height and flies on one continuous path to the other side within 0.6 s
+- hits detected while the server bounces the ball beforehand are dropped, a serve always starts a new
+  rally, and there's no second serve within 4 s (the ball is in play)
+
 **Shot classification (fixed mode)**, in priority order:
-1. First hit of a rally → **serve**; second → **return**
+1. A detected serve → **serve**; the next hit, from across the net → **return**
 2. Speed ≥ `--drive-speed` (10 m/s) → **drive**
 3. Lands in the kitchen → **dink** if hit from near the kitchen line, otherwise **drop**
 4. Lands deep (within 2 m of the baseline) after more than 1 s in the air → **lob**
@@ -290,8 +310,9 @@ Each run writes to `outputs/<video name>[-pov]/`:
 |---|---|
 | `annotated.mp4` | Replay with boxes, IDs, ball trail, mini-court (fixed), shot + fault labels. H.264 so it plays in browsers |
 | `stats.json` | Everything below |
-| `tracking.json` | Raw per-frame detections (cache) plus the settings that produced them |
+| `tracking.json` | Raw per-frame detections (cache: everyone near the court as `people`, the selected `players`) plus the settings that produced them |
 | `court.json` | Court calibration: clicked image points and their court coordinates (fixed) |
+| `appearance.npy` | Clothing-colour descriptor per tracked person (cache for re-ID, fixed) |
 | `heatmap_P<id>.png` | Court-coverage heatmap per player (fixed) |
 
 ### `stats.json` structure
@@ -347,7 +368,9 @@ Pickleball-Vision/
 ├── pbv/
 │   ├── constants.py    # Official court geometry (metres)
 │   ├── court.py        # Image ↔ court homography; kitchen / side / in-bounds checks
-│   ├── tracking.py     # YOLO player tracker (ByteTrack), ball + paddle detector, pose estimator
+│   ├── tracking.py     # YOLO person tracker (ByteTrack), ball + paddle detector, pose estimator
+│   ├── players.py      # Picks the 4 players from everyone tracked; stable per-player IDs
+│   ├── appearance.py   # Clothing-colour descriptors for re-identifying players
 │   ├── events.py       # Ball cleanup, hits/bounces, de-duplication, shot types, rallies, faults,
 │   │                   #   POV camera compensation, swing detection
 │   ├── analytics.py    # Player movement stats, shot summaries, stroke form from keypoints
@@ -472,7 +495,7 @@ Covers:
 - [ ] Pickleball-specific ball detector trained on labelled frames (Roboflow Universe has several datasets), passed via `--ball-model`
 - [ ] TrackNet-style heatmap ball tracker for blur and occlusion (as Badminton-VisionAI uses)
 - [ ] Automatic court-keypoint detection to replace manual calibration
-- [ ] Player re-identification (appearance embeddings) for stable IDs, especially in POV
+- [ ] Learned re-ID embeddings (fixed mode uses colour histograms) for stable IDs, especially in POV
 - [ ] Learned shot classifier from labelled rallies
 - [ ] PDF coach report and Docker images
 - [ ] A labelled evaluation set with a scoring script in the repo

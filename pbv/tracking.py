@@ -20,32 +20,34 @@ class PlayerTracker:
         self.model, self.conf = YOLO(model), conf
         self.person = class_id(self.model, "person")
 
-    def track(self, frame, court=None, max_players=4):
-        """-> {player_id: {"bbox": [x1,y1,x2,y2], "court": [x_m, y_m]}} for people on the court.
-
-        court=None is POV mode: no court position, the wearer's own body is dropped, and
-        the 3 biggest remaining people (partner + opponents) are kept.
-        """
+    def _track_boxes(self, frame):
+        """-> (Nx4 xyxy boxes, N ByteTrack ids) of the people in frame."""
         r = self.model.track(frame, persist=True, classes=[self.person], conf=self.conf,
                              tracker="bytetrack.yaml", device=DEVICE, verbose=False)[0]
         if r.boxes.id is None:
-            return {}
-        boxes = r.boxes.xyxy.cpu().numpy()
-        ids = r.boxes.id.int().cpu().tolist()
-        if court is None:
-            h, w = frame.shape[:2]
-            keep = [i for i in range(len(ids)) if not is_own_body(boxes[i], w, h)]
-            max_players = min(max_players, 3)
-        else:
-            feet = court.to_court(np.c_[(boxes[:, 0] + boxes[:, 2]) / 2, boxes[:, 3]])
-            # Spectators/refs stand off-court; keep the biggest boxes near the court.
-            keep = [i for i in range(len(ids)) if court.inside(feet[i], margin=2.0)]
+            return np.zeros((0, 4)), []
+        return r.boxes.xyxy.cpu().numpy(), r.boxes.id.int().cpu().tolist()
+
+    def people_near_court(self, frame, court, margin=4.0):
+        """Fixed mode: [{"id", "bbox", "court"}] for everyone whose feet are within margin m of the court.
+
+        Everyone is kept (refs and spectators too) so pbv.players.select_players can pick the
+        4 players afterwards and be retuned without re-running YOLO.
+        """
+        boxes, ids = self._track_boxes(frame)
+        if not ids:
+            return []
+        feet = court.to_court(np.c_[(boxes[:, 0] + boxes[:, 2]) / 2, boxes[:, 3]])
+        return [{"id": str(ids[i]), "bbox": boxes[i].round(1).tolist(), "court": feet[i].round(3).tolist()}
+                for i in range(len(ids)) if court.inside(feet[i], margin=margin)]
+
+    def track_pov(self, frame, max_players=3):
+        """POV: {player_id: {"bbox"}} for the biggest people (partner + opponents), the wearer's own body dropped."""
+        boxes, ids = self._track_boxes(frame)
+        h, w = frame.shape[:2]
+        keep = [i for i in range(len(ids)) if not is_own_body(boxes[i], w, h)]
         keep.sort(key=lambda i: -(boxes[i, 2] - boxes[i, 0]) * (boxes[i, 3] - boxes[i, 1]))
-        out = {str(ids[i]): {"bbox": boxes[i].round(1).tolist()} for i in keep[:max_players]}
-        if court is not None:
-            for i in keep[:max_players]:
-                out[str(ids[i])]["court"] = feet[i].round(3).tolist()
-        return out
+        return {str(ids[i]): {"bbox": boxes[i].round(1).tolist()} for i in keep[:max_players]}
 
 
 def class_id(model, *names):

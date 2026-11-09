@@ -1,7 +1,8 @@
 """PickleballVision pipeline. Two modes:
 
 fixed (default): tripod / fence camera that sees the whole court.
-  video -> court calibration -> player tracking (YOLO + ByteTrack) + ball detection
+  video -> court calibration -> person tracking (YOLO + ByteTrack) + ball detection
+        -> player selection (2 per side, bystanders dropped, stable ids, clothing re-ID)
         -> hits/bounces -> shots, rallies, faults -> stroke form (YOLO pose)
         -> movement stats, heatmaps, annotated video
 pov: camera worn by a player (chest / head / paddle mount).
@@ -23,6 +24,7 @@ from tqdm import tqdm
 
 from pbv import analytics, draw, events
 from pbv.court import Court
+from pbv.players import select_players
 
 
 def camera_shift(prev, frame, width=480):
@@ -44,19 +46,21 @@ def track(video, court, start, args):
     n = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - start
     if args.max_frames:
         n = min(n, args.max_frames)
-    players, ball, paddle, cam, thumb = [], [], [], [], None
+    people, ball, paddle, cam, thumb = [], [], [], [], None
     for _ in tqdm(range(n), desc="tracking"):
         ok, frame = cap.read()
         if not ok:
             break
-        players.append(players_model.track(frame, court))
+        people.append(players_model.track_pov(frame) if court is None else players_model.people_near_court(frame, court))
         b, p = ball_model.detect(frame)
         ball.append(b)
         paddle.append(p)
         if court is None:
             thumb, shift = camera_shift(thumb, frame)
             cam.append(shift)
-    return {"fps": fps, "width": int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), "players": players, "ball": ball, "paddle": paddle, "cam_shift": cam}
+    # POV keeps the per-frame players directly; fixed mode keeps everyone near the court for select_players.
+    return {"fps": fps, "width": int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), ("players" if court is None else "people"): people,
+            "ball": ball, "paddle": paddle, "cam_shift": cam}
 
 
 def add_stroke_form(video, shots, players, start, model, serve_fault=True):
@@ -74,6 +78,20 @@ def add_stroke_form(video, shots, players, start, model, serve_fault=True):
         # the follow-through, so only flag a wrist clearly above the waist (half-way to the shoulders).
         if serve_fault and s["type"] == "serve" and s["form"] and s["form"]["contact_height"] > 0.5:
             s["faults"].append("serve_above_waist")
+
+
+def load_appearance(video, people, start, path):
+    """Attach clothing descriptors to every tracked person, computing them (one video pass) if
+    path doesn't hold a set that matches these people."""
+    from pbv.appearance import add_appearance, attach_appearance
+
+    n = sum(len(fp) for fp in people)
+    if path.exists():
+        looks = np.load(path)
+        if len(looks) == n:
+            attach_appearance(people, looks)
+            return
+    np.save(path, add_appearance(video, people, start))
 
 
 def open_writer(path, fps, size):
@@ -114,7 +132,11 @@ def analyse_fixed(data, court, args):
     ball = events.clean_ball(data["ball"], max_jump=0.08 * data["width"])
     evs = events.filter_hits(events.find_events(ball, players), fps,
                              side=lambda e: court.side(players[e["frame"]][e["player"]]["court"]))
-    shots, rallies = events.classify_shots(evs, players, court, fps, drive_speed=args.drive_speed)
+    serves = events.find_serves(ball, players, court, fps, data["width"],
+                                detected=events.real_detections(data["ball"], ball))
+    evs = events.merge_serves(evs, serves, players, court, fps)
+    shots, rallies = events.classify_shots(evs, players, court, fps, drive_speed=args.drive_speed,
+                                           serves_detected=True)
     return ball, evs, shots, rallies, analytics.player_stats(players, fps)
 
 
@@ -186,13 +208,19 @@ def main():
             calibrate(args.video, court_path, start)
         court = Court.load(court_path)
 
-    params = {"version": 2, "mode": args.mode, "start": start, "max_frames": args.max_frames,
+    params = {"version": 3, "mode": args.mode, "start": start, "max_frames": args.max_frames,
               "corners": None if pov else court.corners_px.tolist()}
     cache = out / "tracking.json"
     data = json.loads(cache.read_text()) if cache.exists() and not args.force else None
     if not data or data.get("params") != params:
         data = {**track(args.video, court, start, args), "params": params}
-        cache.write_text(json.dumps(data))
+    if not pov:  # cheap, so always re-run: picks the 4 players and gives each a stable id
+        load_appearance(args.video, data["people"], start, out / "appearance.npy")
+        data["players"] = select_players(data["people"], data["fps"])
+        for fp in data["people"]:  # descriptors live in appearance.npy, not the JSON cache
+            for p in fp:
+                p.pop("look", None)
+    cache.write_text(json.dumps(data))
     players = data["players"]
     data["height"] = int(cv2.VideoCapture(str(args.video)).get(cv2.CAP_PROP_FRAME_HEIGHT))
 

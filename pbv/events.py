@@ -85,6 +85,146 @@ def filter_hits(events, fps, min_gap_s=0.35, side=None, same_side_s=1.0):
     return out
 
 
+def _box_distance(p, bbox):
+    """Pixels from point p to bbox (0 inside)."""
+    x1, y1, x2, y2 = bbox
+    return float(np.hypot(max(x1 - p[0], 0, p[0] - x2), max(y1 - p[1], 0, p[1] - y2)))
+
+
+def _flight(ball, detected, t, go, max_step, max_gap=4):
+    """Detected ball positions after t that form one continuous path from ball[t] (each step < max_step
+    px per frame, no more than max_gap frames unseen), stopping at the first jump or long gap: a
+    detection on another court is not this ball. Interpolated positions are skipped: a straight line
+    drawn across a gap would look like a flight."""
+    path, last, last_f = [], ball[t], t
+    for k in range(t + 1, min(t + go + 1, len(ball))):
+        if not detected[k]:
+            continue
+        if k - last_f > max_gap or np.linalg.norm(ball[k] - last) > max_step * (k - last_f):
+            break
+        path.append(ball[k])
+        last, last_f = ball[k], k
+    return np.array(path).reshape(-1, 2)
+
+
+def _ball_out_of_play(ball, known, players, pid, t, hold, near_h, away_h, min_near, max_away, head, still_m):
+    """find_serves' hold check: over frames [t - hold, t) was the ball held by pid, or dead while pid stood still?"""
+    box = lambda f: players[f][pid]["bbox"] if pid in players[f] else players[t][pid]["bbox"]
+    seen = [f for f in range(t - hold, t) if known[f]]
+    if not seen:
+        here = [players[f][pid]["court"] for f in range(t - hold, t + 1) if pid in players[f]]
+        return len(here) >= hold // 2 and np.ptp(np.asarray(here), axis=0).max() < still_m
+    at_body = away = 0
+    for f in seen:
+        x1, y1, x2, y2 = box(f)
+        d = _box_distance(ball[f], (x1, y1, x2, y2)) / (y2 - y1)
+        at_body += d <= near_h and (ball[f, 1] - y1) / (y2 - y1) >= head
+        away += d > away_h
+    return at_body >= min_near and away <= max_away * len(seen)
+
+
+def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, near_h=0.5, away_h=1.5,
+                min_near=3, max_away=0.2, baseline_m=3.0, min_contact_y=0.15, still_m=0.5, step_frac=0.1,
+                same_contact_s=0.5, min_gap_s=4.0, detected=None):
+    """Fixed mode: serves straight from the ball track -> [{"frame", "player", "px"}].
+
+    A serve is the ball held (or bounced) by a player near their own baseline, then hit so it
+    crosses the net quickly. Contact is a frame t where:
+    - the ball is within near_h box-heights of a player standing within baseline_m of their baseline,
+      and not in the top min_contact_y of their box (serves are underhand: a ball at head height is
+      a volley, an overhead, or the player's cap detected as the ball)
+    - over the hold_s before t the ball was out of play, one of:
+      held: seen at the server's body (not their head: caps get detected as balls) >= min_near times,
+      and away from them (> away_h box-heights) in at most max_away of its sightings. Unseen frames
+      are neutral: a held ball is often hidden in the hand
+      dead: not seen at all while the server stood still (moved < still_m). On the far side the ball
+      in the server's hand is too small to detect, so its first sighting is the serve itself
+    - the ball is detected at t, and within go_s after t (detected[k]: a real detection, not filled in
+      or replaced by clean_ball) flies on
+      one continuous path (steps < step_frac * width px per frame) that moves >= 3 m toward the net
+      and reaches the other side
+    Frames within same_contact_s of each other are one contact (the one where the ball speeds up
+    most is kept), and a serve puts the ball in play, so nothing within min_gap_s after it is a serve.
+    """
+    from .constants import COURT_L
+
+    hold, go, max_step = max(2, int(hold_s * fps)), max(2, int(go_s * fps)), step_frac * width
+    known = ~np.isnan(ball[:, 0])
+    detected = known if detected is None else np.asarray(detected) & known
+    serves = []
+    for t in range(hold, len(ball) - 1):
+        if not detected[t]:
+            continue
+        pid = nearest_player(ball[t], players[t], near_h)
+        if pid is None:
+            continue
+        pl = players[t][pid]
+        x1, y1, x2, y2 = pl["bbox"]
+        box_h = y2 - y1
+        side = court.side(pl["court"])
+        to_baseline = COURT_L - pl["court"][1] if side == "near" else pl["court"][1]
+        if to_baseline > baseline_m or (ball[t, 1] - y1) / box_h < min_contact_y:
+            continue
+        if not _ball_out_of_play(ball, known, players, pid, t, hold, near_h, away_h, min_near, max_away,
+                                 min_contact_y, still_m):
+            continue
+        path = _flight(ball, detected, t, go, max_step)
+        if len(path) < 2:
+            continue
+        on_court = court.to_court(path)
+        start = court.to_court([ball[t]])[0]
+        toward = (start[1] - on_court[:, 1]) if side == "near" else (on_court[:, 1] - start[1])
+        if toward.max() >= 3.0 and any(court.side(p) != side for p in on_court):
+            serves.append({"frame": t, "player": pid, "px": [round(float(v), 1) for v in ball[t]]})
+    # several frames around one contact qualify; contact is where the ball speeds up most
+    groups = []
+    for s in serves:
+        if groups and s["frame"] - groups[-1][-1]["frame"] <= same_contact_s * fps:
+            groups[-1].append(s)
+        else:
+            groups.append([s])
+
+    def speed_up(f, k=3):
+        a, b = ball[max(f - k, 0)], ball[min(f + k, len(ball) - 1)]
+        after = np.linalg.norm(b - ball[f]) if not np.isnan(b[0]) else 0.0
+        before = np.linalg.norm(ball[f] - a) if not np.isnan(a[0]) else 0.0
+        return after - before
+
+    out = []
+    for s in (max(g, key=lambda s: speed_up(s["frame"])) for g in groups):
+        if not out or s["frame"] - out[-1]["frame"] >= min_gap_s * fps:
+            out.append(s)
+    return out
+
+
+def real_detections(raw, ball):
+    """Per frame: is the cleaned ball position an actual detection (not gap-filled, not a removed outlier)?"""
+    return np.array([b is not None and not np.isnan(c[0]) and np.allclose(c, b) for b, c in zip(raw, ball)])
+
+
+def merge_serves(events, serves, players, court, fps, handling_s=3.0, after_s=0.3, hold_s=0.7):
+    """Put detected serves into the event list as hits flagged "serve".
+
+    Hits by the server's team in the handling_s before a serve are ball handling (bouncing it,
+    passing it to the server), and one within after_s after it is the same contact detected late:
+    both are dropped. Any other event in the hold_s before contact (a bounce of the held ball) goes too.
+    """
+    side = lambda f, pid: court.side(players[f][pid]["court"])
+    drop = set()
+    for s in serves:
+        f, srv_side = s["frame"], side(s["frame"], s["player"])
+        for i, e in enumerate(events):
+            if f - handling_s * fps <= e["frame"] <= f + after_s * fps and e["type"] == "hit" \
+                    and side(e["frame"], e["player"]) == srv_side:
+                drop.add(i)
+            elif f - hold_s * fps <= e["frame"] < f:
+                drop.add(i)
+    kept = [e for i, e in enumerate(events) if i not in drop]
+    added = [{"frame": s["frame"], "type": "hit", "player": s["player"], "px": s["px"], "serve": True}
+             for s in serves]
+    return sorted(kept + added, key=lambda e: (e["frame"], e["type"] != "hit"))
+
+
 def shot_type(n_in_rally, hitter, landing, speed, airtime, volley, drive_speed=10.0):
     """Rule-based pickleball shot label. hitter/landing are court metres, speed m/s."""
     if n_in_rally == 1:
@@ -100,15 +240,32 @@ def shot_type(n_in_rally, hitter, landing, speed, airtime, volley, drive_speed=1
     return "volley" if volley else "groundstroke"
 
 
-def classify_shots(events, players, court, fps, rally_gap_s=2.5, drive_speed=10.0):
-    """-> (shots, rallies). Every hit becomes a shot with type, speed, landing and faults."""
+def _type_position(n, e, rally, serves_detected, side):
+    """Rally position shot_type should see: with detected serves, 1 = serve, and 2 = return only for
+    the next hit after a detected serve, from across the net; otherwise 3+ (rule-based type)."""
+    if not serves_detected:
+        return n
+    if e.get("serve"):
+        return 1
+    return 2 if n == 2 and rally["served"] and side != rally["server_side"] else max(n, 3)
+
+
+def classify_shots(events, players, court, fps, rally_gap_s=2.5, drive_speed=10.0, serves_detected=False):
+    """-> (shots, rallies). Every hit becomes a shot with type, speed, landing and faults.
+
+    serves_detected=False: the first hit of a rally (after a rally_gap_s pause) is the serve.
+    serves_detected=True (events went through merge_serves): only hits flagged "serve" are serves,
+    each one starts a new rally, and "return" is the hit right after a serve. A rally that starts
+    without a detected serve (clip starts mid-point, serve missed) has no serve or return.
+    """
     hits = [i for i, e in enumerate(events) if e["type"] == "hit"]
     shots, rallies, prev = [], [], None
     for k, i in enumerate(hits):
         e, f = events[i], events[i]["frame"]
-        new_rally = prev is None or (f - events[prev]["frame"]) / fps > rally_gap_s
+        new_rally = prev is None or (f - events[prev]["frame"]) / fps > rally_gap_s or bool(e.get("serve"))
         if new_rally:
-            rallies.append({"start": f, "end": f, "shots": 0})
+            rallies.append({"start": f, "end": f, "shots": 0, "served": bool(e.get("serve")),
+                            "server_side": court.side(players[f][e["player"]]["court"])})
         rallies[-1]["shots"] += 1
         rallies[-1]["end"] = f
         volley = not new_rally and not any(b["type"] == "bounce" for b in events[prev + 1:i])
@@ -118,7 +275,8 @@ def classify_shots(events, players, court, fps, rally_gap_s=2.5, drive_speed=10.
         # destination: the bounce, else the next hitter in the same rally (a re-hit by the same
         # player, or a hit in the next point, says nothing about this shot's speed)
         nxt_ev = events[nxt] if nxt < len(events) else None
-        same_rally = nxt_ev and nxt_ev["player"] != e["player"] and (nxt_ev["frame"] - f) / fps <= rally_gap_s
+        same_rally = nxt_ev and nxt_ev["player"] != e["player"] and (nxt_ev["frame"] - f) / fps <= rally_gap_s \
+            and not nxt_ev.get("serve")
         target_ev = landing_ev or (nxt_ev if same_rally else None)
         hitter = np.array(players[f][e["player"]]["court"])
         landing = speed = None
@@ -142,7 +300,8 @@ def classify_shots(events, players, court, fps, rally_gap_s=2.5, drive_speed=10.
             faults.append("net")  # bounced on the hitter's own side
         shots.append({
             "frame": f, "time_s": round(f / fps, 2), "player": e["player"], "rally": len(rallies),
-            "n_in_rally": n, "type": shot_type(n, hitter, landing, speed, airtime, volley, drive_speed),
+            "n_in_rally": n, "type": shot_type(_type_position(n, e, rallies[-1], serves_detected, court.side(hitter)),
+                                               hitter, landing, speed, airtime, volley, drive_speed),
             "volley": volley, "speed_kmh": None if speed is None else round(speed * 3.6, 1),
             "hitter": hitter.round(2).tolist(),
             "landing": None if landing is None else landing.round(2).tolist(), "faults": faults,
@@ -150,6 +309,7 @@ def classify_shots(events, players, court, fps, rally_gap_s=2.5, drive_speed=10.
         prev = i
     for r in rallies:
         r["duration_s"] = round((r["end"] - r["start"]) / fps, 2)
+        r.pop("server_side")
     return shots, rallies
 
 

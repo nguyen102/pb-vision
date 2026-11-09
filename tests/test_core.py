@@ -199,6 +199,175 @@ def test_training_labels_keep_moving_ball_and_fill_gaps():
     assert abs(x - 180) < 1e-6 and filled and not labels[7][4]
 
 
+
+
+def _person(pid, cx, cy_court, h=150):
+    """Raw tracker detection: ByteTrack id + bbox + feet in court metres."""
+    return {"id": pid, **_player(cx, cy_court, h)}
+
+
+def test_play_area_margins_are_tight_on_sidelines_loose_on_baselines():
+    assert Court.in_play_area((COURT_W + 0.5, 5)) and not Court.in_play_area((COURT_W + 1.7, 5))
+    assert not Court.in_play_area((-1.7, 10))
+    assert Court.in_play_area((3, COURT_L + 2.5)) and Court.in_play_area((3, -2.5))
+    assert not Court.in_play_area((3, COURT_L + 4))
+
+
+def test_select_players_keeps_two_per_side_and_drops_bystanders():
+    from pbv.players import select_players
+    fps = 30
+    frames = []
+    for f in range(3 * fps):
+        t = f / fps
+        frames.append([
+            _person("1", 1.5 + 0.3 * t, 12.5, h=200), _person("2", 4.5, 12.0 - 0.3 * t, h=200),  # near players
+            _person("3", 1.5, 1.0 + 0.3 * t, h=60), _person("4", 4.5 - 0.3 * t, 1.5, h=60),        # far players
+            _person("8", COURT_W + 1.7, 10.0, h=170),   # line judge past the sideline: outside the margin
+            _person("9", COURT_W + 0.5, 11.0, h=180),   # still bystander inside the margin, near side
+            _person("10", -0.6, 3.0, h=70),              # still bystander inside the margin, far side
+        ])
+    out = select_players(frames, fps)
+    assert all(len(fp) == 4 for fp in out)
+    sides = {pid: Court.side(p["court"]) for pid, p in out[0].items()}
+    assert sorted(sides.values()) == ["far", "far", "near", "near"]
+    kept_x = sorted(round(p["court"][0], 1) for p in out[0].values())
+    assert kept_x == [1.5, 1.5, 4.5, 4.5]  # the four players, none of the bystanders
+
+
+def test_select_players_keeps_one_id_through_bytetrack_switches():
+    from pbv.players import select_players
+    fps = 30
+    frames = []
+    for f in range(4 * fps):
+        x = 1.0 + 0.5 * f / fps  # near player walks right at 0.5 m/s ...
+        near_id = "5" if f < 2 * fps else "17"  # ... and ByteTrack gives them a new id halfway
+        frames.append([_person(near_id, x, 12.0), _person("6", 5.0, 11.0),
+                       _person("7", 2.0, 1.0, h=60), _person("8", 4.0, 1.0, h=60)])
+    frames[70] = [p for p in frames[70] if p["id"] != "6"]  # partner missed for one frame
+    out = select_players(frames, fps)
+    walker = {pid for fp in out for pid, p in fp.items() if abs(p["court"][1] - 12.0) < 1e-6}
+    partner = {pid for fp in out for pid, p in fp.items() if abs(p["court"][1] - 11.0) < 1e-6}
+    assert len(walker) == 1 and len(partner) == 1 and walker != partner
+    assert len({pid for fp in out for pid in fp}) == 4
+    assert len(out[70]) == 3  # a missed detection leaves the slot empty, no stand-in
+
+
+def _look(top, bottom, head=(120, 160, 210)):
+    """Appearance descriptor of a person wearing top/bottom BGR colours (head: skin tone by default)."""
+    from pbv.appearance import describe
+    img = np.zeros((300, 200, 3), np.uint8)
+    img[:60] = head
+    img[60:150], img[150:] = top, bottom
+    return describe(img, [0, 0, 200, 300])
+
+
+def test_appearance_distance_tells_clothes_apart():
+    from pbv.appearance import distance
+    red_blue, blue_red = _look((0, 0, 220), (220, 0, 0)), _look((220, 0, 0), (0, 0, 220))
+    assert distance(red_blue, _look((0, 0, 220), (220, 0, 0))) < 0.05
+    assert distance(red_blue, blue_red) > 0.5
+    assert distance(None, red_blue) == 0.0  # unknown look is neutral
+
+
+def _walkers(fps, seconds, plan):
+    """plan(f) -> [(track_id, x, y, look), ...] per frame -> raw people frames."""
+    frames = []
+    for f in range(int(seconds * fps)):
+        frames.append([{**_person(pid, x, y, h=200 if y > NET_Y else 60), "look": look} for pid, x, y, look in plan(f)])
+    return frames
+
+
+def test_reid_gives_returning_players_their_own_ids():
+    from pbv.players import select_players
+    fps = 30
+    a, b = _look((0, 0, 220), (40, 40, 40)), _look((220, 220, 220), (220, 0, 0))
+    far = [("7", 2.0, 1.0, None), ("8", 4.0, 1.0, None)]
+
+    def plan(f):
+        if f < 60:                      # A on the left, B on the right
+            return [("1", 1.5, 12.0, a), ("2", 4.5, 12.0, b)] + far
+        if f < 150:                     # both walk out of frame
+            return far
+        return [("21", 1.5, 12.0, b), ("22", 4.5, 12.0, a)] + far  # back in, sides swapped, new ByteTrack ids
+
+    out = select_players(_walkers(fps, 6, plan), fps)
+    id_a_before = next(pid for pid, p in out[0].items() if p["court"] == [1.5, 12.0])
+    id_a_after = next(pid for pid, p in out[170].items() if p["court"] == [4.5, 12.0])
+    assert id_a_before == id_a_after
+    assert len({pid for fp in out for pid in fp}) == 4
+
+
+def test_reid_keeps_strangers_out_of_a_missing_players_id():
+    from pbv.players import select_players
+    fps = 30
+    a, b, stranger = _look((0, 0, 220), (40, 40, 40)), _look((220, 220, 220), (220, 0, 0)), \
+        _look((0, 200, 0), (0, 200, 200), head=(30, 30, 30))  # green kit, dark hair
+    far = [("7", 2.0, 1.0, None), ("8", 4.0, 1.0, None)]
+
+    def plan(f):
+        if f < 60:
+            return [("1", 1.5, 12.0, a), ("2", 4.5, 12.0, b)] + far
+        return [("2", 4.5, 12.0, b), ("30", 1.5, 12.5, stranger)] + far  # A gone, a stranger walks on
+
+    out = select_players(_walkers(fps, 4, plan), fps)
+    assert all(len(fp) == 3 for fp in out[61:])  # A's id stays empty; the stranger gets none
+    assert len({pid for fp in out for pid in fp}) == 4
+
+
+def _serve_scene(fps, server_y=13.8, go=True, incoming=False):
+    """Server on the near side holds the ball still for 1.5 s, then (go=True) serves it over the net.
+    incoming=True: instead of being held, the ball flies in from the far side and is hit straight back."""
+    server, partner = _player(2.0, server_y, h=100), _player(4.5, 12.5, h=100)  # real scale: ~1/8 of court width
+    far1, far2 = _player(2.0, 1.0, h=60), _player(4.5, 1.0, h=60)
+    x1, y1, x2, y2 = server["bbox"]
+    hand = np.array([x2, (y1 + y2) / 2])
+    n_hold, n_fly = int(1.5 * fps), int(0.8 * fps)
+    target = COURT.to_image([[4.5, 2.0]])[0]
+    if incoming:
+        ball = [target + (hand - target) * (k + 1) / n_hold for k in range(n_hold)]
+    else:
+        ball = [hand + [0, 3 * np.sin(f)] for f in range(n_hold)]  # jiggling in the hand
+    for k in range(1, n_fly + 1):
+        ball.append(hand + (target - hand) * k / n_fly if go else hand + [0, 3 * np.sin(k)])
+    players = [{"1": server, "2": partner, "3": far1, "4": far2} for _ in ball]
+    return np.array(ball, float), players, n_hold - 1
+
+
+def test_find_serves_needs_still_ball_at_baseline_then_fast_crossing():
+    fps = 30
+    ball, players, contact = _serve_scene(fps)
+    serves = events.find_serves(ball, players, COURT, fps, 1000)
+    assert [(s["frame"], s["player"]) for s in serves] == [(contact, "1")]
+    assert events.find_serves(*_serve_scene(fps, go=False)[:2], COURT, fps, 1000) == []          # ball just held
+    assert events.find_serves(*_serve_scene(fps, server_y=9.5)[:2], COURT, fps, 1000) == []      # hit from mid-court
+    assert events.find_serves(*_serve_scene(fps, incoming=True)[:2], COURT, fps, 1000) == []     # volleyed straight back
+
+
+def test_merge_serves_drops_ball_handling_and_starts_rally():
+    fps = 30
+    pos = {"1": (2.0, 13.8), "2": (4.5, 12.5), "3": (2.0, 1.0)}
+    players = [{pid: _player(*xy) for pid, xy in pos.items()} for _ in range(400)]
+    bpx = lambda x, y: COURT.to_image([[x, y]])[0].tolist()
+    evs = [
+        {"frame": 10, "type": "hit", "player": "3", "px": [0, 0]},                # end of the previous point
+        {"frame": 100, "type": "hit", "player": "1", "px": [0, 0]},               # bouncing the ball before serving
+        {"frame": 120, "type": "bounce", "player": None, "px": bpx(2.0, 13.5)},
+        {"frame": 150, "type": "hit", "player": "2", "px": [0, 0]},               # partner taps it back
+        {"frame": 178, "type": "hit", "player": "1", "px": [0, 0]},               # late re-detection of the serve
+        {"frame": 200, "type": "bounce", "player": None, "px": bpx(3.0, 3.0)},
+        {"frame": 220, "type": "hit", "player": "3", "px": [0, 0]},
+        {"frame": 260, "type": "bounce", "player": None, "px": bpx(3.0, 11.0)},
+        {"frame": 280, "type": "hit", "player": "2", "px": [0, 0]},
+    ]
+    merged = events.merge_serves(evs, [{"frame": 170, "player": "1", "px": [5.0, 5.0]}], players, COURT, fps)
+    hits = [(e["frame"], e["player"], bool(e.get("serve"))) for e in merged if e["type"] == "hit"]
+    assert hits == [(10, "3", False), (170, "1", True), (220, "3", False), (280, "2", False)]
+    shots, rallies = events.classify_shots(merged, players, COURT, fps, serves_detected=True)
+    assert shots[0]["type"] != "serve"  # end of the previous point: no serve detected for it
+    assert [s["type"] for s in shots][1:3] == ["serve", "return"]
+    assert [r["shots"] for r in rallies] == [1, 3]
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

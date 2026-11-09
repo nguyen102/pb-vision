@@ -6,6 +6,9 @@ import numpy as np
 
 from .constants import COURT_L, COURT_W, KITCHEN, NET_Y
 
+# Players chase wide balls ~1 m past a sideline but serve and lob-chase up to ~3 m behind a baseline.
+SIDE_MARGIN, END_MARGIN = 1.0, 3.0
+
 # Order matters: far-left, far-right, near-right, near-left.
 CORNERS_M = np.float32([[0, 0], [COURT_W, 0], [COURT_W, COURT_L], [0, COURT_L]])
 
@@ -68,6 +71,19 @@ class Court:
     @staticmethod
     def inside(p, margin=0.0):
         return -margin <= p[0] <= COURT_W + margin and -margin <= p[1] <= COURT_L + margin
+
+    @staticmethod
+    def in_play_area(p, side_margin=SIDE_MARGIN, end_margin=END_MARGIN):
+        """Where a player can be: a little past the sidelines, well behind the baselines.
+        Refs, line judges and benches stand beside the court, so the sideline margin is tight."""
+        return -side_margin <= p[0] <= COURT_W + side_margin and -end_margin <= p[1] <= COURT_L + end_margin
+
+    @staticmethod
+    def outside_distance(p):
+        """Metres from p to the court rectangle (0 when on the court)."""
+        dx = max(-p[0], 0.0, p[0] - COURT_W)
+        dy = max(-p[1], 0.0, p[1] - COURT_L)
+        return float(np.hypot(dx, dy))
 
     @staticmethod
     def in_kitchen(p):
