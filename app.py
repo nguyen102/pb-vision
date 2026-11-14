@@ -144,7 +144,8 @@ def pick_ball(data, court, min_conf=0.15):
     return balltrack.select_path(cands, data["width"], balltrack.BallRegion(court))
 
 
-def analyse_fixed(data, court, args):
+def analyse_fixed(data, court, args, openings_only=True):
+    """openings_only=False: every shot and event (for evaluation), not just serve / return / third shot."""
     fps, players = data["fps"], data["players"]
     off = data["ball_offscreen"]
     ball = events.clean_ball(data["ball"], max_jump=0.08 * data["width"], offscreen=off)
@@ -157,7 +158,8 @@ def analyse_fixed(data, court, args):
                                            serves_detected=True, offscreen=off)
     # every hit is found (the third shot's landing and speed depend on what follows), but only the
     # serve, return and third shot of each rally are reported
-    shots, rallies, evs = events.opening_shots(shots, rallies, evs, players, court, fps)
+    if openings_only:
+        shots, rallies, evs = events.opening_shots(shots, rallies, evs, players, court, fps)
     return ball, evs, shots, rallies, analytics.player_stats(players, fps)
 
 

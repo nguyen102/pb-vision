@@ -88,11 +88,12 @@ def test_find_events_far_lob_goes_to_the_player_it_left():
     far = _player(3, 1.0, h=60)
     fb = far["bbox"]
     # The ball rises past the far player (reach 0.6 * 60 = 36 px) and keeps rising after contact:
-    # its top, at frame 15, is 60 px above their box. The hit is theirs, at the last frame in reach.
+    # its top, at frame 15, is 60 px above their box. The hit is theirs, at contact: where the ball
+    # passes their hand height (half way down the box, frame 3.75), not at the top of the arc.
     ball = _vee(15, fb[1] - 60, fb[1] + 60, fb[2] + 5)
     evs = events.find_events(ball, [{"2": far}] * len(ball))
     assert [(e["type"], e["player"]) for e in evs] == [("hit", "2")]
-    assert 8 <= evs[0]["frame"] < 15
+    assert 3 <= evs[0]["frame"] <= 5
 
 
 def test_find_events_far_lob_passing_the_partner_is_the_hitters():

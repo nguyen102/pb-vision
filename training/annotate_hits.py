@@ -37,7 +37,7 @@ def load_analysis(run):
     data = json.loads((run / "tracking.json").read_text())
     data.setdefault("ball_offscreen", [False] * len(data["ball"]))  # tracking.json from before off-screen detection
     court = Court.load(run / "court.json")
-    _, evs, *_ = app.analyse_fixed(data, court, SimpleNamespace(drive_speed=10.0))
+    _, evs, *_ = app.analyse_fixed(data, court, SimpleNamespace(drive_speed=10.0), openings_only=False)
     return data, court, evs
 
 

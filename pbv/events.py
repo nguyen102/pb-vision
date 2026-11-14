@@ -50,32 +50,48 @@ def nearest_player(p, frame_players, reach=0.6, allow=None, centre_tiebreak=Fals
     return best
 
 
-def _far_hitter(ball, players, t, reach, far_side, first):
+def _far_hitter(ball, players, t, reach, far_side, first, hand_h=0.5, dist_w=0.5):
     """(hitter, frame) for a local min of image y at t: (None, t) if no far player is in reach back to `first`.
 
-    A far shot that rises (a lob, a dink lifted over the net) keeps going up the screen after contact,
-    so the local min comes up to ~half a second later, when the ball may have passed the hitter's
-    partner. The hitter is the far player the ball came closest to (in box heights) over [first, t];
-    the frame is the latest one where they were in reach.
+    A far shot keeps going up the screen after contact, so the local min comes up to ~half a second later,
+    when the ball may have passed the hitter's partner. The hitter is the far player the ball came closest
+    to (in box heights) over [first, t]. The contact frame is the one, among the frames they were in
+    reach, where the ball is nearest hand height (hand_h of the way down their box) and to the box
+    (dist_w weights the box distance): a far ball rising to the apex stays in reach well after contact,
+    and a far bounce is in reach too but at the feet.
     """
-    latest, best = {}, (np.inf, None)
+    near, best = {}, (np.inf, None)
     for f in range(t, max(first, 0) - 1, -1):
         if np.isnan(ball[f, 0]):
             break
         for pid, pl in players[f].items():
             if not far_side(pl):
                 continue
-            d = _box_distance(ball[f], pl["bbox"]) / max(pl["bbox"][3] - pl["bbox"][1], 1e-9)
+            x1, y1, x2, y2 = pl["bbox"]
+            h = max(y2 - y1, 1e-9)
+            d = _box_distance(ball[f], pl["bbox"]) / h
             if d <= reach:
-                latest.setdefault(pid, f)
+                near.setdefault(pid, []).append((abs((ball[f, 1] - y1) / h - hand_h) + dist_w * d, -f))
                 if d < best[0]:
                     best = (d, pid)
-    return (best[1], latest[best[1]]) if best[1] is not None else (None, t)
+    if best[1] is None:
+        return None, t
+    return best[1], -min(near[best[1]])[1]
+
+
+def _turn(ball, t, k=3):
+    """How sharply the ball changes velocity at frame t (px/frame, over k frames each side); 0 if unseen."""
+    if t - k < 0 or t + k >= len(ball):
+        return 0.0
+    a, b = ball[t - k:t + 1], ball[t:t + k + 1]
+    if np.isnan(a).any() or np.isnan(b).any():
+        return 0.0
+    return float(np.linalg.norm((b[-1] - b[0]) - (a[-1] - a[0]))) / k
 
 
 def find_events(ball, players, window=5, min_prominence=8, min_gap=6, reach=0.6,
                 near_side=lambda pl: pl["court"][1] > NET_Y, far_side=lambda pl: pl["court"][1] <= NET_Y,
-                lookback=15):
+                lookback=15, swing=(4, 15)):
     """Hits and bounces are local extrema of the ball's image y.
 
     A bounce (ball falls then rises) is always a local max of image y. A near-side hit is a
@@ -84,6 +100,11 @@ def find_events(ball, players, window=5, min_prominence=8, min_gap=6, reach=0.6,
     far_side player can make one: a near player's box often covers the far court on screen,
     and a local min there is a far hit or the top of a lob, never a near player's shot. The top of a
     far player's lob comes a few frames after contact, so a local min looks back up to lookback frames.
+    A near local max next to a player can be the bounce in front of them (a return or a third shot is
+    always played off a bounce), with their contact swing[0]..swing[1] frames later, where the ball
+    rises off the court and is struck: no extremum there, but a sharper turn. When the ball, still in
+    their reach, turns more sharply then than at the local max, the local max is a bounce and the hit
+    is at that turn.
     In POV mode every visible player counts as near and as far.
     """
     y, events = ball[:, 1], []
@@ -96,6 +117,16 @@ def find_events(ball, players, window=5, min_prominence=8, min_gap=6, reach=0.6,
         if y[t] == w.max() and min(y[t] - left.min(), y[t] - right.min()) >= min_prominence:
             pid = nearest_player(ball[t], players[t], reach)
             etype = "hit" if pid is not None and near_side(players[t][pid]) else "bounce"
+            if etype == "hit":
+                later = [f for f in range(t + swing[0], min(t + swing[1] + 1, len(y)))
+                         if pid in players[f] and not np.isnan(ball[f, 0])
+                         and _box_distance(ball[f], players[f][pid]["bbox"])
+                         <= reach * (players[f][pid]["bbox"][3] - players[f][pid]["bbox"][1])]
+                turn = max(later, key=lambda f: _turn(ball, f), default=None)
+                if turn is not None and _turn(ball, turn) >= _turn(ball, t):
+                    events.append({"frame": t, "type": "bounce", "player": None,
+                                   "px": [round(float(v), 1) for v in ball[t]]})
+                    at = turn
         elif y[t] == w.min() and min(left.max() - y[t], right.max() - y[t]) >= min_prominence:
             first = max(t - lookback, events[-1]["frame"] + 1 if events else 0)
             pid, at = _far_hitter(ball, players, t, reach, far_side, first)
@@ -108,21 +139,31 @@ def find_events(ball, players, window=5, min_prominence=8, min_gap=6, reach=0.6,
     return events
 
 
-def filter_hits(events, fps, min_gap_s=0.35, side=None, same_side_s=1.0):
+def filter_hits(events, fps, min_gap_s=0.35, side=None, same_side_s=1.0, bounce_hit_s=(0.2, 0.6)):
     """Drop hits that can't be separate shots.
 
     - re-detections of one contact: a hit < min_gap_s after the previous kept hit (time only,
       because player IDs churn and one person can show up under two IDs)
     - with side(event) -> "near"/"far": a hit by the same side < same_side_s after the previous
       kept hit, since the ball has to cross the net and come back first
+    Except: two near-side hits bounce_hit_s[0]..[1] s apart are a bounce in front of the player (the
+    ball's lowest point on screen, in reach) and then their contact, so the later one is the hit and
+    the earlier one becomes a bounce (once: the hit that replaced it isn't replaced in turn). Every
+    return and third shot is played off a bounce; closer pairs are one contact detected twice.
     """
-    out, last = [], None
+    out, last, replaced = [], None, False
     for e in events:
+        e = dict(e)
         if e["type"] == "hit":
             gap = e["frame"] - last["frame"] if last else np.inf
-            if gap < min_gap_s * fps or (side and gap < same_side_s * fps and side(e) == side(last)):
+            if side and not replaced and bounce_hit_s[0] * fps <= gap < bounce_hit_s[1] * fps \
+                    and side(e) == side(last) == "near":
+                last.update(type="bounce", player=None)
+                last, replaced = e, True
+            elif gap < min_gap_s * fps or (side and gap < same_side_s * fps and side(e) == side(last)):
                 continue
-            last = e
+            else:
+                last, replaced = e, False
         out.append(e)
     return out
 
@@ -169,15 +210,17 @@ def _ball_out_of_play(ball, known, players, pid, t, hold, near_h, away_h, min_ne
     return at_body >= min_near and away <= max_away * len(seen)
 
 
-def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, near_h=0.5, away_h=1.5,
-                min_near=3, max_away=0.2, baseline_m=3.0, min_contact_y=0.15, still_m=0.5, step_frac=0.1,
-                same_contact_s=0.5, min_gap_s=4.0, detected=None, offscreen=None):
+def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, go_far_s=1.0, near_h=0.5, away_h=1.5,
+                min_near=3, max_away=0.2, baseline_m=1.0, receiver_m=1.5, min_contact_y=0.15, still_m=0.5, step_frac=0.1,
+                same_contact_s=0.5, min_gap_s=4.0, across_s=1.5, max_across=11, detected=None, offscreen=None):
     """Fixed mode: serves straight from the ball track -> [{"frame", "player", "px"}].
 
     A serve is the ball held (or bounced) by a player near their own baseline, then hit so it
     crosses the net quickly. Contact is a frame t where:
-    - the ball is within near_h box-heights of a player standing within baseline_m of their baseline,
-      and not in the top min_contact_y of their box (serves are underhand: a ball at head height is
+    - the ball is within near_h box-heights of a player standing within baseline_m of their baseline
+      (in front of it; behind it is fine), and, when both players across the net are in view, one of them
+      stands within receiver_m of their own baseline to receive (balls fed across between points are
+      hit from mid-court, or to players who aren't back to receive), and the ball is not in the top min_contact_y of their box (serves are underhand: a ball at head height is
       a volley, an overhead, or the player's cap detected as the ball)
     - over the hold_s before t the ball was out of play, one of:
       held: seen at the server's body (not their head: caps get detected as balls) >= min_near times,
@@ -189,11 +232,16 @@ def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, near_h=0
       or replaced by clean_ball) flies on
       one continuous path (steps < step_frac * width px per frame) that moves >= 3 m toward the net
       and reaches the other side
+    - the ball didn't come from across the net: in the across_s before t it was detected beyond the net
+      (on screen: above the net line for a near server, below it for a far one) at most max_across
+      times. Otherwise t is a return, or the end of a ball fed across between points
     Frames within same_contact_s of each other are one contact (the one where the ball speeds up
     most is kept), and a serve puts the ball in play, so nothing within min_gap_s after it is a serve.
     """
-    from .constants import COURT_L
+    from .constants import COURT_L, COURT_W, NET_Y
 
+    net_px = court.to_image([[COURT_W / 2, NET_Y]])[0][1]
+    margin = 0.02 * width
     hold, go, max_step = max(2, int(hold_s * fps)), max(2, int(go_s * fps)), step_frac * width
     known = ~np.isnan(ball[:, 0])
     detected = known if detected is None else np.asarray(detected) & known
@@ -211,10 +259,18 @@ def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, near_h=0
         to_baseline = COURT_L - pl["court"][1] if side == "near" else pl["court"][1]
         if to_baseline > baseline_m or (ball[t, 1] - y1) / box_h < min_contact_y:
             continue
+        across = [p["court"] for p in players[t].values() if court.side(p["court"]) != side]
+        depth = lambda c: c[1] if side == "near" else COURT_L - c[1]  # receiver's distance in from their baseline
+        if len(across) >= 2 and min(depth(c) for c in across) > receiver_m:
+            continue
+        w = slice(max(0, t - int(across_s * fps)), t)
+        ys = ball[w, 1][detected[w]]
+        if (ys < net_px - margin if side == "near" else ys > net_px + margin).sum() > max_across:
+            continue
         if not _ball_out_of_play(ball, known, players, pid, t, hold, near_h, away_h, min_near, max_away,
                                  min_contact_y, still_m, offscreen):
             continue
-        path = _flight(ball, detected, t, go, max_step)
+        path = _flight(ball, detected, t, go if side == "near" else max(2, int(go_far_s * fps)), max_step)
         if len(path) < 2:
             continue
         on_court = court.to_court(path)
@@ -372,38 +428,53 @@ def classify_shots(events, players, court, fps, rally_gap_s=2.5, drive_speed=10.
 ROLES = ("serve", "return", "third")
 
 
-def opening_shots(shots, rallies, events, players, court, fps):
+def opening_shots(shots, rallies, events, players, court, fps, min_gap_s=0.5, max_gap_s=2.5,
+                  unseen_return_s=(1.8, 3.5)):
     """Keep only the serve, return and third shot of each served rally -> (shots, rallies, events).
 
-    A rally counts only from a detected serve; the return must be the serve's "return" (from across the
-    net) and the third shot must come from the serving team, else the rally is kept up to the last shot
-    that fits. Every shot gets "role" (serve / return / third) and its rally is renumbered; rallies keep
-    start (the serve), end and duration_s (to the last kept shot). Events are cut to those that belong to the kept
-    shots: from the serve up to, not including, the next hit after the last kept shot (so the third
-    shot's bounce stays, later play goes).
+    Roles go by side and timing, not by position in the rally, so a spurious hit (a bounce taken for a
+    hit, a contact detected twice) doesn't push the real return or third shot out:
+    - serve: a shot flagged as a serve (merge_serves)
+    - return: the first shot from across the net min_gap_s..max_gap_s after the serve
+    - third: the first shot by the serving team min_gap_s..max_gap_s after the return, or, if no return
+      was detected, unseen_return_s after the serve (the return happened in between, unseen)
+    all before the next serve. A rally keeps what was found (a serve alone if no return is). Every shot
+    gets "role" (serve / return / third), the return's type is "return", and its rally is renumbered;
+    rallies keep start (the serve), end and duration_s (to the last kept shot). Events are cut to those
+    that belong to the kept shots: from the serve up to, not including, the next hit after the last kept
+    shot (so the third shot's bounce stays, later play goes).
     """
-    by_rally = {}
-    for s in shots:
-        by_rally.setdefault(s["rally"], []).append(s)
     side = lambda s: court.side(players[s["frame"]][s["player"]]["court"])
+    lo, hi = min_gap_s * fps, max_gap_s * fps
+    serves = [s for s in shots if s["type"] == "serve"]
     out_shots, out_rallies, windows = [], [], []
-    for r, rs in sorted(by_rally.items()):
-        rally = rallies[r - 1]
-        if not rally["served"] or rs[0]["type"] != "serve":
-            continue
-        kept = [rs[0]]
-        if len(rs) > 1 and rs[1]["type"] == "return":
-            kept.append(rs[1])
-            if len(rs) > 2 and side(rs[2]) == side(rs[0]):
-                kept.append(rs[2])
+    for k, srv in enumerate(serves):
+        until = serves[k + 1]["frame"] if k + 1 < len(serves) else float("inf")
+
+        def first(after, same_side_as_server, a=lo, b=hi):
+            return next((s for s in shots if after["frame"] + a <= s["frame"] <= min(after["frame"] + b, until - 1)
+                         and s["type"] != "serve" and (side(s) == side(srv)) == same_side_as_server), None)
+
+        kept = [(srv, "serve")]
+        ret = first(srv, False)
+        if ret is not None:
+            kept.append(({**ret, "type": "return"}, "return"))
+        third = first(ret, True) if ret is not None else \
+            first(srv, True, unseen_return_s[0] * fps, unseen_return_s[1] * fps)
+        if third is not None:
+            kept.append(({**third, "type": third["type"] if third["type"] != "return" else
+                          ("volley" if third["volley"] else "groundstroke")}, "third"))
         n = len(out_rallies) + 1
-        for role, s in zip(ROLES, kept):
-            out_shots.append({**s, "rally": n, "role": role})
-        out_rallies.append({**rally, "end": kept[-1]["frame"], "shots": len(kept),
-                            "duration_s": round((kept[-1]["frame"] - kept[0]["frame"]) / fps, 2)})
+        rally = next(r for r in rallies if r["start"] <= srv["frame"] <= r["end"])
+        roles = [r for _, r in kept]
+        kept = [s for s, _ in kept]
+        for role, s in zip(roles, kept):
+            out_shots.append({**s, "rally": n, "n_in_rally": ROLES.index(role) + 1, "role": role})
+        out_rallies.append({**rally, "start": srv["frame"], "end": kept[-1]["frame"], "shots": len(kept),
+                            "duration_s": round((kept[-1]["frame"] - srv["frame"]) / fps, 2)})
         last = kept[-1]["frame"]
         stop = next((e["frame"] for e in events if e["type"] == "hit" and e["frame"] > last), None)
-        windows.append((kept[0]["frame"], stop))
+        windows.append((srv["frame"], stop))
     out_events = [e for e in events
                   if any(a <= e["frame"] and (b is None or e["frame"] < b) for a, b in windows)]
     return out_shots, out_rallies, out_events
