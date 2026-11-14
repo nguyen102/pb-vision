@@ -388,6 +388,27 @@ def test_reid_gives_returning_players_their_own_ids():
     assert len({pid for fp in out for pid in fp}) == 4
 
 
+def test_hidden_players_are_picked_up_where_their_motion_says():
+    from pbv.players import select_players
+    fps = 30
+    same = _look((0, 0, 220), (40, 40, 40))  # identical kit: only motion can tell them apart
+    far = [("7", 2.0, 1.0, None), ("8", 4.0, 1.0, None)]
+
+    def plan(f):  # A walks right, C walks left at 2 m/s; both hidden for 1 s as they cross
+        a, c = 0.5 + 2 * f / fps, 5.5 - 2 * f / fps
+        if f < 30:
+            return [("1", a, 12.2, same), ("2", c, 12.2, same)] + far
+        if f < 60:
+            return far
+        # back in view with new ByteTrack ids, each nearer where the OTHER was last seen
+        return [("21", c, 12.2, same), ("22", a, 12.2, same)] + far
+
+    out = select_players(_walkers(fps, 3, plan), fps)
+    id_a = next(pid for pid, p in out[0].items() if p["court"] == [0.5, 12.2])
+    a_after = 0.5 + 2 * 70 / fps
+    assert abs(out[70][id_a]["court"][0] - a_after) < 1e-6
+
+
 def test_reid_keeps_strangers_out_of_a_missing_players_id():
     from pbv.players import select_players
     fps = 30

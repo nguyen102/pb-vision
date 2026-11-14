@@ -1,12 +1,18 @@
 """Pick the 4 players out of everyone the person tracker sees, and give each one a stable id.
 
-The tracker records every person near the court with ByteTrack ids, which churn (a player who is
-hidden or walks out of frame comes back with a new id) and include refs, line judges and spectators.
-select_players turns that into at most 2 players per side under 4 fixed ids "1".."4":
-- while a player is in view, their id follows them by position (and ByteTrack id);
-- when they come back after being lost, their clothing colours pick which id they get back,
-  so partners who both left the frame don't come back swapped, and a stranger walking on court
-  doesn't inherit a missing player's id.
+The tracker records every person near the court with ByteTrack ids, which churn (a player hidden behind
+another player, or behind the net, comes back with a new id) and include refs and spectators.
+select_players works on the whole clip at once:
+1. tracklets: each ByteTrack id's detections inside the play area, cut where the position jumps further
+   than a person can move (the id slid onto someone else);
+2. each tracklet's clothes: the median colour descriptor over its frames where nobody overlaps it;
+3. four players seeded from the moment four long tracklets are on court together, so everyone's clothes
+   are known from the start;
+4. tracklets go to players longest first. A tracklet costs clothing difference plus motion error: how far
+   it starts from where that player was heading when last seen (last position + velocity, allowed error
+   growing with the time hidden), and, if the player is seen again later, how far it ends from where they
+   reappear. A player can't be in two tracklets at once, a tracklet that is too far to reach or dressed
+   like nobody stays unassigned, and the players' clothes are re-estimated and the assignment repeated.
 """
 import numpy as np
 
@@ -56,97 +62,163 @@ def overlaps_someone(fp, min_frac=0.25):
     return out
 
 
-class SlotMatcher:
-    """Costs of giving a person to a player id (slot). Lower is better; None = not allowed.
+def _velocity(pts, fps):
+    """m/s from a few court positions (least-squares slope), 0 for a single point."""
+    if len(pts) < 2:
+        return np.zeros(2)
+    t = np.arange(len(pts)) / fps
+    return np.polyfit(t, np.asarray(pts, float), 1)[0]
 
-    Clothing limits come from gold-match-short (appearance.describe, 48-bin HSV): a player's own
-    frames sit at a median 0.38 (p90 0.46, p99 ~0.6) from their running profile, other players at
-    a median 0.48. So max_look=0.5 lets returning players back while turning away clear strangers,
-    and the joint assignment does the finer work of telling two lost players apart.
 
-    - active slot (seen < reacquire_s ago): only people its player could have reached and whose
-      clothes aren't clearly different (<= max_look_active), ranked by distance, clothing
-      difference (look_w per unit of distance) and a same-ByteTrack-id bonus
-    - lost slot: a returning player, if their clothes match (distance <= max_look; after relax_s
-      lost, any clothes, so one bad early match can't lock a player out for good)
-    - empty slot (never used): anyone, but dearer than a good clothes match to a lost slot
+PERSON_M = 1.7  # a standing player's height, to turn metres into box heights
+
+
+def _jump(a, b):
+    """How far the top-centre of box a moved to b, in box heights (of the taller box). The top (head),
+    not the feet: a far player's feet go behind the net, which moves the box bottom, and their court
+    position, by a metre or more between frames."""
+    h = max(a[3] - a[1], b[3] - b[1], 1e-9)
+    return float(np.hypot((a[0] + a[2] - b[0] - b[2]) / 2, a[1] - b[1])) / h
+
+
+def build_tracklets(frames, fps, skip=(), max_speed=7.0, max_gap_s=1.0, motion_s=0.5):
+    """Per-frame raw people -> tracklets: one ByteTrack id's run in the play area, split where its box jumps
+    further than a person moving at max_speed could (plus a quarter box height of jitter), or where it's
+    unseen for more than max_gap_s.
+
+    Each tracklet: frames, people, start/end frame, start/end court position (median over motion_s, since a
+    far player's position jumps when their feet go behind the net) and velocity (fitted over motion_s), and
+    look (median descriptor over frames where nobody overlaps them, or None).
     """
-
-    def __init__(self, fps, max_speed=7.0, reacquire_s=1.0, look_w=1.0, max_look=0.5, max_look_active=0.7,
-                 return_w=4.0, relax_s=8.0, unassigned=10.0):
-        self.fps, self.max_speed, self.reacquire_s = fps, max_speed, reacquire_s
-        self.max_look_active = max_look_active
-        self.look_w, self.max_look, self.return_w, self.relax_s = look_w, max_look, return_w, relax_s
-        self.unassigned = unassigned
-        self.empty_cost = 1.0 + return_w * max_look  # a lost player matching below max_look wins over a new id
-
-    def cost(self, slot, person, frame):
-        """Cost of person taking slot at frame, or None."""
-        outside = Court.outside_distance(person["court"])
-        if slot is None:
-            return self.empty_cost + outside
-        look = distance(slot["look"], person.get("look"))
-        lost_s = (frame - slot["frame"]) / self.fps
-        if lost_s <= self.reacquire_s:
-            d = float(np.hypot(*np.subtract(person["court"], slot["court"])))
-            if d > 0.5 + self.max_speed * lost_s or look > self.max_look_active:
-                return None
-            return d + self.look_w * look - (0.3 if person["id"] == slot["track"] else 0.0)
-        if look > self.max_look and lost_s < self.relax_s:
-            return None
-        return 1.0 + outside + self.return_w * look
-
-    def assign(self, slots, people, frame, per_side=2):
-        """Best joint assignment of slots to people, at most per_side people per side of the net.
-        -> [person index or None] per slot."""
-        costs = [[self.cost(s, p, frame) for p in people] for s in slots]
-        sides = [Court.side(p["court"]) for p in people]
-        best = {"cost": np.inf, "pick": [None] * len(slots)}
-
-        def search(i, used, count, total, pick):
-            if total >= best["cost"]:
-                return
-            if i == len(slots):
-                best["cost"], best["pick"] = total, pick
-                return
-            for c in range(len(people)):
-                if c not in used and costs[i][c] is not None and count[sides[c]] < per_side:
-                    search(i + 1, used | {c}, {**count, sides[c]: count[sides[c]] + 1},
-                           total + costs[i][c], pick + [c])
-            search(i + 1, used, count, total + self.unassigned, pick + [None])
-
-        search(0, frozenset(), {"near": 0, "far": 0}, 0.0, [])
-        return best["pick"]
-
-
-def select_players(frames, fps, max_candidates=6, look_rate=0.1, **matcher_args):
-    """Per-frame raw people [{"id", "bbox", "court", "look"?}] -> per-frame {player_id: {"bbox", "court"}}.
-
-    1. drop people outside the play area (tight sideline margin, loose baseline margin)
-    2. drop ids that stand still beside the court for their whole track
-    3. keep at most 2 people per side of the net
-    4. map them to 4 fixed ids by position while in view and by clothing colours when they come back
-    Each id's clothing profile is a running average (look_rate) over frames where nobody overlaps them.
-    """
-    static = static_bystanders(frames, fps)
-    matcher = SlotMatcher(fps, **matcher_args)
-    slots = [None] * len(PLAYER_IDS)
-    out = []
+    runs, live = [], {}
+    gap = int(max_gap_s * fps)
     for f, fp in enumerate(frames):
         mixed = dict(zip(map(id, fp), overlaps_someone(fp)))
-        cands = [p for p in fp if p["id"] not in static and Court.in_play_area(p["court"])]
-        cands = sorted(cands, key=lambda p: Court.outside_distance(p["court"]))[:max_candidates]
-        frame_out = {}
-        for k, c in enumerate(matcher.assign(slots, cands, f)):
-            if c is None:
+        for p in fp:
+            if p["id"] in skip or not Court.in_play_area(p["court"]):
                 continue
-            p = cands[c]
-            look = slots[k]["look"] if slots[k] else None
-            new = p.get("look")
-            if new is not None and not mixed[id(p)]:
-                new = np.asarray(new, float)
-                look = new if look is None else (1 - look_rate) * look + look_rate * new
-            slots[k] = {"court": p["court"], "track": p["id"], "frame": f, "look": look}
-            frame_out[PLAYER_IDS[k]] = {"bbox": p["bbox"], "court": p["court"]}
-        out.append(frame_out)
+            t = live.get(p["id"])
+            if t is not None:
+                dt = f - t["frames"][-1]
+                if dt > gap or _jump(t["people"][-1]["bbox"], p["bbox"]) > 0.25 + max_speed * dt / fps / PERSON_M:
+                    t = None
+            if t is None:
+                t = live[p["id"]] = {"frames": [], "people": [], "looks": []}
+                runs.append(t)
+            if p.get("look") is not None and not mixed[id(p)]:
+                t["looks"].append(np.asarray(p["look"], float))
+            t["frames"].append(f)
+            t["people"].append(p)
+    k = max(2, int(motion_s * fps))
+    for t in runs:
+        pts = np.array([p["court"] for p in t["people"]], float)
+        t["start"], t["end"] = t["frames"][0], t["frames"][-1]
+        t["p0"], t["p1"] = np.median(pts[:k], axis=0), np.median(pts[-k:], axis=0)
+        t["v0"], t["v1"] = _velocity(pts[:k], fps), _velocity(pts[-k:], fps)
+        looks = t.pop("looks")
+        t["look"] = np.median(looks, axis=0) if looks else None
+    return runs
+
+
+def _anchor(tracks):
+    """Up to 4 tracklets that are on court together for longest: the seed for the four players."""
+    best, best_len = [], -1
+    starts = sorted({t["start"] for t in tracks})
+    for f in starts + [0]:
+        here = sorted((t for t in tracks if t["start"] <= f <= t["end"]), key=lambda t: -len(t["frames"]))[:4]
+        total = sum(len(t["frames"]) for t in here) + 10 ** 6 * len(here)  # most people first, then longest
+        if total > best_len:
+            best, best_len = here, total
+    return best
+
+
+class Assigner:
+    """Costs of tracklets for players (see the module docstring); None = not allowed.
+
+    look_w: weight of clothing difference (0..1) against motion error (1 = one allowed-error radius).
+    max_look: a tracklet whose clothes differ more than this from a player's is not them (a stranger).
+    Motion: a player last seen at p moving at v is expected at p + v * min(dt, horizon_s) after dt s,
+    give or take 0.5 + walk * dt metres; further than 0.5 + max_speed * dt is out of reach.
+    unassigned: cost of leaving a tracklet out (a stranger, or a duplicate box).
+    """
+
+    def __init__(self, fps, look_w=8.0, max_look=0.6, walk=2.0, max_speed=7.0, horizon_s=1.0, overlap=2,
+                 unassigned=6.0):
+        self.fps, self.look_w, self.max_look, self.walk = fps, look_w, max_look, walk
+        self.max_speed, self.horizon_s, self.overlap, self.unassigned = max_speed, horizon_s, overlap, unassigned
+
+    def _motion(self, here, there, dt):
+        """Normalised error of seeing someone at `here` when `there` was predicted dt s away; None if unreachable."""
+        err = float(np.hypot(*(here - there)))
+        if err > 0.5 + self.max_speed * dt:
+            return None
+        return err / (0.5 + self.walk * dt)
+
+    def cost(self, t, look, owned):
+        """Cost of tracklet t for a player with clothes `look` who already has tracklets `owned`."""
+        lo, hi = t["start"] + self.overlap, t["end"] - self.overlap
+        if any(o["start"] <= hi and lo <= o["end"] for o in owned):
+            return None  # they're already somewhere else then
+        c = 0.0
+        if t["look"] is not None and look is not None:
+            d = distance(t["look"], look)
+            if d > self.max_look:
+                return None
+            c += self.look_w * d
+        before = max((o for o in owned if o["end"] <= lo), key=lambda o: o["end"], default=None)
+        after = min((o for o in owned if o["start"] >= hi), key=lambda o: o["start"], default=None)
+        if before is not None:
+            dt = max(t["start"] - before["end"], 1) / self.fps
+            m = self._motion(t["p0"], before["p1"] + before["v1"] * min(dt, self.horizon_s), dt)
+            if m is None:
+                return None
+            c += m
+        if after is not None:
+            dt = max(after["start"] - t["end"], 1) / self.fps
+            m = self._motion(t["p1"], after["p0"] - after["v0"] * min(dt, self.horizon_s), dt)
+            if m is None:
+                return None
+            c += m
+        return c
+
+
+def _profiles(owned, n):
+    """Each player's clothes: frame-weighted mean of their tracklets' descriptors (None if none known)."""
+    out = []
+    for k in range(n):
+        ls = [(t["look"], len(t["frames"])) for t in owned[k] if t["look"] is not None]
+        out.append(np.average([l for l, _ in ls], axis=0, weights=[w for _, w in ls]) if ls else None)
+    return out
+
+
+def select_players(frames, fps, rounds=3, **assigner_args):
+    """Per-frame raw people [{"id", "bbox", "court", "look"?}] -> per-frame {player_id: {"bbox", "court"}}.
+
+    Drops people outside the play area and ids that stand still beside the court, splits the rest into
+    tracklets and gives each tracklet to one of the 4 players or to nobody (module docstring).
+    """
+    tracks = build_tracklets(frames, fps, skip=static_bystanders(frames, fps))
+    out = [{} for _ in frames]
+    if not tracks:
+        return out
+    seeds = _anchor(tracks)
+    # ids in a fixed order at the seed moment: near side left to right, then far side left to right
+    seeds.sort(key=lambda t: (Court.side(t["p0"]) != "near", t["p0"][0]))
+    n = len(seeds)
+    a = Assigner(fps, **assigner_args)
+    looks = [t["look"] for t in seeds]
+    order = sorted((t for t in tracks if not any(t is s for s in seeds)), key=lambda t: -len(t["frames"]))
+    for _ in range(rounds):
+        owned = [[s] for s in seeds]
+        for t in order:
+            costs = [a.cost(t, looks[k], owned[k]) for k in range(n)]
+            ok = [(c, k) for k, c in enumerate(costs) if c is not None and c < a.unassigned]
+            if ok:
+                owned[min(ok)[1]].append(t)
+        new = _profiles(owned, n)
+        looks = [nl if nl is not None else ol for nl, ol in zip(new, looks)]
+    for k in range(n):
+        for t in sorted(owned[k], key=lambda t: t["start"]):
+            for f, p in zip(t["frames"], t["people"]):
+                out[f][PLAYER_IDS[k]] = {"bbox": p["bbox"], "court": p["court"]}
     return out
