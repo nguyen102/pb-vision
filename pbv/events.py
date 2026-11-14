@@ -331,6 +331,48 @@ def merge_serves(events, serves, players, court, fps, handling_s=3.0, after_s=0.
     return sorted(kept + added, key=lambda e: (e["frame"], e["type"] != "hit"))
 
 
+def diagonal_servers(events, players, court, fps, within_s=2.5, centre_m=0.3):
+    """Serves go cross-court: give each serve to the server's partner when it landed on the server's own half.
+
+    A far server's ball is too small to see in their hand, so a far serve is first seen in flight, often
+    next to the server's partner, and goes to whoever it passes. Where it lands is on the ground, so its
+    court position is exact: the first bounce across the net within within_s, else where the next hit from
+    across the net (the return) is played. If that is on the same half (left / right of the centre line)
+    as the chosen server, and their partner stands on the other half, the partner served. Landings within
+    centre_m of the centre line, or servers without a partner in view, are left alone.
+    """
+    from .constants import COURT_W
+
+    half = lambda x: x < COURT_W / 2
+    out = [dict(e) for e in events]
+    for i, e in enumerate(out):
+        if not e.get("serve"):
+            continue
+        f, srv = e["frame"], players[e["frame"]][e["player"]]["court"]
+        side = court.side(srv)
+        ref = None
+        for nxt in out[i + 1:]:
+            if nxt["frame"] > f + within_s * fps or nxt.get("serve"):
+                break
+            if nxt["type"] == "bounce":
+                at = court.to_court([nxt["px"]])[0]
+                if court.side(at) != side:
+                    ref = at[0]
+                    break
+            elif nxt["type"] == "hit" and nxt["player"] in players[nxt["frame"]]:
+                at = players[nxt["frame"]][nxt["player"]]["court"]
+                if court.side(at) != side:
+                    ref = at[0]
+                    break
+        if ref is None or abs(ref - COURT_W / 2) < centre_m or half(srv[0]) != half(ref):
+            continue
+        partner = [pid for pid, p in players[f].items()
+                   if pid != e["player"] and court.side(p["court"]) == side and half(p["court"][0]) != half(ref)]
+        if partner:
+            e["player"] = partner[0]
+    return out
+
+
 def shot_type(n_in_rally, hitter, landing, speed, airtime, volley, drive_speed=10.0):
     """Rule-based pickleball shot label. hitter/landing are court metres, speed m/s."""
     if n_in_rally == 1:

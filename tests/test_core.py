@@ -517,6 +517,23 @@ def test_opening_shots_keeps_serve_return_and_third_only():
     assert [e["frame"] for e in kept] == [200, 230, 250, 280, 300, 330, 600, 630, 650]
 
 
+def test_far_serve_goes_to_the_partner_on_the_other_half_from_where_it_lands():
+    fps = 30
+    pos = {"1": (1.5, 13.6), "2": (4.5, 13.6), "3": (1.5, 0.0), "4": (4.5, 0.0)}
+    players = [{pid: _player(*xy) for pid, xy in pos.items()} for _ in range(200)]
+    bpx = lambda x, y: COURT.to_image([[x, y]])[0].tolist()
+    # seen first in flight next to P4 (right half), lands in the near-right box: P3 (left half) served
+    evs = [{"frame": 50, "type": "hit", "player": "4", "px": [0, 0], "serve": True},
+           {"frame": 75, "type": "bounce", "player": None, "px": bpx(4.8, 11.0)},
+           {"frame": 85, "type": "hit", "player": "2", "px": [0, 0]}]
+    assert events.diagonal_servers(evs, players, COURT, fps)[0]["player"] == "3"
+    # landed cross-court already: left alone; no bounce seen: the returner's half decides
+    evs[1]["px"] = bpx(1.0, 11.0)
+    assert events.diagonal_servers(evs, players, COURT, fps)[0]["player"] == "4"
+    no_bounce = [evs[0], evs[2]]
+    assert events.diagonal_servers(no_bounce, players, COURT, fps)[0]["player"] == "3"
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

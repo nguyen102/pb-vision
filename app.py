@@ -154,6 +154,7 @@ def analyse_fixed(data, court, args, openings_only=True):
     serves = events.find_serves(ball, players, court, fps, data["width"],
                                 detected=events.real_detections(data["ball"], ball), offscreen=off)
     evs = events.merge_serves(evs, serves, players, court, fps)
+    evs = events.diagonal_servers(evs, players, court, fps)
     shots, rallies = events.classify_shots(evs, players, court, fps, drive_speed=args.drive_speed,
                                            serves_detected=True, offscreen=off)
     # every hit is found (the third shot's landing and speed depend on what follows), but only the
