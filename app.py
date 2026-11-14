@@ -163,7 +163,7 @@ def analyse_pov(data):
     # Every visible player can hit; their boxes must share the ball's pan-compensated view.
     shifted = [{pid: {"bbox": [p["bbox"][0] - o[0], p["bbox"][1] - o[1], p["bbox"][2] - o[0], p["bbox"][3] - o[1]]}
                 for pid, p in fp.items()} for fp, o in zip(players, offset)]
-    evs = events.filter_hits(events.find_events(ball, shifted, near_side=lambda pl: True), fps)
+    evs = events.filter_hits(events.find_events(ball, shifted, near_side=lambda pl: True, far_side=lambda pl: True), fps)
     for e in evs:
         if e["type"] == "hit":  # your partner fills much of the frame; opponents across the net don't
             x1, y1, x2, y2 = players[e["frame"]][e["player"]]["bbox"]

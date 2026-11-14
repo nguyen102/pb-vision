@@ -31,24 +31,50 @@ def clean_ball(track, max_jump=150, max_gap=8, offscreen=None):
     return out
 
 
-def nearest_player(p, frame_players, reach=0.6):
-    """Player whose bbox (grown by reach * bbox height) contains p, closest first."""
-    best, best_d = None, np.inf
+def nearest_player(p, frame_players, reach=0.6, allow=None, centre_tiebreak=False):
+    """Player whose bbox (grown by reach * bbox height) contains p, closest first.
+
+    centre_tiebreak: when p is inside several boxes (distance 0 for all), the box whose centre line is
+    closest wins, in units of box width, so a small (far) box the ball is inside beats a big (near) box
+    that just covers it; otherwise the first player listed wins. allow(pl) -> False leaves a player out.
+    """
+    best, best_key = None, (np.inf, np.inf)
     for pid, pl in frame_players.items():
+        if allow is not None and not allow(pl):
+            continue
         x1, y1, x2, y2 = pl["bbox"]
         d = np.hypot(max(x1 - p[0], 0, p[0] - x2), max(y1 - p[1], 0, p[1] - y2))
-        if d <= (y2 - y1) * reach and d < best_d:
-            best, best_d = pid, d
+        key = (d, abs(p[0] - (x1 + x2) / 2) / max(x2 - x1, 1e-9) if centre_tiebreak else 0.0)
+        if d <= (y2 - y1) * reach and key < best_key:
+            best, best_key = pid, key
     return best
 
 
+def _far_hitter(ball, players, t, reach, far_side, first):
+    """(far player nearest the ball, frame) at t, or failing that at the latest frame back to `first`
+    where one is in reach: a far lob keeps rising after contact, so its local min comes after the ball
+    has left the paddle, and the contact frame is where the hit belongs. (None, t) if nobody is."""
+    for f in range(t, max(first, 0) - 1, -1):
+        if np.isnan(ball[f, 0]):
+            break
+        pid = nearest_player(ball[f], players[f], reach, allow=far_side, centre_tiebreak=True)
+        if pid is not None:
+            return pid, f
+    return None, t
+
+
 def find_events(ball, players, window=5, min_prominence=8, min_gap=6, reach=0.6,
-                near_side=lambda pl: pl["court"][1] > NET_Y):
+                near_side=lambda pl: pl["court"][1] > NET_Y, far_side=lambda pl: pl["court"][1] <= NET_Y,
+                lookback=8):
     """Hits and bounces are local extrema of the ball's image y.
 
-    A bounce (ball falls then rises) is always a local max of image y. A far-side hit
-    is a local min (ball comes up the screen, then goes back down); a near-side hit is
-    a local max next to a near-side player. In POV mode every visible player counts as near.
+    A bounce (ball falls then rises) is always a local max of image y. A near-side hit is a
+    local max next to a near-side player (ball comes down the screen, then goes back up).
+    A far-side hit is a local min (ball goes up the screen, then comes back down), so only a
+    far_side player can make one: a near player's box often covers the far court on screen,
+    and a local min there is a far hit or the top of a lob, never a near player's shot. The top of a
+    far player's lob comes a few frames after contact, so a local min looks back up to lookback frames.
+    In POV mode every visible player counts as near and as far.
     """
     y, events = ball[:, 1], []
     for t in range(window, len(y) - window):
@@ -56,17 +82,19 @@ def find_events(ball, players, window=5, min_prominence=8, min_gap=6, reach=0.6,
         if np.isnan(w).any() or (events and t - events[-1]["frame"] < min_gap):
             continue
         left, right = w[:window], w[window + 1:]
+        at = t
         if y[t] == w.max() and min(y[t] - left.min(), y[t] - right.min()) >= min_prominence:
             pid = nearest_player(ball[t], players[t], reach)
             etype = "hit" if pid is not None and near_side(players[t][pid]) else "bounce"
         elif y[t] == w.min() and min(left.max() - y[t], right.max() - y[t]) >= min_prominence:
-            pid = nearest_player(ball[t], players[t], reach)
+            first = max(t - lookback, events[-1]["frame"] + 1 if events else 0)
+            pid, at = _far_hitter(ball, players, t, reach, far_side, first)
             etype = "hit" if pid is not None else None  # else: apex of a lob, not an event
         else:
             continue
         if etype:
-            events.append({"frame": t, "type": etype, "player": pid if etype == "hit" else None,
-                           "px": [round(float(v), 1) for v in ball[t]]})
+            events.append({"frame": at, "type": etype, "player": pid if etype == "hit" else None,
+                           "px": [round(float(v), 1) for v in ball[at]]})
     return events
 
 
@@ -214,15 +242,19 @@ def merge_serves(events, serves, players, court, fps, handling_s=3.0, after_s=0.
     """Put detected serves into the event list as hits flagged "serve".
 
     Hits by the server's team in the handling_s before a serve are ball handling (bouncing it,
-    passing it to the server), and one within after_s after it is the same contact detected late:
-    both are dropped. Any other event in the hold_s before contact (a bounce of the held ball) goes too.
+    passing it to the server), and any hit within after_s after it is the same contact detected late:
+    the served ball can't have reached the other side yet, so a "hit" there (the ball passing over a
+    receiver on screen) is the serve too. Any other event in the hold_s before contact (a bounce of the
+    held ball) goes too.
     """
     side = lambda f, pid: court.side(players[f][pid]["court"])
     drop = set()
     for s in serves:
         f, srv_side = s["frame"], side(s["frame"], s["player"])
         for i, e in enumerate(events):
-            if f - handling_s * fps <= e["frame"] <= f + after_s * fps and e["type"] == "hit" \
+            if e["type"] == "hit" and f < e["frame"] <= f + after_s * fps:
+                drop.add(i)
+            elif f - handling_s * fps <= e["frame"] <= f and e["type"] == "hit" \
                     and side(e["frame"], e["player"]) == srv_side:
                 drop.add(i)
             elif f - hold_s * fps <= e["frame"] < f:

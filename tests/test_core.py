@@ -65,6 +65,36 @@ def test_find_events_hit_bounce_hit():
     assert [(e["frame"], e["type"], e["player"]) for e in evs] == [(10, "hit", "1"), (32, "bounce", None), (40, "hit", "2")]
 
 
+def _vee(f, top, bottom, x, n=31):
+    """n frames of ball at image x, going up the screen to `top` at frame f, then back down."""
+    t = np.arange(n)
+    return np.c_[np.full(n, x, float), bottom - (bottom - top) * (1 - np.abs(t - f) / f)]
+
+
+def test_find_events_local_min_is_never_a_near_players_hit():
+    near, far = _player(3, 12.5), _player(0.5, 1.0, h=60)
+    nb = near["bbox"]
+    # Top of a lob over the near player's box on screen, nowhere near the far player: no event,
+    # where the nearest box (the near player's) used to get a hit.
+    ball = _vee(15, nb[1] + 20, nb[1] + 120, (nb[0] + nb[2]) / 2)
+    assert events.find_events(ball, [{"1": near, "2": far}] * len(ball)) == []
+    # Same, with the far player right there on screen too: it's theirs.
+    far2 = {"bbox": [nb[0], nb[1] - 10, nb[0] + 25, nb[1] + 50], "court": [3, 1.0]}
+    evs = events.find_events(ball, [{"1": near, "2": far2}] * len(ball))
+    assert [(e["type"], e["player"]) for e in evs] == [("hit", "2")]
+
+
+def test_find_events_far_lob_goes_to_the_player_it_left():
+    far = _player(3, 1.0, h=60)
+    fb = far["bbox"]
+    # The ball rises past the far player (reach 0.6 * 60 = 36 px) and keeps rising after contact:
+    # its top, at frame 15, is 60 px above their box. The hit is theirs, at the last frame in reach.
+    ball = _vee(15, fb[1] - 60, fb[1] + 60, fb[2] + 5)
+    evs = events.find_events(ball, [{"2": far}] * len(ball))
+    assert [(e["type"], e["player"]) for e in evs] == [("hit", "2")]
+    assert 8 <= evs[0]["frame"] < 15
+
+
 def test_classify_shots_types_and_faults():
     fps = 30
     pos = {"A": (3, 12.8), "B": (3, 0.5), "A2": (3, 12.8), "B2": (3, NET_Y - 1)}  # B2 at the kitchen
@@ -402,6 +432,7 @@ def test_merge_serves_drops_ball_handling_and_starts_rally():
         {"frame": 100, "type": "hit", "player": "1", "px": [0, 0]},               # bouncing the ball before serving
         {"frame": 120, "type": "bounce", "player": None, "px": bpx(2.0, 13.5)},
         {"frame": 150, "type": "hit", "player": "2", "px": [0, 0]},               # partner taps it back
+        {"frame": 174, "type": "hit", "player": "3", "px": [0, 0]},               # served ball passing over a receiver on screen
         {"frame": 178, "type": "hit", "player": "1", "px": [0, 0]},               # late re-detection of the serve
         {"frame": 200, "type": "bounce", "player": None, "px": bpx(3.0, 3.0)},
         {"frame": 220, "type": "hit", "player": "3", "px": [0, 0]},
