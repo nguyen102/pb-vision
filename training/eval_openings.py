@@ -65,7 +65,7 @@ def score(labels, players, opening, hits, tol=8, same_m=1.2):
                 if shot.get("untracked"):
                     out = "right"
                 else:
-                    got = (players[c] if s["player"] in players[c] else players[s["frame"]])[s["player"]]["court"]
+                    got = players[c][s["player"]]["court"] if s["player"] in players[c] else s["hitter"]
                     out = "right" if np.hypot(*np.subtract(got, shot["court"])) <= same_m else "wrong_player"
                 detail = f"P{s['player']} {s['frame'] - c:+d}f"
             elif near:

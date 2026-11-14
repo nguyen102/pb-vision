@@ -75,7 +75,8 @@ def add_stroke_form(video, shots, players, start, model, serve_fault=True):
             continue
         cap.set(cv2.CAP_PROP_POS_FRAMES, start + s["frame"])
         ok, frame = cap.read()
-        kp = pose.keypoints_for(frame, players[s["frame"]][s["player"]]["bbox"]) if ok else None
+        box = players[s["frame"]].get(s["player"], {}).get("bbox")  # None: served from off screen
+        kp = pose.keypoints_for(frame, box) if ok and box else None
         s["form"] = analytics.stroke_form(kp) if kp is not None else None
         # Rule 4.A: serve contact must be below the waist. The hit frame can land a few frames into
         # the follow-through, so only flag a wrist clearly above the waist (half-way to the shoulders).
@@ -119,7 +120,7 @@ def render(video, dst, start, players, ball, evs, shots, court, fps):
             break
         if f in shot_at:
             s = shot_at[f]
-            kind = s['type'] if s.get('role') != "third" else f"3rd shot {s['type']}"
+            kind = "3rd shot" if s["type"] == "third" else s["type"]
             label = f"{draw.name(s['player'])} {kind}" + (f" {s['speed_kmh']:.0f} km/h" if s["speed_kmh"] else "")
             if s["faults"]:
                 label += "  FAULT: " + ", ".join(s["faults"])
@@ -151,10 +152,15 @@ def analyse_fixed(data, court, args, openings_only=True):
     ball = events.clean_ball(data["ball"], max_jump=0.08 * data["width"], offscreen=off)
     evs = events.filter_hits(events.find_events(ball, players), fps,
                              side=lambda e: court.side(players[e["frame"]][e["player"]]["court"]))
-    serves = events.find_serves(ball, players, court, fps, data["width"],
-                                detected=events.real_detections(data["ball"], ball), offscreen=off)
+    detected = events.real_detections(data["ball"], ball)
+    serves = events.find_serves(ball, players, court, fps, data["width"], detected=detected, offscreen=off)
+    # serves find_serves misses (ball never seen in the server's hand, server off screen): everyone still, then
+    # the ball flies over the net
+    still = events.find_still_serves(ball, players, court, fps, data["width"], detected=detected)
+    serves = events.combine_serves(serves, still, fps, evs, players, court)
     evs = events.merge_serves(evs, serves, players, court, fps)
     evs = events.diagonal_servers(evs, players, court, fps)
+    evs = events.infer_returns(evs, ball, players, court, fps)
     shots, rallies = events.classify_shots(evs, players, court, fps, drive_speed=args.drive_speed,
                                            serves_detected=True, offscreen=off)
     # every hit is found (the third shot's landing and speed depend on what follows), but only the

@@ -534,6 +534,38 @@ def test_far_serve_goes_to_the_partner_on_the_other_half_from_where_it_lands():
     assert events.diagonal_servers(no_bounce, players, COURT, fps)[0]["player"] == "3"
 
 
+def test_missing_return_is_inferred_at_the_turn_after_the_serve_bounce():
+    fps = 30
+    pos = {"1": (1.5, 13.6), "2": (4.5, 13.6), "3": (1.5, 0.0), "4": (4.5, 0.0)}
+    players = [{pid: _player(*xy) for pid, xy in pos.items()} for _ in range(200)]
+    rx, ry = COURT.to_image([[1.5, 0.3]])[0]
+    # ball comes to the far receiver (P3, diagonal from server P2), bounces at frame 60, turns back at 70
+    ball = np.full((200, 2), np.nan)
+    for k in range(50, 71):
+        ball[k] = [rx + 2 * (70 - k), ry - 30 + 1.0 * (70 - k)]
+    for k in range(71, 90):
+        ball[k] = [rx + 6 * (k - 70), ry - 30 + 8 * (k - 70)]
+    evs = [{"frame": 20, "type": "hit", "player": "2", "px": [0, 0], "serve": True},
+           {"frame": 60, "type": "bounce", "player": None, "px": COURT.to_image([[1.5, 1.0]])[0].tolist()}]
+    out = events.infer_returns(evs, ball, players, COURT, fps)
+    ret = [e for e in out if e.get("inferred")]
+    assert len(ret) == 1 and ret[0]["player"] == "3" and abs(ret[0]["frame"] - 70) <= 2
+    # a serve that already has its return is left alone
+    evs.append({"frame": 70, "type": "hit", "player": "3", "px": [0, 0]})
+    assert not any(e.get("inferred") for e in events.infer_returns(evs, ball, players, COURT, fps))
+
+
+def test_offscreen_serve_replaces_a_far_serve_that_is_really_the_return():
+    fps = 30
+    players = [{"2": _player(4.5, 13.6), "3": _player(1.5, 0.0), "4": _player(4.5, 0.0)} for _ in range(200)]
+    serves = [{"frame": 90, "player": "4", "px": [0, 0]}]
+    still = [{"frame": 50, "player": "1", "px": [0, 0], "offscreen": True, "court": [1.5, 13.6]}]
+    out = events.combine_serves(serves, still, fps, [], players, COURT)
+    assert [(s["frame"], s["player"], bool(s.get("return"))) for s in out] == [(50, "1", False), (90, "4", True)]
+    merged = events.merge_serves([], out, players, COURT, fps)
+    assert [(e["frame"], bool(e.get("serve"))) for e in merged] == [(50, True), (90, False)]
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):
