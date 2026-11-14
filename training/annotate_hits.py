@@ -74,14 +74,15 @@ def main():
     todo = [e for e in hits if e["frame"] not in labels][: max(args.n - len(labels), 0)]
 
     cap = cv2.VideoCapture(str(args.video))
-    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    start = data.get("params", {}).get("start", 0)  # tracking frame 0 is this video frame (app.py --start)
+    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - start
     s = VIEW_W / int(cap.get(3))
     cv2.namedWindow("hits")
     done, k = [], 0
     while k < len(todo):
         e = todo[k]
         lo, hi = max(e["frame"] - args.span, 0), min(e["frame"] + args.span, total - 1, len(players) - 1)
-        cap.set(cv2.CAP_PROP_POS_FRAMES, lo)
+        cap.set(cv2.CAP_PROP_POS_FRAMES, start + lo)
         clip = [cap.read()[1] for _ in range(lo, hi + 1)]
         f, paused, result = e["frame"], False, None
         while result is None:

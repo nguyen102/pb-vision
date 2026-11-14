@@ -56,7 +56,8 @@ def main():
     todo = [e for e in serves if e["frame"] not in labels][: max(args.n - len(labels), 0)]
 
     cap = cv2.VideoCapture(str(args.video))
-    total = min(int(cap.get(cv2.CAP_PROP_FRAME_COUNT)), len(players))
+    start = data.get("params", {}).get("start", 0)  # tracking frame 0 is this video frame (app.py --start)
+    total = min(int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - start, len(players))
     s = VIEW_W / int(cap.get(3))
     save = lambda: path.write_text(json.dumps({"meta": meta, "labels": {str(f): v for f, v in sorted(labels.items())}},
                                               indent=1))
@@ -65,7 +66,7 @@ def main():
     while k < len(todo):
         e = todo[k]
         lo, hi = max(e["frame"] - int(args.before * fps), 0), min(e["frame"] + int(args.after * fps), total - 1)
-        cap.set(cv2.CAP_PROP_POS_FRAMES, lo)
+        cap.set(cv2.CAP_PROP_POS_FRAMES, start + lo)
         clip = []
         for _ in range(lo, hi + 1):
             ok, img = cap.read()
