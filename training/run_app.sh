@@ -5,7 +5,8 @@
 #                                                        OUTDIR) and restart it if it dies or stalls before "done"
 #   training/run_app.sh --status OUTDIR                  state, stage progress, log age, restarts
 #
-# Output goes to OUTDIR/run.log; watchdog actions to OUTDIR/watchdog.log. A run is stalled when run.log hasn't
+# Output goes to OUTDIR/run.log, deleted once the run finishes (its final summary line is kept in
+# OUTDIR/watchdog.log, which logs every watchdog action). A run is stalled when run.log hasn't
 # changed for STALL_S seconds (default 1800: the clothing-colour pass between tracking and analysis prints nothing
 # for several minutes). app.py can't resume mid-tracking, but tracking.json is cached once tracking finishes, so a
 # restart after that point goes straight to the later stages. Gives up after MAX_RESTARTS (default 3) restarts.
@@ -17,6 +18,8 @@ MAX_RESTARTS=${MAX_RESTARTS:-3}
 app_pid() { pgrep -f "^[^ ]*python[0-9.]* app.py .*--out $1( |$)" | head -1; }  # not the shell that launched it
 log_age() { echo $(( $(date +%s) - $(stat -c %Y "$1/run.log" 2>/dev/null || date +%s) )); }
 finished() { grep -aq "^done (" "$1/run.log" 2>/dev/null; }
+# the last start/adopt/finish in watchdog.log was a finish (run.log is gone by then)
+recorded_done() { grep -aE " (started|adopted|done:) " "$1/watchdog.log" 2>/dev/null | tail -1 | grep -q " done: "; }
 stage() {  # last progress bar or final line of run.log (tqdm rewrites one line with \r), else its last line
   local t; t=$(tail -c 20000 "$1/run.log" 2>/dev/null | tr '\r' '\n' | grep -a .)
   { grep -aE '[0-9]+%\||^done \(' <<<"$t" || echo "$t"; } | tail -1 | cut -c1-110
@@ -25,14 +28,19 @@ stage() {  # last progress bar or final line of run.log (tqdm rewrites one line 
 if [ "$1" = "--status" ]; then
   out=${2:?usage: $0 --status OUTDIR}
   pid=$(app_pid "$out")
-  if finished "$out"; then state=DONE
-  elif [ -n "$pid" ] && [ "$(log_age "$out")" -gt "$STALL_S" ]; then state=STALLED
+  if [ -n "$pid" ] && [ "$(log_age "$out")" -gt "$STALL_S" ]; then state=STALLED
   elif [ -n "$pid" ]; then state=RUNNING
+  elif finished "$out" || recorded_done "$out"; then state=DONE
   else state=NOT-RUNNING; fi
   watch=$(pgrep -f "run_app.sh $out( |$)" | head -1)
   echo "state:     $state${pid:+ (pid $pid)}"
-  echo "progress:  $(stage "$out")"
-  echo "log:       $out/run.log, changed $(log_age "$out")s ago"
+  if [ -f "$out/run.log" ]; then
+    echo "progress:  $(stage "$out")"
+    echo "log:       $out/run.log, changed $(log_age "$out")s ago"
+  else
+    echo "progress:  $(grep -a " done: " "$out/watchdog.log" 2>/dev/null | tail -1 | sed 's/.* done: //' | cut -c1-110)"
+    echo "log:       none (deleted when the run finished)"
+  fi
   echo "watchdog:  $([ -n "$watch" ] && echo "running (pid $watch)" || echo "not running")"
   echo "restarts:  $(cat "$out/watchdog.log" 2>/dev/null | grep -ac "restarting")"
   exit 0
@@ -70,7 +78,11 @@ for restarts in $(seq 0 "$MAX_RESTARTS"); do
     fi
   done
   wait "$pid" 2>/dev/null
-  if finished "$out"; then note "done: $(grep -a '^done (' "$out/run.log" | tail -1)"; exit 0; fi
+  if finished "$out"; then
+    note "done: $(grep -a '^done (' "$out/run.log" | tail -1)"
+    rm -f "$out/run.log"
+    exit 0
+  fi
   note "pid $pid stopped before finishing, last output: $(stage "$out")"
   pid=""
   [ "$restarts" -lt "$MAX_RESTARTS" ] && note "restarting ($((restarts + 1))/$MAX_RESTARTS)"

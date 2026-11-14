@@ -26,6 +26,7 @@ from pbv import analytics, balltrack, draw, events
 from pbv.court import Court
 from pbv.players import select_players
 
+PROGRESS_S = 5  # progress bars redraw at most this often, so a run's log stays small
 BALL_MODEL = Path(__file__).resolve().parent / "models" / "ball-r1.pt"  # trained by training/ (round 1)
 
 
@@ -49,7 +50,7 @@ def track(video, court, start, args):
     if args.max_frames:
         n = min(n, args.max_frames)
     people, ball, paddle, cam, thumb = [], [], [], [], None
-    for _ in tqdm(range(n), desc="tracking"):
+    for _ in tqdm(range(n), desc="tracking", mininterval=PROGRESS_S):
         ok, frame = cap.read()
         if not ok:
             break
@@ -69,7 +70,7 @@ def add_stroke_form(video, shots, players, start, model, serve_fault=True):
     from pbv.tracking import PoseEstimator
 
     pose, cap = PoseEstimator(model), cv2.VideoCapture(str(video))
-    for s in tqdm(shots, desc="pose"):
+    for s in tqdm(shots, desc="pose", mininterval=PROGRESS_S):
         if s["player"] not in players[s["frame"]]:  # your own swings in POV: no box to pose
             continue
         cap.set(cv2.CAP_PROP_POS_FRAMES, start + s["frame"])
@@ -112,7 +113,7 @@ def render(video, dst, start, players, ball, evs, shots, court, fps):
     shot_at = {s["frame"]: s for s in shots}
     bounce_at = {e["frame"]: court.to_court([e["px"]])[0] for e in evs if e["type"] == "bounce"} if court else {}
     label, label_until, bounces = "", -1, []
-    for f in tqdm(range(len(players)), desc="rendering"):
+    for f in tqdm(range(len(players)), desc="rendering", mininterval=PROGRESS_S):
         ok, frame = cap.read()
         if not ok:
             break
