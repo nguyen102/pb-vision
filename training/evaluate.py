@@ -39,6 +39,22 @@ def near(p, balls, r):
     return p is not None and any(np.hypot(p[0] - b[0], p[1] - b[1]) <= max(r, 0.6 * min(b[2], b[3])) for b in balls)
 
 
+def size_hand_labels(gt, frame_lists, search=30.0):
+    """Hand labels are clicks (size 10x10). Give each the size of the detection on it (the biggest
+    side of the nearest candidate within `search` px in any scan), so near()'s radius grows with the
+    ball: a close or blurred ball 25 px across is still hit 12 px from the click."""
+    out = {}
+    for i, v in gt.items():
+        out[i] = []
+        for x, y, w, h, *rest in v:
+            near_c = [c for f in frame_lists if i < len(f) for c in (f[i] or []) if np.hypot(c[0] - x, c[1] - y) <= search]
+            if near_c:
+                c = min(near_c, key=lambda c: np.hypot(c[0] - x, c[1] - y))
+                w = h = max(w, c[2], c[3])
+            out[i].append([x, y, w, h, *rest])
+    return out
+
+
 def old_track(frames, width, conf=0.15):
     top = [fr[0][:2] if fr and fr[0][4] >= conf else None for fr in frames]
     return events.clean_ball(top, max_jump=0.08 * width)
@@ -68,6 +84,7 @@ def main():
 
     if args.gt:
         gt = {int(k): v for k, v in json.loads(args.gt.read_text())["labels"].items()}
+        gt = size_hand_labels(gt, [f for _, f in scans.values()])
     else:
         union = [None if all(f[i] is None for _, f in scans.values()) else
                  merge_candidates([c for _, f in scans.values() for c in (f[i] or [])], k=20) for i in range(n)]
