@@ -369,6 +369,46 @@ def classify_shots(events, players, court, fps, rally_gap_s=2.5, drive_speed=10.
     return shots, rallies
 
 
+ROLES = ("serve", "return", "third")
+
+
+def opening_shots(shots, rallies, events, players, court, fps):
+    """Keep only the serve, return and third shot of each served rally -> (shots, rallies, events).
+
+    A rally counts only from a detected serve; the return must be the serve's "return" (from across the
+    net) and the third shot must come from the serving team, else the rally is kept up to the last shot
+    that fits. Every shot gets "role" (serve / return / third) and its rally is renumbered; rallies keep
+    start (the serve), end and duration_s (to the last kept shot). Events are cut to those that belong to the kept
+    shots: from the serve up to, not including, the next hit after the last kept shot (so the third
+    shot's bounce stays, later play goes).
+    """
+    by_rally = {}
+    for s in shots:
+        by_rally.setdefault(s["rally"], []).append(s)
+    side = lambda s: court.side(players[s["frame"]][s["player"]]["court"])
+    out_shots, out_rallies, windows = [], [], []
+    for r, rs in sorted(by_rally.items()):
+        rally = rallies[r - 1]
+        if not rally["served"] or rs[0]["type"] != "serve":
+            continue
+        kept = [rs[0]]
+        if len(rs) > 1 and rs[1]["type"] == "return":
+            kept.append(rs[1])
+            if len(rs) > 2 and side(rs[2]) == side(rs[0]):
+                kept.append(rs[2])
+        n = len(out_rallies) + 1
+        for role, s in zip(ROLES, kept):
+            out_shots.append({**s, "rally": n, "role": role})
+        out_rallies.append({**rally, "end": kept[-1]["frame"], "shots": len(kept),
+                            "duration_s": round((kept[-1]["frame"] - kept[0]["frame"]) / fps, 2)})
+        last = kept[-1]["frame"]
+        stop = next((e["frame"] for e in events if e["type"] == "hit" and e["frame"] > last), None)
+        windows.append((kept[0]["frame"], stop))
+    out_events = [e for e in events
+                  if any(a <= e["frame"] and (b is None or e["frame"] < b) for a, b in windows)]
+    return out_shots, out_rallies, out_events
+
+
 def compensate(track, cam_shift):
     """POV: undo the cumulative camera pan so ball positions share one reference view.
 

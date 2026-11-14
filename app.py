@@ -3,7 +3,7 @@
 fixed (default): tripod / fence camera that sees the whole court.
   video -> court calibration -> person tracking (YOLO + ByteTrack) + ball detection
         -> player selection (2 per side, bystanders dropped, stable ids, clothing re-ID)
-        -> hits/bounces -> shots, rallies, faults -> stroke form (YOLO pose)
+        -> hits/bounces -> serve, return and third shot of each rally, faults -> stroke form (YOLO pose)
         -> movement stats, heatmaps, annotated video
 pov: camera worn by a player (chest / head / paddle mount).
   video -> camera-motion estimate -> player + ball tracking (camera pan removed)
@@ -119,7 +119,8 @@ def render(video, dst, start, players, ball, evs, shots, court, fps):
             break
         if f in shot_at:
             s = shot_at[f]
-            label = f"{draw.name(s['player'])} {s['type']}" + (f" {s['speed_kmh']:.0f} km/h" if s["speed_kmh"] else "")
+            kind = s['type'] if s.get('role') != "third" else f"3rd shot {s['type']}"
+            label = f"{draw.name(s['player'])} {kind}" + (f" {s['speed_kmh']:.0f} km/h" if s["speed_kmh"] else "")
             if s["faults"]:
                 label += "  FAULT: " + ", ".join(s["faults"])
             label_until = f + int(fps * 1.5)
@@ -154,6 +155,9 @@ def analyse_fixed(data, court, args):
     evs = events.merge_serves(evs, serves, players, court, fps)
     shots, rallies = events.classify_shots(evs, players, court, fps, drive_speed=args.drive_speed,
                                            serves_detected=True, offscreen=off)
+    # every hit is found (the third shot's landing and speed depend on what follows), but only the
+    # serve, return and third shot of each rally are reported
+    shots, rallies, evs = events.opening_shots(shots, rallies, evs, players, court, fps)
     return ball, evs, shots, rallies, analytics.player_stats(players, fps)
 
 

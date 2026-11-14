@@ -496,6 +496,26 @@ def test_bounce_on_the_serve_frame_is_the_serve_and_speeds_stay_finite():
     assert shots[0]["speed_kmh"] is None
 
 
+def test_opening_shots_keeps_serve_return_and_third_only():
+    fps = 30
+    pos = {"1": (2.0, 13.8), "2": (4.5, 12.5), "3": (2.0, 1.0), "4": (4.5, 1.5)}
+    players = [{pid: _player(*xy) for pid, xy in pos.items()} for _ in range(900)]
+    bpx = lambda x, y: COURT.to_image([[x, y]])[0].tolist()
+    hit = lambda f, pid, **kw: {"frame": f, "type": "hit", "player": pid, "px": [0, 0], **kw}
+    bounce = lambda f, y: {"frame": f, "type": "bounce", "player": None, "px": bpx(3.0, y)}
+    evs = [hit(10, "3"),                                                        # tail of an unserved rally
+           hit(200, "1", serve=True), bounce(230, 3.0), hit(250, "3"), bounce(280, 11.0),
+           hit(300, "2"), bounce(330, 5.0), hit(360, "4"), hit(400, "1"),        # 4th and 5th shots go
+           hit(600, "1", serve=True), bounce(630, 3.0), hit(650, "3"), hit(680, "4")]  # 3rd by receivers: cut
+    shots, rallies = events.classify_shots(evs, players, COURT, fps, serves_detected=True)
+    shots, rallies, kept = events.opening_shots(shots, rallies, evs, players, COURT, fps)
+    assert [(s["frame"], s["role"], s["rally"]) for s in shots] == [
+        (200, "serve", 1), (250, "return", 1), (300, "third", 1), (600, "serve", 2), (650, "return", 2)]
+    assert shots[2]["landing"] is not None  # third shot keeps its landing
+    assert [(r["start"], r["end"], r["shots"]) for r in rallies] == [(200, 300, 3), (600, 650, 2)]
+    assert [e["frame"] for e in kept] == [200, 230, 250, 280, 300, 330, 600, 630, 650]
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):
