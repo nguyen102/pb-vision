@@ -88,8 +88,18 @@ live, and High analyzes about 2 frames per second of clip.
     Players dressed alike (e.g. both in black) are told apart mostly by position, so a long
     disappearance by both of them can still swap them.
   In POV mode, your own arms, hands and legs are filtered out.
-- **Ball tracking.** YOLO detects the ball every frame. Isolated false detections (heads, shoes, signs) are
-  removed, and short gaps are filled by interpolation. Long gaps are left empty: the ball is out of play.
+- **Ball tracking** (`pbv/balltrack.py`). YOLO reports up to 8 ball *candidates* per frame, not just the most
+  confident box: a full-frame pass plus a full-resolution crop around where the ball is predicted to be (a far
+  ball is a few pixels and vanishes when the frame is downscaled). Each candidate gets a motion score (frame
+  difference: with a fixed camera, heads, lights and logos stand still). Candidates are linked into tracklets
+  with a constant-velocity prediction, and the best-scoring tracklets win, so a blurred ball in flight beats a
+  sharper head. In fixed mode a candidate must also fit the court at the depth its *size* implies (a 74 mm ball
+  looks ~3× bigger at the near baseline than the far one), which drops balls on neighbouring courts that land
+  on the same pixels. Short gaps are then filled by interpolation; long gaps are left empty (out of play).
+  **The ball often leaves the picture** (a wide ball near the camera, a lob over the top). When the track runs
+  into a frame edge and is heading out, the gap is marked *off-screen*: it is never interpolated (a straight
+  line across the frame would invent a path), it counts as ball in play for serve detection, and its time
+  doesn't count toward the pause that ends a rally.
 - **Paddle detection.** In POV mode, paddles (COCO "tennis racket") are detected in the same pass as the ball,
   to recognise your own paddle in frame.
 - **Court mapping (fixed mode).** You click 4 or more court landmarks once: corners, kitchen-line ends and centres,
@@ -166,11 +176,12 @@ court through a fisheye lens. So any court-plane number would be wrong.
 video ─► frames ─┬─► court homography (4+ clicked landmarks) ─► feet → court metres
                  │
                  ├─► YOLOv8 + ByteTrack ─► people near the court ─► 4 players {P1–P4: bbox, court xy}
-                 ├─► YOLOv8 ─► ball xy (+ paddles in POV)
+                 ├─► YOLOv8 (full frame + crop at predicted ball) ─► ball candidates + motion (+ paddles in POV)
                  └─► phase correlation ─► camera shift per frame            (POV only)
                                  │
                                  ▼
-       ball cleanup: outliers out, short gaps interpolated, camera pan removed (POV)
+       ball path: candidates linked over time, best tracks inside the court (by size-implied depth) kept,
+                  short gaps interpolated, camera pan removed (POV)
                                  │
                                  ▼
        events: turning points in ball y ─► hit (near a player) / bounce
@@ -222,7 +233,7 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-YOLO weights (`yolov8m.pt`, `yolov8n-pose.pt`) download automatically on first run (~60 MB).
+YOLO weights (`yolov8m.pt`, `yolov8n-pose.pt`) download automatically on first run (~60 MB). The pickleball detector `models/ball-r1.pt` (22 MB) is in the repo.
 
 ---
 
@@ -279,8 +290,8 @@ python app.py IMG_1577.MOV --court-points "near-left=1537,1613;near-baseline-cen
 | `--start SECONDS` | `0` | Where to start in the video |
 | `--max-frames N` | all | How many frames to analyse |
 | `--player-model` | `yolov8m.pt` | YOLO model for people |
-| `--ball-model` | `yolov8m.pt` | YOLO model for the ball |
-| `--ball-class` | `32` | Class id of the ball in `--ball-model` (`-1` = any class). Use `0` for a single-class custom model |
+| `--ball-model` | fixed: `models/ball-r1.pt`; pov: `yolov8m.pt` | YOLO model for the ball. Fixed mode uses the pickleball detector trained with `training/` on fixed-camera video (round 1). POV keeps generic COCO "sports ball", which also detects the paddle used to confirm swings |
+| `--ball-class` | from the model | Class id of the ball in `--ball-model`: found from the class names (`pickleball`, else COCO `sports ball` = 32); `-1` = any class |
 | `--pose-model` | `yolov8n-pose.pt` | YOLO pose model |
 | `--no-pose` | off | Skip stroke-form analysis |
 | `--drive-speed` | `10.0` | Fixed mode: shot speed (m/s) above which a shot is a drive |
@@ -368,7 +379,8 @@ Pickleball-Vision/
 ├── pbv/
 │   ├── constants.py    # Official court geometry (metres)
 │   ├── court.py        # Image ↔ court homography; kitchen / side / in-bounds checks
-│   ├── tracking.py     # YOLO person tracker (ByteTrack), ball + paddle detector, pose estimator
+│   ├── tracking.py     # YOLO person tracker (ByteTrack), ball candidates + paddle detector, pose estimator
+│   ├── balltrack.py    # Ball candidates -> track: motion score, tracklet linking, size-aware court region
 │   ├── players.py      # Picks the 4 players from everyone tracked; stable per-player IDs
 │   ├── appearance.py   # Clothing-colour descriptors for re-identifying players
 │   ├── events.py       # Ball cleanup, hits/bounces, de-duplication, shot types, rallies, faults,
@@ -380,6 +392,12 @@ Pickleball-Vision/
 │   ├── build.py        # Builds the shareable HTML replay from output folders
 │   ├── template.html   # Replay page (camera view, court view, timeline, tables)
 │   └── meta.json       # Per-run captions for the replay
+├── training/           # Ball-detector training from your own videos (see "Training a ball detector")
+│   ├── scan.py         #   1. teacher model -> ball candidates per frame
+│   ├── labels.py       #   2. ball-like tracks -> pseudo-labels -> full-resolution 640x640 crop dataset
+│   ├── train.py        #   3. fine-tune YOLOv8s on the crops
+│   ├── evaluate.py     #   4. detectors and trackers compared on a held-out video
+│   └── annotate.py     #   hand-label a ground-truth test set
 ├── tests/
 │   └── test_core.py    # Self-checks for all non-ML logic
 └── requirements.txt
@@ -439,6 +457,10 @@ All thresholds are plain function arguments with docstrings:
 | Swing jolt threshold (POV) | `find_swings` `rel_thresh` | 2% of frame width per frame (or 4× median motion) |
 | Own-paddle size (POV) | `find_swings` `own_paddle` | 20% of frame height |
 | Ball gap filling | `clean_ball` `max_gap` | 8 frames |
+| Ball candidates per frame / min confidence | `BallDetector` `top_k` / `conf` | 8 / 0.05 |
+| Ball track linking gate | `link_tracklets` `gate` | 2.5% of frame width (+ a share of the speed) |
+| Ball off-screen detection | `offscreen_frames` `margin` / `max_frames` | within 5% of an edge and heading out / up to 3 s |
+| Ball court region | `BallRegion` `side` / `end` / `up` / `loose` / `tight` | 1.5 m / 3 m / 8 m / box ≤2.6× the ball / never smaller |
 
 Because tracking is cached, changing any of these and re-running `app.py` only re-does the analysis
 (seconds to a few minutes), not the detection.
@@ -471,7 +493,9 @@ node tests/engine_parity.mjs outputs/<run>   # web engine vs Python on a real ru
 
 Covers:
 - homography round-trips, kitchen checks, and calibration from non-corner landmarks
-- ball outlier removal and gap filling
+- ball outlier removal and gap filling; a ball leaving the frame is off-screen (not filled, rally not split)
+- ball candidate selection: a moving ball beats a sharper still object; the size-aware court region keeps a
+  big (near) ball beside the court and drops a small (far) one on the next court; pseudo-labels skip logos
 - hit/bounce detection on a synthetic trajectory
 - shot classification and faults (serve, return, drop, kitchen volley)
 - movement metrics and stroke form from keypoints
@@ -492,7 +516,7 @@ Covers:
 - **POV mode** has no court geometry. Player IDs churn, and ball handling between points can look like play.
 
 **Roadmap:**
-- [ ] Pickleball-specific ball detector trained on labelled frames (Roboflow Universe has several datasets), passed via `--ball-model`
+- [x] Pickleball-specific ball detector trained on your own videos (`training/`), the default `--ball-model` (`models/ball-r1.pt`)
 - [ ] TrackNet-style heatmap ball tracker for blur and occlusion (as Badminton-VisionAI uses)
 - [ ] Automatic court-keypoint detection to replace manual calibration
 - [ ] Learned re-ID embeddings (fixed mode uses colour histograms) for stable IDs, especially in POV

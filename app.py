@@ -22,9 +22,11 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
-from pbv import analytics, draw, events
+from pbv import analytics, balltrack, draw, events
 from pbv.court import Court
 from pbv.players import select_players
+
+BALL_MODEL = Path(__file__).resolve().parent / "models" / "ball-r1.pt"  # trained by training/ (round 1)
 
 
 def camera_shift(prev, frame, width=480):
@@ -52,15 +54,15 @@ def track(video, court, start, args):
         if not ok:
             break
         people.append(players_model.track_pov(frame) if court is None else players_model.people_near_court(frame, court))
-        b, p = ball_model.detect(frame)
-        ball.append(b)
+        c, p = ball_model.candidates(frame)
+        ball.append(c)
         paddle.append(p)
         if court is None:
             thumb, shift = camera_shift(thumb, frame)
             cam.append(shift)
     # POV keeps the per-frame players directly; fixed mode keeps everyone near the court for select_players.
     return {"fps": fps, "width": int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), ("players" if court is None else "people"): people,
-            "ball": ball, "paddle": paddle, "cam_shift": cam}
+            "ball_cands": ball, "paddle": paddle, "cam_shift": cam}
 
 
 def add_stroke_form(video, shots, players, start, model, serve_fault=True):
@@ -127,16 +129,30 @@ def render(video, dst, start, players, ball, evs, shots, court, fps):
     writer.release()
 
 
+def pick_ball(data, court, min_conf=0.15):
+    """Per-frame ball [x, y] or None from the detector's candidates.
+
+    Fixed camera: link candidates over time and keep the best-scoring paths inside the court region
+    (pbv.balltrack), so a blurred ball beats a sharper head or a ball on the next court.
+    POV: the camera moves, so motion and court region mean little: most confident candidate per frame.
+    """
+    cands = data["ball_cands"]
+    if court is None:
+        return [c[0][:2] if c and c[0][4] >= min_conf else None for c in cands]
+    return balltrack.select_path(cands, data["width"], balltrack.BallRegion(court))
+
+
 def analyse_fixed(data, court, args):
     fps, players = data["fps"], data["players"]
-    ball = events.clean_ball(data["ball"], max_jump=0.08 * data["width"])
+    off = data["ball_offscreen"]
+    ball = events.clean_ball(data["ball"], max_jump=0.08 * data["width"], offscreen=off)
     evs = events.filter_hits(events.find_events(ball, players), fps,
                              side=lambda e: court.side(players[e["frame"]][e["player"]]["court"]))
     serves = events.find_serves(ball, players, court, fps, data["width"],
-                                detected=events.real_detections(data["ball"], ball))
+                                detected=events.real_detections(data["ball"], ball), offscreen=off)
     evs = events.merge_serves(evs, serves, players, court, fps)
     shots, rallies = events.classify_shots(evs, players, court, fps, drive_speed=args.drive_speed,
-                                           serves_detected=True)
+                                           serves_detected=True, offscreen=off)
     return ball, evs, shots, rallies, analytics.player_stats(players, fps)
 
 
@@ -171,7 +187,9 @@ def main():
                     '"near-left=1537,1613;near-baseline-center=3330,1613;near-kitchen-left=1642,1398;..." '
                     "(names: see LANDMARKS in pbv/court.py)")
     ap.add_argument("--player-model", default="yolov8m.pt")
-    ap.add_argument("--ball-model", default="yolov8m.pt")
+    ap.add_argument("--ball-model", help="ball detector (default: fixed mode models/ball-r1.pt, the pickleball "
+                    "model trained with training/ on fixed-camera video; pov mode yolov8m.pt, generic COCO, "
+                    "which also finds the paddle used to confirm swings)")
     ap.add_argument("--ball-class", type=int, help="class id of the ball (default: from the model's class names; -1 = any)")
     ap.add_argument("--pose-model", default="yolov8n-pose.pt")
     ap.add_argument("--no-pose", action="store_true")
@@ -183,6 +201,7 @@ def main():
     if not args.video.exists():
         ap.error(f"{args.video} not found")
     pov = args.mode == "pov"
+    args.ball_model = args.ball_model or ("yolov8m.pt" if pov else str(BALL_MODEL))
 
     out = args.out or Path("outputs") / (args.video.stem + ("-pov" if pov else ""))
     out.mkdir(parents=True, exist_ok=True)
@@ -208,7 +227,7 @@ def main():
             calibrate(args.video, court_path, start)
         court = Court.load(court_path)
 
-    params = {"version": 3, "mode": args.mode, "start": start, "max_frames": args.max_frames,
+    params = {"version": 5, "mode": args.mode, "ball_model": Path(args.ball_model).name, "start": start, "max_frames": args.max_frames,
               "corners": None if pov else court.corners_px.tolist()}
     cache = out / "tracking.json"
     data = json.loads(cache.read_text()) if cache.exists() and not args.force else None
@@ -220,9 +239,12 @@ def main():
         for fp in data["people"]:  # descriptors live in appearance.npy, not the JSON cache
             for p in fp:
                 p.pop("look", None)
+    data["height"] = int(cv2.VideoCapture(str(args.video)).get(cv2.CAP_PROP_FRAME_HEIGHT))
+    data["ball"] = pick_ball(data, court)  # cheap, so always re-run (and kept in the cache for demo/build.py)
+    # The ball leaving the picture (a lob over the top) is in play, not lost: no gap filling, no dead-ball serve.
+    data["ball_offscreen"] = None if pov else balltrack.offscreen_frames(data["ball"], data["width"], data["height"])
     cache.write_text(json.dumps(data))
     players = data["players"]
-    data["height"] = int(cv2.VideoCapture(str(args.video)).get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     ball, evs, shots, rallies, player_stats = analyse_pov(data) if pov else analyse_fixed(data, court, args)
     if not args.no_pose and shots:

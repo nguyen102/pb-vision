@@ -182,21 +182,70 @@ def test_pov_shots_rallies_and_net_crossing():
     assert [(s["player"], s["type"]) for s in shots] == [("4", "serve"), ("me", "return"), ("4", "volley"), ("5", "serve")]
     assert [r["shots"] for r in rallies] == [3, 1]
 
-def test_training_labels_keep_moving_ball_and_fill_gaps():
-    from training.labels import ball_tracks, labels_from_tracks, link_tracks
+def _ball_frames(n=20, missed=(8, 9)):
+    """Candidates [x, y, w, h, conf, motion]: a sharp static logo (conf 0.6) and a blurred moving ball (0.3)."""
     frames = []
-    for i in range(20):
-        c = [[300.0, 50.0, 6, 6, 0.4]]                    # static logo, never moves
-        if i not in (8, 9):                               # ball moving 10 px/frame, missed twice
-            c.append([100.0 + 10 * i, 200.0, 6, 6, 0.3])
-        frames.append({"main": True, "c": c})
-    frames.append({"main": False, "c": []})               # camera cut ends every track
-    kept = ball_tracks(link_tracks(frames))
-    assert len(kept) == 1 and kept[0][0][1] == 100.0
-    labels = labels_from_tracks(kept)
-    assert sorted(labels) == list(range(20))
-    x, y, size, conf, filled = labels[8]
-    assert abs(x - 180) < 1e-6 and filled and not labels[7][4]
+    for i in range(n):
+        c = [[300.0, 50.0, 6, 6, 0.6, 0.0]]
+        if i not in missed:
+            c.append([100.0 + 10 * i, 200.0 + 0.5 * i * i, 6, 6, 0.3, 0.8])
+        frames.append(c)
+    return frames
+
+
+def test_training_labels_keep_moving_ball_and_fill_gaps():
+    from training.labels import ball_labels
+    frames = _ball_frames() + [None] + _ball_frames(6, missed=())  # None = camera cut / unscanned
+    labels, tracks = ball_labels(frames, width=1920)
+    assert all(t[0][1] == 100.0 for t in tracks)                 # the logo never becomes a label
+    assert sorted(labels) == list(range(20)) + list(range(21, 27))
+    x, y, w, h, filled = labels[8][0]
+    assert abs(x - 180) < 1e-6 and filled and not labels[7][0][4]
+
+
+def test_select_path_prefers_moving_ball_over_sharper_static_object():
+    from pbv.balltrack import select_path
+    path = select_path(_ball_frames(), width=1920)
+    assert path[5] == [150.0, 212.5] and path[8] is None          # gaps are clean_ball's job
+    assert all(p is None or p[0] != 300.0 for p in path[:8] + path[10:])
+
+
+def test_ball_leaving_the_frame_is_offscreen_not_lost():
+    from pbv.balltrack import offscreen_frames
+    W, H = 1920, 1080
+    # Lob: rises 30 px/frame, crosses the top edge, comes back 6 frames later. Then a mid-court miss.
+    path = [[900.0, 200.0 - 30 * i] for i in range(7)] + [None] * 6 + [[960.0, 30.0], [965.0, 60.0]]
+    path += [[970.0, 400.0], None, None, [990.0, 420.0]]
+    off = offscreen_frames(path, W, H)
+    assert off[7:13] == [True] * 6 and not any(off[:7]) and not any(off[13:])
+    # Short gap: clean_ball would join (900, 20) and (960, 30) with a line across the top; off-screen stays empty.
+    ball = events.clean_ball(path, offscreen=off)
+    assert np.isnan(ball[7:13]).all() and not np.isnan(ball[17:19]).any()   # the mid-court miss is still filled
+    assert offscreen_frames([[900.0, 500.0], [900.0, 480.0], None, None], W, H) == [False] * 4
+    assert offscreen_frames([[900.0, 30.0], [900.0, 31.0], None], W, H) == [False] * 3  # at the edge, not leaving
+
+
+def test_offscreen_lob_does_not_split_the_rally():
+    fps = 30
+    players = [{"1": {"bbox": [0, 0, 1, 1], "court": [3.0, 12.0]}, "2": {"bbox": [0, 0, 1, 1], "court": [3.0, 1.0]}}
+               for _ in range(200)]
+    evs = [{"frame": 10, "type": "hit", "player": "1", "px": [0, 0]},
+           {"frame": 100, "type": "hit", "player": "2", "px": [0, 0]}]  # 3 s later, 2 s of it a lob above the frame
+    off = [10 <= f < 70 for f in range(200)]
+    _, rallies = events.classify_shots(evs, players, COURT, fps)
+    assert len(rallies) == 2
+    _, rallies = events.classify_shots(evs, players, COURT, fps, offscreen=off)
+    assert len(rallies) == 1 and rallies[0]["shots"] == 2
+
+
+def test_ball_region_uses_size_to_drop_the_next_court():
+    from pbv.balltrack import BallRegion
+    court = Court([(642, 473), (1205, 468), (1915, 1005), (2, 1017)])  # 1080p behind-baseline view
+    r = BallRegion(court)
+    assert r.contains([920, 700, 14, 14]) and r.contains([920, 300, 8, 8])     # mid-court; lob over the far half
+    assert r.contains([1700, 470, 22, 22])       # big = near the camera: 1.7 m above our near sideline
+    assert not r.contains([1700, 470, 8, 8])     # small = far away: that's the next court's ball
+    assert not r.contains([920, 1060, 8, 8])     # small and below the near baseline: under the floor
 
 
 

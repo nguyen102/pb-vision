@@ -16,3 +16,5 @@ brag-output*/
 training/data/
 training/runs/
 training/*.log
+training/logs/
+!models/*.pt

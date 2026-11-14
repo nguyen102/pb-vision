@@ -1,138 +1,166 @@
-"""Step 2: turn teacher candidates into clean ball labels and a YOLO dataset.
+"""Step 2: turn teacher candidates into ball pseudo-labels and a YOLO dataset of full-resolution crops.
 
-Ball candidates are linked into tracks across frames; only tracks that persist and move like a
-ball are kept (logos, shoes and heads don't), and short gaps inside a track are filled, so the
-dataset also has balls the teacher missed. Train/val are split by time to avoid leakage.
+Candidates are linked into tracklets (pbv.balltrack), minus static hotspots (a rack of spare balls);
+only tracklets that persist, travel and visibly move are kept as balls (logos, lights, heads and shoes don't), and short gaps inside a track are filled,
+so the dataset also has balls the teacher missed. Every ball-like track is kept, including balls on
+other courts: they're real pickleballs, which is what the detector should learn.
 
-Usage: python training/labels.py training/data/ppa [--val-frac 0.2 --stride 2]
+The dataset is 640x640 crops at native resolution, not whole frames: a far ball is ~5 px in a 1080p
+frame, and training on whole frames at imgsz 640 would shrink it to ~2 px. The detector is then run at
+native resolution (BallDetector uses imgsz 1920 for a trained model). Crops are:
+  - positives: a labelled ball at a random spot in the crop (any other labelled ball inside is labelled too)
+  - hard negatives: centred on a confident teacher candidate that isn't on any ball track (a head, a light)
+  - random negatives: anywhere with no candidate nearby
+Train/val are split by time (the last --val-frac of each video) to avoid near-duplicate leakage.
+
+Usage: python training/labels.py training/data/train-1104-r0 [more dirs] --out training/data/ds-r0
+       python training/labels.py training/data/test-1011-r0 --labels-only    (labels.json for evaluation)
 """
 import argparse
 import json
 import random
+import sys
 from pathlib import Path
 
 import cv2
 import numpy as np
-from ultralytics import YOLO
 
-from pbv.tracking import DEVICE
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from pbv.balltrack import drop_static, is_ball_track, link_tracklets, static_hotspots  # noqa: E402
 
-CLASSES = {0: "person", 1: "pickleball", 2: "paddle"}  # student classes (one model for the whole pipeline)
-TEACHER_TO_STUDENT = {0: 0, 38: 2}                       # COCO person -> 0, tennis racket -> 2
-
-
-def link_tracks(frames, max_step=28.0, max_gap=3):
-    """Greedy tracklets: each candidate joins the track whose last point is closest (within reach)."""
-    tracks, live = [], []
-    for i, fr in enumerate(frames):
-        if not fr["main"]:
-            live = []  # camera cut: tracks can't continue across it
-            continue
-        live = [t for t in live if i - t[-1][0] <= max_gap + 1]
-        used = set()
-        for x, y, w, h, c in sorted(fr["c"], key=lambda c: -c[4]):
-            best, bd = None, None
-            for k, t in enumerate(live):
-                if k in used:
-                    continue
-                j, px, py = t[-1][:3]
-                d = np.hypot(x - px, y - py)
-                if d <= max_step * (i - j) and (bd is None or d < bd):
-                    best, bd = k, d
-            if best is None:
-                live.append([(i, x, y, w, h, c)])
-                tracks.append(live[-1])
-                used.add(len(live) - 1)
-            else:
-                live[best].append((i, x, y, w, h, c))
-                used.add(best)
-    return tracks
+CROP = 640
 
 
-def ball_tracks(tracks, min_len=5, min_move=15.0, min_conf=0.12):
-    """Keep tracks that persist, move, and are confident on average."""
-    keep = []
-    for t in tracks:
-        a = np.array(t)
-        span = np.ptp(a[:, 1:3], axis=0).max() if len(a) > 1 else 0
-        if len(t) >= min_len and span >= min_move and a[:, 5].mean() >= min_conf:
-            keep.append(t)
-    return keep
-
-
-def labels_from_tracks(tracks):
-    """frame -> (x, y, size, conf, interpolated); gaps inside a track are filled linearly."""
+def ball_labels(frames, width, hot=None):
+    """frame -> [[x, y, w, h, interpolated], ...] from the ball-like tracklets; gaps filled linearly.
+    Candidates at static hotspots (a rack of spare balls) are left out: they'd link into fake tracks."""
+    hot = static_hotspots(frames) if hot is None else hot
+    tracks = [t for t in link_tracklets(drop_static(frames, hot), width) if is_ball_track(t, width)]
     out = {}
     for t in tracks:
-        a = np.array(t)
-        size = float(np.clip(np.median(a[:, 3:5]), 4, 14))
-        score = float(a[:, 5].mean())
-        for (i0, x0, y0, *_), (i1, x1, y1, *_) in zip(t, t[1:]):
-            for i in range(int(i0), int(i1)):
-                u = (i - i0) / (i1 - i0)
-                cand = (x0 + u * (x1 - x0), y0 + u * (y1 - y0), size, score, i != i0)
-                if i not in out or out[i][3] < score:  # overlapping tracks: keep the more confident
-                    out[i] = cand
-        i, x, y = int(t[-1][0]), t[-1][1], t[-1][2]
-        if i not in out or out[i][3] < score:
-            out[i] = (x, y, size, score, False)
+        a = np.asarray(t, float)
+        w, h = (float(np.clip(np.median(a[:, k]), 5, 30)) for k in (3, 4))
+        for p, q in zip(a, a[1:]):
+            for i in range(int(p[0]), int(q[0])):
+                u = (i - p[0]) / (q[0] - p[0])
+                out.setdefault(i, []).append([p[1] + u * (q[1] - p[1]), p[2] + u * (q[2] - p[2]), w, h, bool(i != p[0])])
+        out.setdefault(int(a[-1, 0]), []).append([float(a[-1, 1]), float(a[-1, 2]), w, h, False])
+    return out, tracks
+
+
+def hard_negatives(frames, labels, tracks, hot, min_conf=0.25, away=40.0):
+    """(frame, x, y) of confident candidates on no ball track and nowhere near a labelled ball.
+    Hotspots are excluded: they're often real (spare) balls, which mustn't be taught as background."""
+    on_track = {(int(p[0]), round(p[1], 1), round(p[2], 1)) for t in tracks for p in t}
+    out = []
+    for i, fr in enumerate(drop_static(frames, hot)):
+        for c in fr or []:
+            if c[4] < min_conf or (i, round(c[0], 1), round(c[1], 1)) in on_track:
+                continue
+            if all(np.hypot(c[0] - b[0], c[1] - b[1]) > away for b in labels.get(i, [])):
+                out.append((i, c[0], c[1]))
     return out
+
+
+def crop_origin(x, y, W, H, rnd, margin=24):
+    """Top-left of a CROP x CROP window containing (x, y) at a random position, at least margin px from its edge."""
+    lo_x, hi_x = max(0, int(x) - CROP + margin), min(W - CROP, int(x) - margin)
+    lo_y, hi_y = max(0, int(y) - CROP + margin), min(H - CROP, int(y) - margin)
+    return rnd.randint(lo_x, max(lo_x, hi_x)), rnd.randint(lo_y, max(lo_y, hi_y))
+
+
+def yolo_rows(balls, x0, y0):
+    rows = []
+    for x, y, w, h, *_ in balls:
+        cx, cy = x - x0, y - y0
+        if 2 <= cx <= CROP - 2 and 2 <= cy <= CROP - 2:
+            rows.append(f"0 {cx / CROP:.6f} {cy / CROP:.6f} {w / CROP:.6f} {h / CROP:.6f}\n")
+    return rows
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("data", type=Path)
-    ap.add_argument("--val-frac", type=float, default=0.2)
-    ap.add_argument("--stride", type=int, default=2, help="keep every Nth labelled frame (neighbours are near-duplicates)")
-    ap.add_argument("--teacher", default="yolov8m.pt", help="labels people and paddles on the exported frames")
+    ap.add_argument("data", type=Path, nargs="+", help="scan folders (each with candidates.json)")
+    ap.add_argument("--out", type=Path, help="dataset folder (default: <first data>/yolo)")
+    ap.add_argument("--val-frac", type=float, default=0.15)
+    ap.add_argument("--stride", type=int, default=3, help="keep every Nth labelled frame (neighbours are near-duplicates)")
+    ap.add_argument("--neg-frac", type=float, default=0.25, help="negatives per positive (half hard, half random)")
+    ap.add_argument("--labels-only", action="store_true")
     args = ap.parse_args()
 
-    cand = json.loads((args.data / "candidates.json").read_text())
-    meta, frames = cand["meta"], cand["frames"]
-    tracks = link_tracks(frames)
-    kept = ball_tracks(tracks)
-    labels = labels_from_tracks(kept)
-    n_main = sum(f["main"] for f in frames)
-    n_det = sum(1 for i, f in enumerate(frames) if f["main"] and f["c"])
-    print(f"main-camera frames {n_main}; teacher had candidates in {n_det}; "
-          f"{len(tracks)} tracks -> {len(kept)} ball tracks -> {len(labels)} labelled frames "
-          f"({sum(v[4] for v in labels.values())} filled by interpolation)")
-    (args.data / "labels.json").write_text(json.dumps({"meta": meta, "labels": {str(k): v for k, v in labels.items()}}))
-
-    # YOLO dataset: images + one "pickleball" box per labelled frame
-    split_at = int(len(frames) * (1 - args.val_frac))
-    W, H = meta["width"], meta["height"]
-    root = args.data / "yolo"
-    for sub in ("images/train", "images/val", "labels/train", "labels/val"):
-        (root / sub).mkdir(parents=True, exist_ok=True)
-    keep = sorted(labels)[::args.stride]
-    # A few main-camera frames with no candidates nearby (ball out of play) as negatives.
-    labelled = set(labels)
-    negs = [i for i, f in enumerate(frames) if f["main"] and not any(j in labelled for j in range(i - 25, i + 26))]
-    random.Random(0).shuffle(negs)
-    want = {i: labels[i] for i in keep} | {i: None for i in negs[: len(keep) // 10]}
-    cap = cv2.VideoCapture(meta["video"])
-    teacher = YOLO(args.teacher)
+    root = args.out or args.data[0] / "yolo"
+    rnd = random.Random(0)
     counts = {"train": 0, "val": 0}
-    for i in range(max(want) + 1):  # one sequential pass: far faster than seeking per frame
-        ok, img = cap.read()
-        if not ok:
-            break
-        if i not in want:
+    for data in args.data:
+        cand = json.loads((data / "candidates.json").read_text())
+        meta, frames = cand["meta"], cand["frames"]
+        W, H = meta["width"], meta["height"]
+        hot = static_hotspots(frames)
+        labels, tracks = ball_labels(frames, W, hot)
+        n_scanned = sum(f is not None for f in frames)
+        print(f"{data.name}: {n_scanned} scanned frames, {len(tracks)} ball tracks -> {len(labels)} frames with a ball "
+              f"({sum(all(b[4] for b in v) for v in labels.values())} only by gap filling); "
+              f"{len(hot)} static hotspot cells ignored")
+        (data / "labels.json").write_text(json.dumps({"meta": meta, "labels": {str(k): v for k, v in labels.items()}}))
+        if args.labels_only:
             continue
-        split = "val" if i >= split_at else "train"
-        name = f"{args.data.name}_{i:06d}"
-        cv2.imwrite(str(root / f"images/{split}/{name}.jpg"), img, [cv2.IMWRITE_JPEG_QUALITY, 95])
-        lab = want[i]
-        rows = [] if lab is None else [f"1 {lab[0] / W:.6f} {lab[1] / H:.6f} {lab[2] / W:.6f} {lab[2] / H:.6f}"]
-        r = teacher.predict(img, classes=list(TEACHER_TO_STUDENT), conf=0.35, imgsz=640, device=DEVICE, verbose=False)[0]
-        for k, (x, y, w, h) in zip(r.boxes.cls.int().tolist(), r.boxes.xywhn.tolist()):
-            rows.append(f"{TEACHER_TO_STUDENT[k]} {x:.6f} {y:.6f} {w:.6f} {h:.6f}")
-        (root / f"labels/{split}/{name}.txt").write_text("".join(row + "\n" for row in rows))
-        counts[split] += 1
-    names = "".join(f"  {k}: {v}\n" for k, v in CLASSES.items())
-    (root / "data.yaml").write_text(f"path: {root.resolve()}\ntrain: images/train\nval: images/val\nnames:\n{names}")
-    print(f"dataset: {counts['train']} train / {counts['val']} val images -> {root / 'data.yaml'}")
+
+        pos = sorted(labels)[::args.stride]
+        hard = hard_negatives(frames, labels, tracks, hot)
+        rnd.shuffle(hard)
+        hard = hard[: int(len(pos) * args.neg_frac / 2)]
+        scanned = [i for i, f in enumerate(frames) if f is not None]
+        rand = rnd.sample(scanned, min(len(scanned), int(len(pos) * args.neg_frac / 2)))
+        jobs = {}  # frame -> [(kind, x, y)]
+        for i in pos:
+            jobs.setdefault(i, []).append(("pos",) + tuple(rnd.choice(labels[i])[:2]))
+        for i, x, y in hard:
+            jobs.setdefault(i, []).append(("hard", x, y))
+        for i in rand:
+            jobs.setdefault(i, []).append(("rand", None, None))
+        split_at = scanned[int(len(scanned) * (1 - args.val_frac))]
+        for sub in ("images/train", "images/val", "labels/train", "labels/val"):
+            (root / sub).mkdir(parents=True, exist_ok=True)
+
+        cap = cv2.VideoCapture(meta["video"])
+        last = max(jobs)
+        for i in range(last + 1):  # one sequential pass: far faster than seeking per frame
+            if i not in jobs:
+                if not cap.grab():
+                    break
+                continue
+            ok, img = cap.read()
+            if not ok:
+                break
+            split = "val" if i >= split_at else "train"
+            balls = labels.get(i, [])
+            for c in frames[i]:  # blur out hotspot objects (spare balls in a rack): unlabelled, but not background
+                if (int(c[0] // 8), int(c[1] // 8)) in hot:
+                    r = int(max(c[2], c[3]) / 2) + 4
+                    y0, y1, x0, x1 = max(int(c[1]) - r, 0), int(c[1]) + r, max(int(c[0]) - r, 0), int(c[0]) + r
+                    img[y0:y1, x0:x1] = cv2.GaussianBlur(img[y0:y1, x0:x1], (0, 0), 6)
+            for k, (kind, x, y) in enumerate(jobs[i]):
+                if kind == "rand":
+                    for _ in range(20):  # somewhere with no candidate at all
+                        x0, y0 = rnd.randint(0, W - CROP), rnd.randint(0, H - CROP)
+                        if not any(x0 - 8 <= c[0] <= x0 + CROP + 8 and y0 - 8 <= c[1] <= y0 + CROP + 8 for c in frames[i]):
+                            break
+                    else:
+                        continue
+                else:
+                    x0, y0 = crop_origin(x, y, W, H, rnd)
+                rows = yolo_rows(balls, x0, y0)
+                if kind == "hard" and rows:
+                    continue  # a labelled ball is in this crop after all; positives cover it
+                name = f"{data.name}_{i:06d}_{k}"
+                cv2.imwrite(str(root / f"images/{split}/{name}.jpg"), img[y0:y0 + CROP, x0:x0 + CROP],
+                            [cv2.IMWRITE_JPEG_QUALITY, 95])
+                (root / f"labels/{split}/{name}.txt").write_text("".join(rows))
+                counts[split] += 1
+        print(f"  {len(pos)} positive, {len(hard)} hard-negative, {len(rand)} random crops queued")
+    if not args.labels_only:
+        (root / "data.yaml").write_text(f"path: {root.resolve()}\ntrain: images/train\nval: images/val\nnames:\n  0: pickleball\n")
+        print(f"dataset: {counts['train']} train / {counts['val']} val crops -> {root / 'data.yaml'}")
 
 
 if __name__ == "__main__":
