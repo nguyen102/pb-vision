@@ -254,8 +254,8 @@ def merge_serves(events, serves, players, court, fps, handling_s=3.0, after_s=0.
     Hits by the server's team in the handling_s before a serve are ball handling (bouncing it,
     passing it to the server), and any hit within after_s after it is the same contact detected late:
     the served ball can't have reached the other side yet, so a "hit" there (the ball passing over a
-    receiver on screen) is the serve too. Any other event in the hold_s before contact (a bounce of the
-    held ball) goes too.
+    receiver on screen) is the serve too. Any other event in the hold_s before contact, or at it (a bounce
+    of the held ball, or the contact itself seen as a bounce), goes too.
     """
     side = lambda f, pid: court.side(players[f][pid]["court"])
     drop = set()
@@ -267,7 +267,7 @@ def merge_serves(events, serves, players, court, fps, handling_s=3.0, after_s=0.
             elif f - handling_s * fps <= e["frame"] <= f and e["type"] == "hit" \
                     and side(e["frame"], e["player"]) == srv_side:
                 drop.add(i)
-            elif f - hold_s * fps <= e["frame"] < f:
+            elif f - hold_s * fps <= e["frame"] < f or (e["frame"] == f and e["type"] != "hit"):
                 drop.add(i)
     kept = [e for i, e in enumerate(events) if i not in drop]
     added = [{"frame": s["frame"], "type": "hit", "player": s["player"], "px": s["px"], "serve": True}
@@ -337,7 +337,7 @@ def classify_shots(events, players, court, fps, rally_gap_s=2.5, drive_speed=10.
         hitter = np.array(players[f][e["player"]]["court"])
         landing = speed = None
         airtime = 0.0
-        if target_ev:
+        if target_ev and target_ev["frame"] > f:
             if landing_ev:
                 landing = court.to_court([landing_ev["px"]])[0]
                 tgt = landing

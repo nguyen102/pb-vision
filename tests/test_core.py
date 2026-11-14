@@ -481,6 +481,21 @@ def test_merge_serves_drops_ball_handling_and_starts_rally():
     assert [r["shots"] for r in rallies] == [1, 3]
 
 
+def test_bounce_on_the_serve_frame_is_the_serve_and_speeds_stay_finite():
+    fps = 30
+    players = [{"1": _player(2.0, 13.8), "3": _player(2.0, 1.0)} for _ in range(200)]
+    bpx = lambda x, y: COURT.to_image([[x, y]])[0].tolist()
+    evs = [{"frame": 50, "type": "bounce", "player": None, "px": bpx(2.0, 13.5)},  # the serve contact seen as a bounce
+           {"frame": 80, "type": "bounce", "player": None, "px": bpx(3.0, 3.0)}]
+    merged = events.merge_serves(evs, [{"frame": 50, "player": "1", "px": bpx(2.0, 13.5)}], players, COURT, fps)
+    assert [(e["frame"], e["type"]) for e in merged] == [(50, "hit"), (80, "bounce")]
+    # an event at the hit's own frame says nothing about speed (0 s of flight)
+    same = [{"frame": 50, "type": "hit", "player": "1", "px": [0, 0]},
+            {"frame": 50, "type": "bounce", "player": None, "px": bpx(2.0, 13.5)}]
+    shots, _ = events.classify_shots(same, players, COURT, fps)
+    assert shots[0]["speed_kmh"] is None
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):
