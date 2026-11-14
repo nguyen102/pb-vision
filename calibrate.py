@@ -2,15 +2,35 @@
 
 Landmarks are asked for one at a time (corners first). Click it, or press s to skip one that
 isn't visible (e.g. a corner off-screen or behind the net). Needs 4+ landmarks, not 3 on one line.
-Enter saves, u undoes the last point, r resets, Esc aborts.
+Enter shows the court lines those points imply over the frame (red): Enter again saves, any other key
+goes back to clicking. u undoes the last point, r resets, Esc aborts.
 Usage: python calibrate.py match.mp4 outputs/match/court.json [--frame 0]
 """
 import argparse
 import sys
 
 import cv2
+import numpy as np
 
+from pbv.constants import COURT_L, COURT_W, KITCHEN, NET_Y
 from pbv.court import LANDMARKS, Court
+
+LINES = [((0, 0), (COURT_W, 0)), ((0, COURT_L), (COURT_W, COURT_L)), ((0, 0), (0, COURT_L)),
+         ((COURT_W, 0), (COURT_W, COURT_L)), ((0, NET_Y - KITCHEN), (COURT_W, NET_Y - KITCHEN)),
+         ((0, NET_Y + KITCHEN), (COURT_W, NET_Y + KITCHEN)), ((COURT_W / 2, 0), (COURT_W / 2, NET_Y - KITCHEN)),
+         ((COURT_W / 2, NET_Y + KITCHEN), (COURT_W / 2, COURT_L)), ((0, NET_Y), (COURT_W, NET_Y))]
+
+
+def confirm(win, frame, court, scale):
+    """Draw the court lines `court` implies over the frame; True if the user presses Enter again."""
+    img = frame.copy()
+    for a, b in LINES:
+        pts = court.to_image(np.linspace(a, b, 50)).astype(np.int32)
+        cv2.polylines(img, [pts.reshape(-1, 1, 2)], False, (0, 0, 255), max(2, int(2 * scale)))
+    cv2.putText(img, "Red lines on the court lines? Enter = save, any other key = back to clicking",
+                (20, int(40 * scale)), cv2.FONT_HERSHEY_SIMPLEX, 0.9 * scale, (0, 255, 255), 2)
+    cv2.imshow(win, img)
+    return cv2.waitKey(0) & 0xFF in (10, 13)
 
 
 def calibrate(video, dst, frame_no=0):
@@ -36,7 +56,7 @@ def calibrate(video, dst, frame_no=0):
             cv2.circle(img, p, int(6 * scale), (0, 0, 255), -1)
             cv2.putText(img, name, (p[0] + 8, p[1] - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.6 * scale, (0, 0, 255), 2)
         msg = (f"Click {names[i[0]]} (s = skip)" if i[0] < len(names) else "All landmarks asked") + \
-              (f"  |  {len(picked)} points: Enter = save, u = undo" if len(picked) >= 4 else "")
+              (f"  |  {len(picked)} points: Enter = check, u = undo" if len(picked) >= 4 else "")
         cv2.putText(img, msg, (20, int(40 * scale)), cv2.FONT_HERSHEY_SIMPLEX, 0.9 * scale, (0, 255, 255), 2)
         cv2.imshow(win, img)
         key = cv2.waitKey(20) & 0xFF
@@ -54,9 +74,11 @@ def calibrate(video, dst, frame_no=0):
         if key in (10, 13) and len(picked) >= 4:
             try:
                 court = Court.from_landmarks(picked)
-                break
             except ValueError as e:
                 print(e)
+                continue
+            if confirm(win, frame, court, scale):
+                break
     cv2.destroyAllWindows()
     court.save(dst)
     print(f"saved {dst}")
