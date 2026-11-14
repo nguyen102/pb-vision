@@ -95,6 +95,18 @@ def test_find_events_far_lob_goes_to_the_player_it_left():
     assert 8 <= evs[0]["frame"] < 15
 
 
+def test_find_events_far_lob_passing_the_partner_is_the_hitters():
+    hitter, partner = _player(1.5, 1.0, h=60), _player(4.5, 1.0, h=60)
+    hb, pb = hitter["bbox"], partner["bbox"]
+    # Contact inside the hitter's box at frame 3; the ball rises across to the partner (just in reach
+    # at the top of the arc, frame 15), then comes down. The partner is nearer at the local min.
+    f = np.arange(31)
+    xs = np.interp(f, [0, 3, 15, 30], [hb[0] + 5, hb[2] - 5, pb[0] - 10, pb[0] - 10])
+    ys = np.interp(f, [0, 3, 15, 30], [hb[1] + 40, hb[1] + 20, pb[1] - 15, pb[1] + 60])
+    evs = events.find_events(np.c_[xs, ys], [{"1": hitter, "2": partner}] * len(f))
+    assert [(e["type"], e["player"]) for e in evs] == [("hit", "1")]
+
+
 def test_classify_shots_types_and_faults():
     fps = 30
     pos = {"A": (3, 12.8), "B": (3, 0.5), "A2": (3, 12.8), "B2": (3, NET_Y - 1)}  # B2 at the kitchen

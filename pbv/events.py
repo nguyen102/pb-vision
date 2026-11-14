@@ -51,21 +51,31 @@ def nearest_player(p, frame_players, reach=0.6, allow=None, centre_tiebreak=Fals
 
 
 def _far_hitter(ball, players, t, reach, far_side, first):
-    """(far player nearest the ball, frame) at t, or failing that at the latest frame back to `first`
-    where one is in reach: a far lob keeps rising after contact, so its local min comes after the ball
-    has left the paddle, and the contact frame is where the hit belongs. (None, t) if nobody is."""
+    """(hitter, frame) for a local min of image y at t: (None, t) if no far player is in reach back to `first`.
+
+    A far shot that rises (a lob, a dink lifted over the net) keeps going up the screen after contact,
+    so the local min comes up to ~half a second later, when the ball may have passed the hitter's
+    partner. The hitter is the far player the ball came closest to (in box heights) over [first, t];
+    the frame is the latest one where they were in reach.
+    """
+    latest, best = {}, (np.inf, None)
     for f in range(t, max(first, 0) - 1, -1):
         if np.isnan(ball[f, 0]):
             break
-        pid = nearest_player(ball[f], players[f], reach, allow=far_side, centre_tiebreak=True)
-        if pid is not None:
-            return pid, f
-    return None, t
+        for pid, pl in players[f].items():
+            if not far_side(pl):
+                continue
+            d = _box_distance(ball[f], pl["bbox"]) / max(pl["bbox"][3] - pl["bbox"][1], 1e-9)
+            if d <= reach:
+                latest.setdefault(pid, f)
+                if d < best[0]:
+                    best = (d, pid)
+    return (best[1], latest[best[1]]) if best[1] is not None else (None, t)
 
 
 def find_events(ball, players, window=5, min_prominence=8, min_gap=6, reach=0.6,
                 near_side=lambda pl: pl["court"][1] > NET_Y, far_side=lambda pl: pl["court"][1] <= NET_Y,
-                lookback=8):
+                lookback=15):
     """Hits and bounces are local extrema of the ball's image y.
 
     A bounce (ball falls then rises) is always a local max of image y. A near-side hit is a

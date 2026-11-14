@@ -1,13 +1,14 @@
 """Score hitter attribution against hand labels from training/annotate_hits.py.
 
 Re-runs the analysis on the labelled clip with the current code, then for each label:
-  hit        the predicted hit nearest the labelled contact frame (within --tol frames) must be by the same
+  hit        the predicted hit nearest the labelled contact frame (within --tol frames of it, or within
+             --tol-none of the labelled detection) must be by the same
              person: the predicted hitter stands within --same-m metres of where the labelled hitter stood.
              Positions, not ids, so labels survive a re-track that renumbers players.
   none       no predicted hit within --tol-none frames of the labelled event (it was rejected)
   untracked  reported only: the hitter had no box, so no attribution could be right
 
-Usage: python training/eval_hits.py training/data/hits-1011 [-v]
+Usage: python training/eval_hits.py training/data/hits-1011 [--run outputs/<re-tracked clip>] [-v]
 """
 import argparse
 import json
@@ -36,13 +37,17 @@ def score(labels, players, court, evs, tol=8, tol_none=3, same_m=1.2):
             rows.append((f, "none", out, f"P{near[0]['player']} f{near[0]['frame']}" if near else ""))
             continue
         c = lab["contact"]
-        near = [e for e in hits if abs(e["frame"] - c) <= tol]
+        # the predicted hit near the contact, or the detection that was labelled (it may sit well before
+        # or after the contact, e.g. at the top of the ball's arc, and still name the right hitter)
+        near = [e for e in hits if abs(e["frame"] - c) <= tol or abs(e["frame"] - f) <= tol_none]
         if not near:
             counts["missed"] += 1
             rows.append((f, f"P{lab['hitter']}", "missed", ""))
             continue
         e = min(near, key=lambda e: abs(e["frame"] - c))
-        got = players[e["frame"]][e["player"]]["court"]
+        # where the predicted hitter stood at the labelled contact (same frame as the label), if in view then
+        at = players[c] if e["player"] in players[c] else players[e["frame"]]
+        got = at[e["player"]]["court"]
         if np.hypot(*np.subtract(got, lab["court"])) <= same_m:
             out = "right"
         else:
@@ -58,13 +63,15 @@ def main():
     ap.add_argument("--tol", type=int, default=8, help="frames between labelled contact and predicted hit")
     ap.add_argument("--tol-none", type=int, default=3)
     ap.add_argument("--same-m", type=float, default=1.2)
+    ap.add_argument("--run", type=Path, help="score against this analysed clip instead of the one labelled "
+                    "(e.g. a re-track of the same video; labels are matched by position, not id)")
     ap.add_argument("-v", "--verbose", action="store_true", help="list every mistake")
     args = ap.parse_args()
 
     path = args.labels / "hits.json" if args.labels.is_dir() else args.labels
     doc = json.loads(path.read_text())
     labels = {int(k): v for k, v in doc["labels"].items()}
-    data, court, evs = load_analysis(Path(doc["meta"]["run"]))
+    data, court, evs = load_analysis(args.run or Path(doc["meta"]["run"]))
     c, rows = score(labels, data["players"], court, evs, args.tol, args.tol_none, args.same_m)
 
     n_hit = c["right"] + c["wrong_player"] + c["wrong_side"] + c["missed"]
