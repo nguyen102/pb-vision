@@ -78,6 +78,7 @@ def main():
     total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - start
     s = VIEW_W / int(cap.get(3))
     cv2.namedWindow("hits")
+    placed = False  # WSLg can open a window off-screen: move it once it's shown
     done, k = [], 0
     while k < len(todo):
         e = todo[k]
@@ -95,6 +96,10 @@ def main():
             cv2.putText(view, "1-4 hitter  m untracked  x no hit  s skip  u undo  q quit  space pause  a/d step",
                         (10, view.shape[0] - 15), 0, 0.6, (255, 255, 255), 2)
             cv2.imshow("hits", view)
+            if not placed:
+                cv2.waitKey(50)  # let it map first: a move before that is ignored
+                cv2.moveWindow("hits", 0, 0)
+                placed = True
             key = cv2.waitKey(0 if paused else int(1000 / fps)) & 0xFF
             if not paused and key == 255:
                 f = lo if f >= hi else f + 1

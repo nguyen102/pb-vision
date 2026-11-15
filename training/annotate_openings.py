@@ -62,6 +62,7 @@ def main():
     save = lambda: path.write_text(json.dumps({"meta": meta, "labels": {str(f): v for f, v in sorted(labels.items())}},
                                               indent=1))
     cv2.namedWindow("openings")
+    placed = False  # WSLg can open a window off-screen: move it once it's shown
     done, k = [], 0
     while k < len(todo):
         e = todo[k]
@@ -88,6 +89,10 @@ def main():
             cv2.putText(view, "1-4 hitter  m no box  n next rally  x no serve  u undo  s skip  q quit  "
                         "space pause  a/d 1 frame  j/l 10", (10, view.shape[0] - 15), 0, 0.55, (255, 255, 255), 2)
             cv2.imshow("openings", view)
+            if not placed:
+                cv2.waitKey(50)  # let it map first: a move before that is ignored
+                cv2.moveWindow("openings", 0, 0)
+                placed = True
             key = cv2.waitKey(0 if paused else int(1000 / fps)) & 0xFF
             if not paused and key == 255:
                 f = lo if f >= hi else f + 1

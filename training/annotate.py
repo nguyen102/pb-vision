@@ -50,6 +50,7 @@ def main():
                 state["click"] = state["mouse"]
 
     cv2.namedWindow("annotate")
+    placed = False  # WSLg can open a window off-screen: move it once it's shown
     cv2.setMouseCallback("annotate", on_mouse)
     done, k = [], 0
     while k < len(todo):
@@ -71,6 +72,10 @@ def main():
             cv2.putText(pane, f"{len(labels)}/{args.n}  frame {i}", (8, view.shape[0] - 40), 0, 0.6, (255, 255, 255), 1)
             cv2.putText(pane, "click=ball n=none s=skip u=undo q=quit", (8, view.shape[0] - 15), 0, 0.5, (200, 200, 200), 1)
             cv2.imshow("annotate", np.hstack([view, pane]))
+            if not placed:
+                cv2.waitKey(50)  # let it map first: a move before that is ignored
+                cv2.moveWindow("annotate", 0, 0)
+                placed = True
             key = cv2.waitKey(20) & 0xFF
             if state["click"]:
                 x, y = state["click"]
