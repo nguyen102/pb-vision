@@ -251,7 +251,7 @@ ffmpeg -c:v libdav1d -i match.mkv -an -c:v libx264 -crf 20 match.mp4      # or -
 
 **Fixed camera:**
 ```bash
-uv run python app.py data/match.mp4
+uv run app.py data/match.mp4
 ```
 A window opens and asks for court landmarks one at a time, starting with the four corners. Click each
 one, or press **s** to skip a landmark you can't see (for example a corner off the edge of the frame or
@@ -276,12 +276,12 @@ Landmarks: `far-left`, `far-right`, `near-right`, `near-left`, `near-baseline-ce
 
 **POV camera:**
 ```bash
-uv run python app.py data/my_gopro.mp4 --mode pov
+uv run app.py data/my_gopro.mp4 --mode pov
 ```
 
 **Analyse a slice of a long video** (recommended: POV clips are often 10–20 minutes):
 ```bash
-uv run python app.py data/my_gopro.mp4 --mode pov --start 120 --max-frames 1800
+uv run app.py data/my_gopro.mp4 --mode pov --start 120 --max-frames 1800
 ```
 
 **Open the dashboard:**
@@ -291,11 +291,11 @@ uv run streamlit run dashboard.py
 
 **Headless / scripted calibration** (all 4 corners visible):
 ```bash
-uv run python app.py data/match.mp4 --corners 412,318,1508,318,1840,1012,80,1012
+uv run app.py data/match.mp4 --corners 412,318,1508,318,1840,1012,80,1012
 ```
 Or with any 4+ named landmarks, e.g. a floor-level phone that sees only the near half:
 ```bash
-uv run python app.py IMG_1577.MOV --court-points "near-left=1537,1613;near-baseline-center=3330,1613;near-kitchen-left=1642,1398;near-kitchen-center=2354,1404"
+uv run app.py IMG_1577.MOV --court-points "near-left=1537,1613;near-baseline-center=3330,1613;near-kitchen-left=1642,1398;near-kitchen-center=2354,1404"
 ```
 
 ---
@@ -322,13 +322,13 @@ uv run python app.py IMG_1577.MOV --court-points "near-left=1537,1613;near-basel
 
 ### `calibrate.py`
 ```bash
-uv run python calibrate.py match.mp4 outputs/match/court.json --frame 300
+uv run calibrate.py match.mp4 outputs/match/court.json --frame 300
 ```
 Re-do the court calibration on any frame.
 
 ### `demo/build.py`
 ```bash
-uv run python demo/build.py demo/replay.html "outputs/IMG_1577:Fixed · floor phone" "outputs/clip-pov:POV · chest cam"
+uv run demo/build.py demo/replay.html "outputs/IMG_1577:Fixed · floor phone" "outputs/clip-pov:POV · chest cam"
 ```
 Builds a single self-contained HTML replay from one or more output folders. It shows synced camera and
 court views, a shot timeline, a player table and a shot log. Only detections are embedded, never video
@@ -510,7 +510,7 @@ Because tracking is cached, changing any of these and re-running `app.py` only r
 ## Testing
 
 ```bash
-uv run python tests/test_core.py        # or: uv run python -m pytest tests
+uv run tests/test_core.py        # or: uv run -m pytest tests
 node tests/engine_parity.mjs outputs/<run>   # web engine vs Python on a real run
 ```
 
