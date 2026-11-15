@@ -583,6 +583,25 @@ def test_hidden_players_stay_where_last_or_next_seen():
     assert not out[0]["1"].get("hidden") and out[2]["1"]["hidden"] and "1" not in frames[2]  # input untouched
 
 
+def test_openings_model_decode_and_cross_court_hitters():
+    from pbv import openings_model as om
+    fps, T = 30, 300
+    prob = np.zeros((T, len(om.CLASSES)), np.float32)
+    prob[:, 0] = 1
+    prob[98:103] = [0.1, 0.9, 0.0, 0.0, 0.0]   # serve from the near side (peaks a few frames wide)
+    prob[138:143] = [0.2, 0.0, 0.0, 0.0, 0.8]  # its return, from the far side
+    prob[118:123] = [0.5, 0.5, 0.0, 0.0, 0.0]  # weaker serve score within 2 s: not a second serve
+    pairs = om.decode(prob, fps)
+    assert pairs == [((100, "near"), (140, "far"))]
+    pos = {"1": (1.5, 13.6), "2": (4.5, 13.6), "3": (1.5, 0.0), "4": (4.5, 0.0)}
+    players = [{pid: _player(*xy) for pid, xy in pos.items()} for _ in range(T)]
+    ball = np.full((T, 2), np.nan)
+    # the ball is equally near both far players at the return: the cross-court rule picks P4 for P1's serve
+    ball[100] = players[100]["1"]["bbox"][2:]
+    shots = om.assign(pairs, players, ball, COURT)
+    assert [(s["role"], s["player"]) for s in shots] == [("serve", "1"), ("return", "4")]
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

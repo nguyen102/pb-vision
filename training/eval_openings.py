@@ -2,8 +2,8 @@
 
 Re-runs the analysis on the labelled clip with the current code. For each labelled shot (serve, return,
 third shot) it looks for the reported shot with that role within --tol frames of the labelled contact:
-  right          found, by the same person (the reported hitter stood within --same-m metres of the
-                 labelled hitter; positions, not ids, so labels survive a re-track)
+  right          found, by the same person (the labelled hitter's id, or the reported hitter stood
+                 within --same-m metres of the labelled hitter: survives a re-track that renumbers ids)
   wrong_player   found, by someone else
   wrong_role     no shot with that role there, but a reported shot with another role is (e.g. the
                  return reported as a serve)
@@ -66,7 +66,10 @@ def score(labels, players, opening, hits, tol=8, same_m=1.2):
                     out = "right"
                 else:
                     got = players[c][s["player"]]["court"] if s["player"] in players[c] else s["hitter"]
-                    out = "right" if np.hypot(*np.subtract(got, shot["court"])) <= same_m else "wrong_player"
+                    # the same id as the labelled hitter (labels are made on the same tracking run), or where
+                    # they stood (survives a re-track that renumbers players)
+                    same = s["player"] == shot.get("hitter") or np.hypot(*np.subtract(got, shot["court"])) <= same_m
+                    out = "right" if same else "wrong_player"
                 detail = f"P{s['player']} {s['frame'] - c:+d}f"
             elif near:
                 out, detail = "wrong_role", "reported as " + ", ".join(s["role"] for s in near)

@@ -662,6 +662,7 @@ def classify_shots(events, players, court, fps, rally_gap_s=2.5, drive_speed=10.
             "volley": volley, "speed_kmh": None if speed is None else round(speed * 3.6, 1),
             "hitter": hitter.round(2).tolist(),
             "landing": None if landing is None else landing.round(2).tolist(), "faults": faults,
+            **({"model_return": True} if e.get("model_return") else {}),
         })
         prev = i
     for r in rallies:
@@ -701,7 +702,9 @@ def opening_shots(shots, rallies, events, players, court, fps, min_gap_s=0.5, ma
                          and s["type"] != "serve" and (side(s) == side(srv)) == same_side_as_server), None)
 
         kept = [(srv, "serve")]
-        ret = first(srv, False)
+        # the learned detector's return for this serve (openings_model.detect), else the first shot from across
+        ret = next((s for s in shots if s.get("model_return") and srv["frame"] < s["frame"] < until
+                    and s["frame"] - srv["frame"] <= hi), None) or first(srv, False)
         if ret is not None:
             kept.append((ret, "return"))
         third = first(ret, True) if ret is not None else \

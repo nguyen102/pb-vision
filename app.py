@@ -27,6 +27,7 @@ from pbv.court import Court
 from pbv.players import fill_hidden as fill_hidden_players, select_players
 
 PROGRESS_S = 5  # progress bars redraw at most this often, so a run's log stays small
+OPENINGS_MODEL = Path(__file__).parent / "models" / "openings.pt"  # learned serve / return detector
 BALL_MODEL = Path(__file__).resolve().parent / "models" / "ball-r1.pt"  # trained by training/ (round 1)
 
 
@@ -155,15 +156,26 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
     evs = events.filter_hits(events.find_events(ball, players), fps,
                              side=lambda e: court.side(players[e["frame"]][e["player"]]["court"]))
     detected = events.real_detections(data["ball"], ball)
-    serves = events.find_serves(ball, players, court, fps, data["width"], detected=detected, offscreen=off)
-    # serves find_serves misses (server off screen or without a box, so the ball is never seen in their hand):
-    # everyone waiting still, then the ball comes into view and flies over the net
-    entry = events.find_entry_serves(ball, players, court, fps, data["width"], data["height"],
-                                     hits=[e["frame"] for e in evs if e["type"] == "hit"], detected=detected)
-    serves = events.combine_serves(serves, entry, players, court, fps)
-    evs = events.merge_serves(evs, serves, players, court, fps)
-    evs = events.diagonal_servers(evs, players, court, fps)
-    evs = events.infer_returns(evs, ball, players, court, fps)
+    if OPENINGS_MODEL.exists():
+        # serves and returns from the detector trained on hand labels (training/train_openings.py)
+        import torch
+        from pbv import openings_model
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        serves, returns = openings_model.detect(openings_model.load(OPENINGS_MODEL, device), ball, detected, players,
+                                                court, fps, data["width"], data["height"], device=device)
+        evs = events.merge_serves(evs, serves, players, court, fps)
+        evs = sorted([e for e in evs if all(abs(e["frame"] - r["frame"]) > 3 or e.get("serve") for r in returns)]
+                     + returns, key=lambda e: (e["frame"], e["type"] != "hit"))
+    else:
+        serves = events.find_serves(ball, players, court, fps, data["width"], detected=detected, offscreen=off)
+        # serves find_serves misses (server off screen or without a box, so the ball is never seen in their hand):
+        # everyone waiting still, then the ball comes into view and flies over the net
+        entry = events.find_entry_serves(ball, players, court, fps, data["width"], data["height"],
+                                         hits=[e["frame"] for e in evs if e["type"] == "hit"], detected=detected)
+        serves = events.combine_serves(serves, entry, players, court, fps)
+        evs = events.merge_serves(evs, serves, players, court, fps)
+        evs = events.diagonal_servers(evs, players, court, fps)
+        evs = events.infer_returns(evs, ball, players, court, fps)
     shots, rallies = events.classify_shots(evs, players, court, fps, drive_speed=args.drive_speed,
                                            serves_detected=True, offscreen=off)
     # every hit is found (the third shot's landing and speed depend on what follows), but only the
