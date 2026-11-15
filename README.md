@@ -225,13 +225,18 @@ near-side player.
 Requires Python 3.10+. Runs on macOS (Apple-silicon GPU is used automatically), Linux and Windows
 (CUDA if available, otherwise CPU).
 
+Uses [uv](https://docs.astral.sh/uv/) for the virtual environment and packages. Install it once:
+`curl -LsSf https://astral.sh/uv/install.sh | sh` (Windows: `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"`).
+
 ```bash
 git clone https://github.com/ArvanJ/Pickleball-Vision.git
 cd Pickleball-Vision
-python3 -m venv .venv
+uv venv .venv --python 3.12        # uv downloads that Python if it isn't installed
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 ```
+
+Keep the environment at `.venv/`: `training/run_app.sh` runs `.venv/bin/python`.
 
 YOLO weights (`yolov8m.pt`, `yolov8n-pose.pt`) download automatically on first run (~60 MB). The pickleball detector `models/ball-r1.pt` (22 MB) and the serve / return / third-shot detector `models/openings.pt` (1.5 MB) are in the repo.
 
