@@ -212,7 +212,7 @@ def _ball_out_of_play(ball, known, players, pid, t, hold, near_h, away_h, min_ne
 
 def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, go_far_s=1.0, near_h=0.5, away_h=1.5,
                 min_near=3, max_away=0.2, baseline_m=1.0, receiver_m=1.5, min_contact_y=0.15, still_m=0.5, step_frac=0.1,
-                same_contact_s=0.5, min_gap_s=2.0, across_s=1.5, max_across=11, max_across_far=0, far_delay_s=0.27,
+                same_contact_s=0.5, min_gap_s=2.0, keep_later=True, across_s=1.5, max_across=11, max_across_far=0, far_delay_s=0.27,
                 detected=None, offscreen=None):
     """Fixed mode: serves straight from the ball track -> [{"frame", "player", "px"}].
 
@@ -238,7 +238,9 @@ def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, go_far_s
       times (max_across_far for a far server: before a real far serve the ball is never seen on the near
       half, while a far return has the near serve's flight behind it). Otherwise t is a return, or the end of a ball fed across between points
     Frames within same_contact_s of each other are one contact (the one where the ball speeds up
-    most is kept), and a serve puts the ball in play, so nothing within min_gap_s after it is a serve.
+    most is kept), and a serve puts the ball in play, so nothing within min_gap_s after it is a serve,
+    except from the same side (keep_later): then the first one was ball handling before the serve (a
+    bounce, a toss to the server) and the later one is kept.
     """
     from .constants import COURT_L, COURT_W, NET_Y
 
@@ -314,6 +316,8 @@ def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, go_far_s
     for s in (pick(g) for g in groups):
         if not out or s["frame"] - out[-1]["frame"] >= min_gap_s * fps:
             out.append(s)
+        elif keep_later and s["side"] == out[-1]["side"]:
+            out[-1] = s  # same side again within min_gap_s: the first was ball handling (a bounce, a toss)
     for s in out:
         del s["side"]
     return out
@@ -325,31 +329,36 @@ def real_detections(raw, ball):
 
 
 def hitter_court(players, e):
-    """Court position of an event's player at its frame; for a server off screen (find_still_serves), where
+    """Court position of an event's player at its frame; for a player off screen (infer_returns), where
     they were last seen."""
     fp = players[e["frame"]]
     return fp[e["player"]]["court"] if e["player"] in fp else e["court"]
 
 
-def find_still_serves(ball, players, court, fps, width, ids=("1", "2", "3", "4"), still_s=1.0, swing_s=0.3,
-                      still_h=0.3, min_people=3, reach_h=0.5, go_s=1.0, across_s=1.5, max_across=11,
-                      baseline_m=1.0, step_frac=0.1, same_s=1.0, detected=None):
-    """Serves from the moment before one: everyone waits still for the serve, then the ball flies over the net.
+def find_entry_serves(ball, players, court, fps, width, height, still_s=1.0, swing_s=0.3, still_h=0.3,
+                      min_people=2, unseen=5, edge=0.1, held_s=0.33, held_frac=0.02, quiet_s=2.0, hits=(),
+                      go_s=1.0, across_s=1.5,
+                      max_across=11, max_across_far=0, baseline_m=1.5, step_frac=0.1, same_s=1.0,
+                      detected=None):
+    """Serves inferred from the wait before one: everyone in view stands still, nobody has played the ball,
+    then the ball comes into view and flies over the net. For serves find_serves can't see: the server is
+    off the edge of the picture, or has no box (a far server the person detector misses), so the ball is
+    never seen in their hand.
 
-    Contact is the first frame t where:
-    - at least min_people players are in view, and over the still_s before t (ending swing_s before t:
-      the server's own swing moves them) none of them moved: the top-centre of their box (their head;
-      a far player's feet go behind the net) stays within still_h box heights
-    - the ball didn't come from across the net (as find_serves: at most max_across sightings past the
-      net in the across_s before t)
-    - the ball is detected at t and flies on one continuous path (as find_serves) that crosses the net
-      within go_s
-    - the server is the player within baseline_m of their baseline the ball is within reach_h box heights
-      of at t, or, when the ball starts
-      on the near half of the screen with nobody in reach and one player is missing from view, that
-      player: they serve from behind the near baseline, below the picture. Such serves carry
-      "offscreen": True and "court": where the server was last seen.
-    -> [{"frame", "player", "px", "offscreen"?, "court"?}], at most one per same_s.
+    players: per-frame players with hidden ones filled in (players.fill_hidden). Contact is the first frame
+    t where:
+    - the ball comes into play: detected at t, and either not detected in the `unseen` frames before, at
+      the edge of the picture (within `edge` of the frame width / height, sides and bottom), or held: its
+      detections over the held_s before stay within held_frac of the frame width with no player box in
+      reach (in the hand of a server the person detector missed)
+    - at least min_people players are really in view and none of them moved over the still_s before t
+      (ending swing_s before t): the top-centre of their box stays within still_h box heights
+    - no hit (from `hits`, frames) in the quiet_s before t: the ball was dead
+    - the ball didn't come from across the net (as find_serves, max_across / max_across_far sightings)
+    - it flies on (one continuous path, as find_serves) to past the net within go_s
+    - the server: of the players (seen or hidden) on the ball's side of the net (above the net line on screen:
+      far) within baseline_m of their baseline, the one nearest the ball
+    -> [{"frame", "player", "px", "entry": True}], at most one per same_s.
     """
     from .constants import COURT_W
 
@@ -358,79 +367,77 @@ def find_still_serves(ball, players, court, fps, width, ids=("1", "2", "3", "4")
     net_px = court.to_image([[COURT_W / 2, NET_Y]])[0][1]
     margin = 0.02 * width
     still, swing, go = int(still_s * fps), int(swing_s * fps), int(go_s * fps)
-    last_seen, out = {}, []
-    for t in range(len(ball)):
-        for pid, p in players[t].items():
-            last_seen[pid] = p["court"]
-        if not detected[t] or t < still + swing or (out and t - out[-1]["frame"] < same_s * fps):
+    hit_frames = np.asarray(sorted(hits), int)
+    out = []
+    for t in range(still + swing, len(ball) - 1):
+        if not detected[t] or (out and t - out[-1]["frame"] < same_s * fps):
             continue
-        here = players[t]
-        if len(here) < min_people:
+        x, y = ball[t]
+        at_edge = x < edge * width or x > (1 - edge) * width or y > (1 - edge) * height
+        before = ball[max(0, t - int(held_s * fps)):t][detected[max(0, t - int(held_s * fps)):t]]
+        ball_side = "far" if y < net_px else "near"
+        held = len(before) >= 3 and np.ptp(before, axis=0).max() < held_frac * width \
+            and nearest_player(ball[t], {k: p for k, p in players[t].items() if not p.get("hidden")
+                                         and court.side(p["court"]) == ball_side}, 0.5) is None
+        if detected[max(0, t - unseen):t].any() and not at_edge and not held:
             continue
-        window = range(t - swing - still, t - swing)
+        i = np.searchsorted(hit_frames, t)
+        if i and t - hit_frames[i - 1] <= quiet_s * fps:
+            continue
+        seen = {k: p for k, p in players[t].items() if not p.get("hidden")}
+        if len(seen) < min_people:
+            continue
         moved = False
-        for pid in here:
-            tops = np.array([((players[f][pid]["bbox"][0] + players[f][pid]["bbox"][2]) / 2,
-                              players[f][pid]["bbox"][1], players[f][pid]["bbox"][3] - players[f][pid]["bbox"][1])
-                             for f in window if pid in players[f]])
-            if len(tops) < still // 2:
+        for pid in seen:
+            boxes = [players[f][pid]["bbox"] for f in range(t - swing - still, t - swing)
+                     if pid in players[f] and not players[f][pid].get("hidden")]
+            if len(boxes) < still // 2:
                 moved = True
                 break
-            spread = np.ptp(tops[:, :2], axis=0).max() / np.median(tops[:, 2])
-            if spread > still_h:
+            b = np.array([((x1 + x2) / 2, y1, y2 - y1) for x1, y1, x2, y2 in boxes])
+            if np.ptp(b[:, :2], axis=0).max() / np.median(b[:, 2]) > still_h:
                 moved = True
                 break
         if moved:
             continue
-        b = ball[t]
-        pid = nearest_player(b, here, reach_h)
-        offscreen = False
-        if pid is None:
-            missing = [i for i in ids if i not in here]
-            if b[1] > net_px + margin and len(missing) == 1 and missing[0] in last_seen:
-                pid, offscreen = missing[0], True
-            else:
-                continue
-        side = "near" if offscreen else court.side(here[pid]["court"])
-        if not offscreen:
-            c = here[pid]["court"]
-            if (COURT_L - c[1] if side == "near" else c[1]) > baseline_m:
-                continue
+        side = "far" if y < net_px else "near"
         w = slice(max(0, t - int(across_s * fps)), t)
         ys = ball[w, 1][detected[w]]
-        if (ys < net_px - margin if side == "near" else ys > net_px + margin).sum() > max_across:
+        if (ys < net_px - margin if side == "near" else ys > net_px + margin).sum() > \
+                (max_across if side == "near" else max_across_far):
             continue
         path = np.asarray(_flight(ball, detected, t, go, step_frac * width))
         if len(path) < 2 or not (path[:, 1] < net_px - margin if side == "near" else path[:, 1] > net_px + margin).any():
             continue
-        s = {"frame": t, "player": pid, "px": [round(float(v), 1) for v in b]}
-        if offscreen:
-            s.update(offscreen=True, court=[float(v) for v in last_seen[pid]])
-        out.append(s)
+        back = {k: p for k, p in players[t].items() if court.side(p["court"]) == side
+                and (COURT_L - p["court"][1] if side == "near" else p["court"][1]) <= baseline_m}
+        if not back:
+            continue
+        pid = min(back, key=lambda k: _box_distance(ball[t], back[k]["bbox"]))
+        out.append({"frame": t, "player": pid, "px": [round(float(v), 1) for v in ball[t]], "entry": True})
     return out
 
 
-def combine_serves(serves, still_serves, fps, events=(), players=None, court=None, same_s=1.5, quiet_s=2.0,
-                   return_s=2.5):
-    """find_serves' serves plus find_still_serves' off-screen ones (a visible server is find_serves' job; its
-    other finds are mostly players standing about between points).
+def combine_serves(serves, entry_serves, players, court, fps, same_s=1.0, return_s=2.5):
+    """find_serves' serves plus find_entry_serves'.
 
-    An off-screen serve is added when no hit was detected in the quiet_s before it (the ball was in play)
-    and find_serves has no serve within same_s of it. A serve find_serves reports from the far side within
-    return_s after it is the return taken for a serve (the real serve wasn't seen): it stays as a plain
-    hit ("return": True; merge_serves adds it as a hit, not a serve).
+    An entry serve and a find_serves serve on the same side within same_s are one serve: find_serves fires
+    later when it only saw the ball once it was flying (next to the server's partner), so the earlier one
+    is kept. An entry serve also turns a find_serves serve from across the net within return_s after it
+    into a plain hit ("return": True; merge_serves adds it as a hit): that was the return.
     """
-    hits = [e["frame"] for e in events if e["type"] == "hit"]
     side = lambda s: court.side(players[s["frame"]][s["player"]]["court"])
     out = list(serves)
-    for s in still_serves:
-        f = s["frame"]
-        if not s.get("offscreen") or any(f - quiet_s * fps <= h < f for h in hits):
-            continue
-        late = [o for o in out if 0 < o["frame"] - f <= return_s * fps and side(o) == "far" and not o.get("return")]
-        if any(abs(o["frame"] - f) <= same_s * fps for o in out if o not in late and not o.get("return")):
-            continue
-        out = [{**o, "return": True} if o in late else o for o in out] + [s]
+    for e in entry_serves:
+        f = e["frame"]
+        same = [o for o in out if not o.get("return") and abs(o["frame"] - f) <= same_s * fps and side(o) == side(e)]
+        if same and min(o["frame"] for o in same) <= f:
+            continue  # find_serves already has it, as early
+        out = [o for o in out if o not in same]
+        out = [{**o, "return": True} if 0 < o["frame"] - f <= return_s * fps and side(o) != side(e)
+               and not o.get("return") else o for o in out]
+        if all(abs(o["frame"] - f) > same_s * fps for o in out if not o.get("return")):
+            out.append(e)
     return sorted(out, key=lambda s: s["frame"])
 
 

@@ -555,15 +555,23 @@ def test_missing_return_is_inferred_at_the_turn_after_the_serve_bounce():
     assert not any(e.get("inferred") for e in events.infer_returns(evs, ball, players, COURT, fps))
 
 
-def test_offscreen_serve_replaces_a_far_serve_that_is_really_the_return():
+def test_entry_serve_replaces_a_late_serve_and_a_return_taken_for_a_serve():
     fps = 30
-    players = [{"2": _player(4.5, 13.6), "3": _player(1.5, 0.0), "4": _player(4.5, 0.0)} for _ in range(200)]
-    serves = [{"frame": 90, "player": "4", "px": [0, 0]}]
-    still = [{"frame": 50, "player": "1", "px": [0, 0], "offscreen": True, "court": [1.5, 13.6]}]
-    out = events.combine_serves(serves, still, fps, [], players, COURT)
+    # P1 serves from below the picture (a hidden stand-in, players.fill_hidden)
+    players = [{"1": {**_player(1.5, 13.6), "hidden": True}, "2": _player(4.5, 13.6), "3": _player(1.5, 0.0),
+                "4": _player(4.5, 0.0)} for _ in range(200)]
+    entry = [{"frame": 50, "player": "1", "px": [0, 0], "entry": True}]
+    # find_serves only saw the far return (frame 90) as a serve
+    out = events.combine_serves([{"frame": 90, "player": "4", "px": [0, 0]}], entry, players, COURT, fps)
     assert [(s["frame"], s["player"], bool(s.get("return"))) for s in out] == [(50, "1", False), (90, "4", True)]
     merged = events.merge_serves([], out, players, COURT, fps)
     assert [(e["frame"], bool(e.get("serve"))) for e in merged] == [(50, True), (90, False)]
+    # find_serves saw the serve only once it was flying, 20 frames on: the earlier one is kept
+    out = events.combine_serves([{"frame": 70, "player": "2", "px": [0, 0]}], entry, players, COURT, fps)
+    assert [(s["frame"], s["player"]) for s in out] == [(50, "1")]
+    # find_serves saw it first: nothing changes
+    out = events.combine_serves([{"frame": 45, "player": "2", "px": [0, 0]}], entry, players, COURT, fps)
+    assert [(s["frame"], s["player"]) for s in out] == [(45, "2")]
 
 
 def test_hidden_players_stay_where_last_or_next_seen():

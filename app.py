@@ -156,10 +156,11 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
                              side=lambda e: court.side(players[e["frame"]][e["player"]]["court"]))
     detected = events.real_detections(data["ball"], ball)
     serves = events.find_serves(ball, players, court, fps, data["width"], detected=detected, offscreen=off)
-    # serves find_serves misses (ball never seen in the server's hand, server off screen): everyone still, then
-    # the ball flies over the net. Needs to know who is really out of view.
-    still = events.find_still_serves(ball, seen, court, fps, data["width"], detected=detected)
-    serves = events.combine_serves(serves, still, fps, evs, players, court)
+    # serves find_serves misses (server off screen or without a box, so the ball is never seen in their hand):
+    # everyone waiting still, then the ball comes into view and flies over the net
+    entry = events.find_entry_serves(ball, players, court, fps, data["width"], data["height"],
+                                     hits=[e["frame"] for e in evs if e["type"] == "hit"], detected=detected)
+    serves = events.combine_serves(serves, entry, players, court, fps)
     evs = events.merge_serves(evs, serves, players, court, fps)
     evs = events.diagonal_servers(evs, players, court, fps)
     evs = events.infer_returns(evs, ball, players, court, fps)
