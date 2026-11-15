@@ -13,7 +13,7 @@ third shot) it looks for the reported shot with that role within --tol frames of
 Untracked hitters (labelled with no box) count only for detection, not for who.
 "Not a serve" labels: is a serve still reported within --tol frames of it (false serve)?
 
-Usage: python training/eval_openings.py training/data/openings-jb [--run outputs/<re-tracked clip>] [-v]
+Usage: python training/eval_openings.py training/data/openings-jb [more label dirs...] [--run outputs/<clip>] [-v]
 """
 import argparse
 import collections
@@ -79,25 +79,40 @@ def score(labels, players, opening, hits, tol=8, same_m=1.2):
     return per, false_serves, nones, rows
 
 
+def report(per, false_serves, nones, indent=""):
+    for role, c in per.items():
+        n = sum(c.values())
+        print(f"{indent}{role:7s} right {c['right']}/{n} ({c['right'] / max(n, 1):.0%})  "
+              + "  ".join(f"{o} {c[o]}" for o in OUTCOMES[1:]))
+    print(f"{indent}false serves: {false_serves}/{nones} 'not a serve' labels still reported as serves")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("labels", type=Path, help="dir with openings.json")
-    ap.add_argument("--run", type=Path, help="analysed clip to score (default: the one labelled)")
+    ap.add_argument("labels", type=Path, nargs="+", help="dir(s) with openings.json; several are scored and totalled")
+    ap.add_argument("--run", type=Path, help="analysed clip to score (default: the one labelled; one labels dir only)")
     ap.add_argument("--tol", type=int, default=8, help="frames between labelled and reported contact")
     ap.add_argument("-v", "--verbose", action="store_true", help="list every labelled shot that isn't right")
     args = ap.parse_args()
-    doc = json.loads((args.labels / "openings.json").read_text())
-    players, _, opening, hits = analyse(args.run or Path(doc["meta"]["run"]))
-    per, false_serves, nones, rows = score(doc["labels"], players, opening, hits, tol=args.tol)
-    for role, c in per.items():
-        n = sum(c.values())
-        print(f"{role:7s} right {c['right']}/{n} ({c['right'] / max(n, 1):.0%})  "
-              + "  ".join(f"{o} {c[o]}" for o in OUTCOMES[1:]))
-    print(f"false serves: {false_serves}/{nones} 'not a serve' labels still reported as serves")
-    if args.verbose:
-        for key, role, out, detail in rows:
-            if out != "right":
-                print(f"  rally@{key:>6} {role:11s} {out:12s} {detail}")
+    total = {r: collections.Counter() for r in ROLE.values()}
+    tf = tn = 0
+    for d in args.labels:
+        doc = json.loads((d / "openings.json").read_text())
+        players, _, opening, hits = analyse(args.run or Path(doc["meta"]["run"]))
+        per, false_serves, nones, rows = score(doc["labels"], players, opening, hits, tol=args.tol)
+        for r in per:
+            total[r] += per[r]
+        tf, tn = tf + false_serves, tn + nones
+        if len(args.labels) > 1:
+            print(d.name)
+        report(per, false_serves, nones, "  " if len(args.labels) > 1 else "")
+        if args.verbose:
+            for key, role, out, detail in rows:
+                if out != "right":
+                    print(f"  rally@{key:>6} {role:11s} {out:12s} {detail}")
+    if len(args.labels) > 1:
+        print("TOTAL")
+        report(total, tf, tn, "  ")
 
 
 if __name__ == "__main__":

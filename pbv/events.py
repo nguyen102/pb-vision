@@ -212,7 +212,8 @@ def _ball_out_of_play(ball, known, players, pid, t, hold, near_h, away_h, min_ne
 
 def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, go_far_s=1.0, near_h=0.5, away_h=1.5,
                 min_near=3, max_away=0.2, baseline_m=1.0, receiver_m=1.5, min_contact_y=0.15, still_m=0.5, step_frac=0.1,
-                same_contact_s=0.5, min_gap_s=2.0, across_s=1.5, max_across=11, detected=None, offscreen=None):
+                same_contact_s=0.5, min_gap_s=2.0, across_s=1.5, max_across=11, max_across_far=0, far_delay_s=0.27,
+                detected=None, offscreen=None):
     """Fixed mode: serves straight from the ball track -> [{"frame", "player", "px"}].
 
     A serve is the ball held (or bounced) by a player near their own baseline, then hit so it
@@ -234,7 +235,8 @@ def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, go_far_s
       and reaches the other side
     - the ball didn't come from across the net: in the across_s before t it was detected beyond the net
       (on screen: above the net line for a near server, below it for a far one) at most max_across
-      times. Otherwise t is a return, or the end of a ball fed across between points
+      times (max_across_far for a far server: before a real far serve the ball is never seen on the near
+      half, while a far return has the near serve's flight behind it). Otherwise t is a return, or the end of a ball fed across between points
     Frames within same_contact_s of each other are one contact (the one where the ball speeds up
     most is kept), and a serve puts the ball in play, so nothing within min_gap_s after it is a serve.
     """
@@ -249,23 +251,30 @@ def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, go_far_s
     for t in range(hold, len(ball) - 1):
         if not detected[t]:
             continue
-        pid = nearest_player(ball[t], players[t], near_h)
+        # only players at their baseline can serve (a near player at the kitchen has a box tall enough to
+        # cover a far server on screen); a server out of view (no box, or behind someone: players.fill_hidden)
+        # only when nobody seen is near
+        back = {k: p for k, p in players[t].items()
+                if (COURT_L - p["court"][1] if court.side(p["court"]) == "near" else p["court"][1]) <= baseline_m}
+        visible = {k: p for k, p in back.items() if not p.get("hidden")}
+        pid = nearest_player(ball[t], visible, near_h) or nearest_player(ball[t], back, near_h)
         if pid is None:
             continue
         pl = players[t][pid]
         x1, y1, x2, y2 = pl["bbox"]
         box_h = y2 - y1
         side = court.side(pl["court"])
-        to_baseline = COURT_L - pl["court"][1] if side == "near" else pl["court"][1]
-        if to_baseline > baseline_m or (ball[t, 1] - y1) / box_h < min_contact_y:
+        if (ball[t, 1] - y1) / box_h < min_contact_y:
             continue
-        across = [p["court"] for p in players[t].values() if court.side(p["court"]) != side]
+        visible = {k: p for k, p in players[t].items() if not p.get("hidden")}
+        across = [p["court"] for p in visible.values() if court.side(p["court"]) != side]
         depth = lambda c: c[1] if side == "near" else COURT_L - c[1]  # receiver's distance in from their baseline
         if len(across) >= 2 and min(depth(c) for c in across) > receiver_m:
             continue
         w = slice(max(0, t - int(across_s * fps)), t)
         ys = ball[w, 1][detected[w]]
-        if (ys < net_px - margin if side == "near" else ys > net_px + margin).sum() > max_across:
+        if (ys < net_px - margin if side == "near" else ys > net_px + margin).sum() > \
+                (max_across if side == "near" else max_across_far):
             continue
         if not _ball_out_of_play(ball, known, players, pid, t, hold, near_h, away_h, min_near, max_away,
                                  min_contact_y, still_m, offscreen):
@@ -279,8 +288,8 @@ def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, go_far_s
         if toward.max() >= 3.0 and any(court.side(p) != side for p in on_court):
             serves.append({"frame": t, "player": pid, "px": [round(float(v), 1) for v in ball[t]]})
     # several frames around one contact qualify; contact is where the ball speeds up most, except on the
-    # far side: the ball isn't seen in the server's hand, the first sighting is already in flight and the
-    # speed-up frames come later still, so the earliest one is nearest the contact
+    # far side: the ball isn't seen in the server's hand, the speed-up frames come well after contact and
+    # the first qualifying frame a little before it, so far_delay_s after the first one
     for s in serves:
         s["side"] = court.side(players[s["frame"]][s["player"]]["court"])
     groups = []
@@ -297,7 +306,12 @@ def find_serves(ball, players, court, fps, width, hold_s=1.0, go_s=0.6, go_far_s
         return after - before
 
     out = []
-    for s in (g[0] if g[0]["side"] == "far" else max(g, key=lambda s: speed_up(s["frame"])) for g in groups):
+    def pick(g):
+        if g[0]["side"] == "far":  # the frame nearest far_delay_s after the first one (tuned on hand labels)
+            return min(g, key=lambda s: abs(s["frame"] - g[0]["frame"] - far_delay_s * fps))
+        return max(g, key=lambda s: speed_up(s["frame"]))
+
+    for s in (pick(g) for g in groups):
         if not out or s["frame"] - out[-1]["frame"] >= min_gap_s * fps:
             out.append(s)
     for s in out:

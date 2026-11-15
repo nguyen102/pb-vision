@@ -24,7 +24,7 @@ from tqdm import tqdm
 
 from pbv import analytics, balltrack, draw, events
 from pbv.court import Court
-from pbv.players import select_players
+from pbv.players import fill_hidden as fill_hidden_players, select_players
 
 PROGRESS_S = 5  # progress bars redraw at most this often, so a run's log stays small
 BALL_MODEL = Path(__file__).resolve().parent / "models" / "ball-r1.pt"  # trained by training/ (round 1)
@@ -145,9 +145,11 @@ def pick_ball(data, court, min_conf=0.15):
     return balltrack.select_path(cands, data["width"], balltrack.BallRegion(court))
 
 
-def analyse_fixed(data, court, args, openings_only=True):
-    """openings_only=False: every shot and event (for evaluation), not just serve / return / third shot."""
-    fps, players = data["fps"], data["players"]
+def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
+    """openings_only=False: every shot and event (for evaluation), not just serve / return / third shot.
+    fill_hidden: shots are attributed with players out of view kept where they were last / next seen."""
+    fps, seen = data["fps"], data["players"]
+    players = fill_hidden_players(seen) if fill_hidden else seen
     off = data["ball_offscreen"]
     ball = events.clean_ball(data["ball"], max_jump=0.08 * data["width"], offscreen=off)
     evs = events.filter_hits(events.find_events(ball, players), fps,
@@ -155,8 +157,8 @@ def analyse_fixed(data, court, args, openings_only=True):
     detected = events.real_detections(data["ball"], ball)
     serves = events.find_serves(ball, players, court, fps, data["width"], detected=detected, offscreen=off)
     # serves find_serves misses (ball never seen in the server's hand, server off screen): everyone still, then
-    # the ball flies over the net
-    still = events.find_still_serves(ball, players, court, fps, data["width"], detected=detected)
+    # the ball flies over the net. Needs to know who is really out of view.
+    still = events.find_still_serves(ball, seen, court, fps, data["width"], detected=detected)
     serves = events.combine_serves(serves, still, fps, evs, players, court)
     evs = events.merge_serves(evs, serves, players, court, fps)
     evs = events.diagonal_servers(evs, players, court, fps)
@@ -167,6 +169,7 @@ def analyse_fixed(data, court, args, openings_only=True):
     # serve, return and third shot of each rally are reported
     if openings_only:
         shots, rallies, evs = events.opening_shots(shots, rallies, evs, players, court, fps)
+    players = seen
     return ball, evs, shots, rallies, analytics.player_stats(players, fps)
 
 

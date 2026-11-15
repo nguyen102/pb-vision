@@ -566,6 +566,15 @@ def test_offscreen_serve_replaces_a_far_serve_that_is_really_the_return():
     assert [(e["frame"], bool(e.get("serve"))) for e in merged] == [(50, True), (90, False)]
 
 
+def test_hidden_players_stay_where_last_or_next_seen():
+    from pbv.players import fill_hidden
+    a, b = {"bbox": [0, 0, 1, 2], "court": [1.0, 13.0]}, {"bbox": [5, 0, 6, 2], "court": [5.0, 13.0]}
+    frames = [{"1": a}, {}, {}, {}, {"1": b}, {}]
+    out = fill_hidden(frames)
+    assert [fp["1"]["court"][0] for fp in out] == [1.0, 1.0, 1.0, 5.0, 5.0, 5.0]  # nearer sighting in time
+    assert not out[0]["1"].get("hidden") and out[2]["1"]["hidden"] and "1" not in frames[2]  # input untouched
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

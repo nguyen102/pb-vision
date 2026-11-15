@@ -222,3 +222,29 @@ def select_players(frames, fps, rounds=3, **assigner_args):
             for f, p in zip(t["frames"], t["people"]):
                 out[f][PLAYER_IDS[k]] = {"bbox": p["bbox"], "court": p["court"]}
     return out
+
+
+def fill_hidden(players, ids=PLAYER_IDS, max_gap=None):
+    """Per-frame players with everyone who is out of view put back where they were last (or next) seen.
+
+    A player missing from a frame has walked off the edge of the picture (a near player behind the
+    baseline or wide of the sideline) or is hidden behind someone (a far player behind a near one), and is
+    still close to where they were seen: for each gap, the nearer in time of their last and next sighting
+    (a player who walks into view just after the ball came from that side hit it). Filled entries are
+    copies with "hidden": True; gaps longer than max_gap frames (None = any) are left empty.
+    For hit attribution only: stats and drawing use the real boxes.
+    """
+    n = len(players)
+    out = [dict(fp) for fp in players]
+    for pid in ids:
+        seen = [f for f in range(n) if pid in players[f]]
+        if not seen:
+            continue
+        bounds = [(-1, seen[0])] + [(a, b) for a, b in zip(seen, seen[1:]) if b - a > 1] + [(seen[-1], n)]
+        for a, b in bounds:
+            if max_gap is not None and b - a - 1 > max_gap:
+                continue
+            for f in range(a + 1, b):
+                src = a if a >= 0 and (b >= n or f - a <= b - f) else b
+                out[f][pid] = {**players[src][pid], "hidden": True}
+    return out
