@@ -222,21 +222,21 @@ near-side player.
 
 ## Installation
 
-Requires Python 3.10+. Runs on macOS (Apple-silicon GPU is used automatically), Linux and Windows
-(CUDA if available, otherwise CPU).
+Requires Python 3.10+. Runs on Ubuntu (CUDA if available, otherwise CPU) and macOS (the Apple-silicon GPU is
+used automatically).
 
 Uses [uv](https://docs.astral.sh/uv/) for the virtual environment and packages. Install it once:
-`curl -LsSf https://astral.sh/uv/install.sh | sh` (Windows: `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"`).
+`curl -LsSf https://astral.sh/uv/install.sh | sh`.
 
 ```bash
 git clone https://github.com/ArvanJ/Pickleball-Vision.git
 cd Pickleball-Vision
 uv venv .venv --python 3.12        # uv downloads that Python if it isn't installed
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
 uv pip install -r requirements.txt
 ```
 
-Keep the environment at `.venv/`: `training/run_app.sh` runs `.venv/bin/python`.
+No need to activate the environment: prefix commands with `uv run` (as below), which uses `.venv/`.
+Keep it at `.venv/`: `training/run_app.sh` runs `.venv/bin/python`.
 
 YOLO weights (`yolov8m.pt`, `yolov8n-pose.pt`) download automatically on first run (~60 MB). The pickleball detector `models/ball-r1.pt` (22 MB) and the serve / return / third-shot detector `models/openings.pt` (1.5 MB) are in the repo.
 
@@ -251,7 +251,7 @@ ffmpeg -c:v libdav1d -i match.mkv -an -c:v libx264 -crf 20 match.mp4      # or -
 
 **Fixed camera:**
 ```bash
-python app.py data/match.mp4
+uv run python app.py data/match.mp4
 ```
 A window opens and asks for court landmarks one at a time, starting with the four corners. Click each
 one, or press **s** to skip a landmark you can't see (for example a corner off the edge of the frame or
@@ -276,26 +276,26 @@ Landmarks: `far-left`, `far-right`, `near-right`, `near-left`, `near-baseline-ce
 
 **POV camera:**
 ```bash
-python app.py data/my_gopro.mp4 --mode pov
+uv run python app.py data/my_gopro.mp4 --mode pov
 ```
 
 **Analyse a slice of a long video** (recommended: POV clips are often 10–20 minutes):
 ```bash
-python app.py data/my_gopro.mp4 --mode pov --start 120 --max-frames 1800
+uv run python app.py data/my_gopro.mp4 --mode pov --start 120 --max-frames 1800
 ```
 
 **Open the dashboard:**
 ```bash
-streamlit run dashboard.py
+uv run streamlit run dashboard.py
 ```
 
 **Headless / scripted calibration** (all 4 corners visible):
 ```bash
-python app.py data/match.mp4 --corners 412,318,1508,318,1840,1012,80,1012
+uv run python app.py data/match.mp4 --corners 412,318,1508,318,1840,1012,80,1012
 ```
 Or with any 4+ named landmarks, e.g. a floor-level phone that sees only the near half:
 ```bash
-python app.py IMG_1577.MOV --court-points "near-left=1537,1613;near-baseline-center=3330,1613;near-kitchen-left=1642,1398;near-kitchen-center=2354,1404"
+uv run python app.py IMG_1577.MOV --court-points "near-left=1537,1613;near-baseline-center=3330,1613;near-kitchen-left=1642,1398;near-kitchen-center=2354,1404"
 ```
 
 ---
@@ -322,13 +322,13 @@ python app.py IMG_1577.MOV --court-points "near-left=1537,1613;near-baseline-cen
 
 ### `calibrate.py`
 ```bash
-python calibrate.py match.mp4 outputs/match/court.json --frame 300
+uv run python calibrate.py match.mp4 outputs/match/court.json --frame 300
 ```
 Re-do the court calibration on any frame.
 
 ### `demo/build.py`
 ```bash
-python demo/build.py demo/replay.html "outputs/IMG_1577:Fixed · floor phone" "outputs/clip-pov:POV · chest cam"
+uv run python demo/build.py demo/replay.html "outputs/IMG_1577:Fixed · floor phone" "outputs/clip-pov:POV · chest cam"
 ```
 Builds a single self-contained HTML replay from one or more output folders. It shows synced camera and
 court views, a shot timeline, a player table and a shot log. Only detections are embedded, never video
@@ -380,7 +380,7 @@ Court coordinates: `x` runs across the court (0–6.10 m) and `y` along it (0 = 
 
 ## Dashboard
 
-`streamlit run dashboard.py` lists every analysed video in `outputs/` and shows:
+`uv run streamlit run dashboard.py` lists every analysed video in `outputs/` and shows:
 
 - **Headline numbers:** duration, rallies, shots, faults
 - **Annotated replay**
@@ -510,7 +510,7 @@ Because tracking is cached, changing any of these and re-running `app.py` only r
 ## Testing
 
 ```bash
-python tests/test_core.py        # or: python -m pytest tests
+uv run python tests/test_core.py        # or: uv run python -m pytest tests
 node tests/engine_parity.mjs outputs/<run>   # web engine vs Python on a real run
 ```
 
