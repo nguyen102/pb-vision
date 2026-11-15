@@ -233,7 +233,12 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-YOLO weights (`yolov8m.pt`, `yolov8n-pose.pt`) download automatically on first run (~60 MB). The pickleball detector `models/ball-r1.pt` (22 MB) is in the repo.
+YOLO weights (`yolov8m.pt`, `yolov8n-pose.pt`) download automatically on first run (~60 MB). The pickleball detector `models/ball-r1.pt` (22 MB) and the serve / return / third-shot detector `models/openings.pt` (1.5 MB) are in the repo.
+
+**AV1 video** (most YouTube downloads, `.webm` / some `.mkv`): OpenCV often can't decode it. Convert to H.264 first:
+```bash
+ffmpeg -c:v libdav1d -i match.mkv -an -c:v libx264 -crf 20 match.mp4      # or -c:v h264_nvenc on an NVIDIA GPU
+```
 
 ---
 
@@ -245,8 +250,21 @@ python app.py data/match.mp4
 ```
 A window opens and asks for court landmarks one at a time, starting with the four corners. Click each
 one, or press **s** to skip a landmark you can't see (for example a corner off the edge of the frame or
-behind the net). Once at least 4 are placed (not all on one line), press **Enter**. **u** undoes,
-**r** resets and **Esc** aborts. The calibration is saved and reused.
+behind the net). Once at least 4 are placed (not all on one line), press **Enter**: the court lines those
+points imply are drawn in red over the frame. If they sit on the painted lines, press **Enter** again to
+save; any other key goes back to clicking. **u** undoes, **r** resets and **Esc** aborts. The calibration
+is saved and reused.
+
+**What fixed mode reports:** the **serve, return and third shot** of each rally (who hit each one, when),
+found by the learned detector in `models/openings.pt` (rules are the fallback if the file is missing), plus
+player movement stats and heatmaps. Players out of view are assumed to be where they were last seen. A long
+video can run under a watchdog that restarts it if it crashes or stalls:
+```bash
+nohup training/run_app.sh outputs/match data/match.mp4 --no-pose >/dev/null 2>&1 &
+training/run_app.sh --status outputs/match
+```
+To improve the detector on new footage, label rallies with `training/annotate_openings.py`, score with
+`training/eval_openings.py` and retrain with `training/train_openings.py` (`--cv` for held-out scores).
 
 Landmarks: `far-left`, `far-right`, `near-right`, `near-left`, `near-baseline-center`,
 `far-baseline-center`, `near-kitchen-left|center|right`, `far-kitchen-left|center|right`.
