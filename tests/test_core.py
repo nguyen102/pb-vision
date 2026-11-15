@@ -588,18 +588,24 @@ def test_openings_model_decode_and_cross_court_hitters():
     fps, T = 30, 300
     prob = np.zeros((T, len(om.CLASSES)), np.float32)
     prob[:, 0] = 1
-    prob[98:103] = [0.1, 0.9, 0.0, 0.0, 0.0]   # serve from the near side (peaks a few frames wide)
-    prob[138:143] = [0.2, 0.0, 0.0, 0.0, 0.8]  # its return, from the far side
-    prob[118:123] = [0.5, 0.5, 0.0, 0.0, 0.0]  # weaker serve score within 2 s: not a second serve
+    prob[98:103] = [0.1, 0.9, 0, 0, 0, 0, 0]   # serve from the near side (peaks a few frames wide)
+    prob[138:143] = [0.2, 0, 0, 0, 0.8, 0, 0]  # its return, from the far side
+    prob[118:123] = [0.5, 0.5, 0, 0, 0, 0, 0]  # weaker serve score within 2 s: not a second serve
+    prob[178:183] = [0.3, 0, 0, 0, 0, 0.7, 0]  # third shot, near side
     pairs = om.decode(prob, fps)
-    assert pairs == [((100, "near"), (140, "far"))]
+    assert pairs == [((100, "near"), (140, "far"), (180, "near"))]
     pos = {"1": (1.5, 13.6), "2": (4.5, 13.6), "3": (1.5, 0.0), "4": (4.5, 0.0)}
     players = [{pid: _player(*xy) for pid, xy in pos.items()} for _ in range(T)]
     ball = np.full((T, 2), np.nan)
-    # the ball is equally near both far players at the return: the cross-court rule picks P4 for P1's serve
+    # the ball is equally near both far players at the return: the cross-court rule picks P4 for P1's serve;
+    # the third shot goes to the serving-team player nearest the ball (P2)
     ball[100] = players[100]["1"]["bbox"][2:]
+    ball[180] = players[180]["2"]["bbox"][:2]
     shots = om.assign(pairs, players, ball, COURT)
-    assert [(s["role"], s["player"]) for s in shots] == [("serve", "1"), ("return", "4")]
+    assert [(s["role"], s["player"]) for s in shots] == [("serve", "1"), ("return", "4"), ("third", "2")]
+    # no return found: the third shot is looked for 1.8-4 s after the serve
+    prob[138:143] = [1, 0, 0, 0, 0, 0, 0]
+    assert om.decode(prob, fps) == [((100, "near"), None, (180, "near"))]
 
 
 if __name__ == "__main__":

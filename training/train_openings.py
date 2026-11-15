@@ -31,7 +31,8 @@ from pbv.court import Court  # noqa: E402
 from pbv.players import fill_hidden  # noqa: E402
 import eval_openings as EO  # noqa: E402
 
-ROLE_CLASS = {("serve", "near"): 1, ("serve", "far"): 2, ("return", "near"): 3, ("return", "far"): 4}
+ROLE_CLASS = {("serve", "near"): 1, ("serve", "far"): 2, ("return", "near"): 3, ("return", "far"): 4,
+              ("third shot", "near"): 5, ("third shot", "far"): 6}
 
 
 def load_clip(label_dir):
@@ -82,7 +83,7 @@ def windows_and_targets(clip):
         cs = [s["contact"] for s in lab["shots"]]
         wins.append((max(0, min(cs + [k]) - int(3 * fps)), min(T, max(cs) + int(3 * fps))))
         for i, s in enumerate(lab["shots"]):
-            if s["role"] not in ("serve", "return"):
+            if s["role"] not in ("serve", "return", "third shot"):
                 continue
             side = shot_side(clip, lab, i)
             y[max(0, s["contact"] - 2):s["contact"] + 3] = ROLE_CLASS[(s["role"], side)]
@@ -99,7 +100,7 @@ def train(clips, epochs=60, crop=240, batch=32, device="cuda", seed=0):
     n_in = clips[0]["feats"].shape[1]
     model = om.ContactNet(n_in).to(device)
     opt = torch.optim.Adam(model.parameters(), lr=2e-3, weight_decay=1e-4)
-    loss_fn = nn.CrossEntropyLoss(weight=torch.tensor([1.0] + [15.0] * 4, device=device))
+    loss_fn = nn.CrossEntropyLoss(weight=torch.tensor([1.0] + [15.0] * (len(om.CLASSES) - 1), device=device))
     for ep in range(epochs):
         model.train()
         order = rng.permutation(len(items))
@@ -152,7 +153,7 @@ def main():
     print("clips:", ", ".join(f"{c['name']} {c['feats'].shape}" for c in clips), flush=True)
     if args.cv:
         import collections
-        total = {r: collections.Counter() for r in ("serve", "return")}
+        total = {r: collections.Counter() for r in ("serve", "return", "third")}
         tf = tn = 0
         for i, held in enumerate(clips):
             models = [train([c for j, c in enumerate(clips) if j != i], args.epochs, device=device, seed=k)
@@ -164,7 +165,7 @@ def main():
             print(held["name"], {r: f"{per[r]['right']}/{sum(per[r].values())}" for r in total}, f"false {fs}/{n}",
                   flush=True)
         print("TOTAL (held-out)")
-        EO.report({**total, "third": collections.Counter()}, tf, tn, "  ")
+        EO.report(total, tf, tn, "  ")
         return
     models = [train(clips, args.epochs, device=device, seed=k) for k in range(args.ensemble)]
     torch.save({"states": [m.state_dict() for m in models], "n_in": clips[0]["feats"].shape[1], "hidden": 64,

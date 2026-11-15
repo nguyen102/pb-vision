@@ -161,11 +161,11 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
         import torch
         from pbv import openings_model
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        serves, returns = openings_model.detect(openings_model.load(OPENINGS_MODEL, device), ball, detected, players,
-                                                court, fps, data["width"], data["height"], device=device)
+        serves, model_hits = openings_model.detect(openings_model.load(OPENINGS_MODEL, device), ball, detected,
+                                                   players, court, fps, data["width"], data["height"], device=device)
         evs = events.merge_serves(evs, serves, players, court, fps)
-        evs = sorted([e for e in evs if all(abs(e["frame"] - r["frame"]) > 3 or e.get("serve") for r in returns)]
-                     + returns, key=lambda e: (e["frame"], e["type"] != "hit"))
+        evs = sorted([e for e in evs if all(abs(e["frame"] - r["frame"]) > 3 or e.get("serve") for r in model_hits)]
+                     + model_hits, key=lambda e: (e["frame"], e["type"] != "hit"))
     else:
         serves = events.find_serves(ball, players, court, fps, data["width"], detected=detected, offscreen=off)
         # serves find_serves misses (server off screen or without a box, so the ball is never seen in their hand):

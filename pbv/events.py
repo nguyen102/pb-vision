@@ -662,7 +662,7 @@ def classify_shots(events, players, court, fps, rally_gap_s=2.5, drive_speed=10.
             "volley": volley, "speed_kmh": None if speed is None else round(speed * 3.6, 1),
             "hitter": hitter.round(2).tolist(),
             "landing": None if landing is None else landing.round(2).tolist(), "faults": faults,
-            **({"model_return": True} if e.get("model_return") else {}),
+            **{k: True for k in ("model_return", "model_third") if e.get(k)},
         })
         prev = i
     for r in rallies:
@@ -675,7 +675,7 @@ ROLES = ("serve", "return", "third")
 
 
 def opening_shots(shots, rallies, events, players, court, fps, min_gap_s=0.5, max_gap_s=2.5,
-                  unseen_return_s=(1.8, 3.5)):
+                  unseen_return_s=(1.8, 3.5), unseen_model_s=(1.8, 4.0)):
     """Keep only the serve, return and third shot of each served rally -> (shots, rallies, events).
 
     Roles go by side and timing, not by position in the rally, so a spurious hit (a bounce taken for a
@@ -707,8 +707,13 @@ def opening_shots(shots, rallies, events, players, court, fps, min_gap_s=0.5, ma
                     and s["frame"] - srv["frame"] <= hi), None) or first(srv, False)
         if ret is not None:
             kept.append((ret, "return"))
-        third = first(ret, True) if ret is not None else \
-            first(srv, True, unseen_return_s[0] * fps, unseen_return_s[1] * fps)
+        # the learned detector's third shot: after the return, or, with no return found, unseen_model_s after the
+        # serve (openings_model.decode); else the rules below
+        third = next((s for s in shots if s.get("model_third") and s["frame"] < until and (
+            ret["frame"] < s["frame"] <= ret["frame"] + hi if ret is not None
+            else srv["frame"] + unseen_model_s[0] * fps <= s["frame"] <= srv["frame"] + unseen_model_s[1] * fps)),
+            None) or \
+            (first(ret, True) if ret is not None else first(srv, True, unseen_return_s[0] * fps, unseen_return_s[1] * fps))
         if third is not None:
             kept.append((third, "third"))
         n = len(out_rallies) + 1
