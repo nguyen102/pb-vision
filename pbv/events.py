@@ -732,6 +732,17 @@ def opening_shots(shots, rallies, events, players, court, fps, min_gap_s=0.5, ma
     return out_shots, out_rallies, out_events
 
 
+def full_rallies(opening, rallies, fps):
+    """Rallies from opening_shots with their whole length: shots, end and duration_s run to the rally's
+    last detected hit, not just the third shot. -> one rally per detected serve."""
+    out = []
+    for o in opening:
+        full = next(r for r in rallies if r["start"] <= o["start"] <= r["end"])
+        out.append({**o, "end": full["end"], "shots": full["shots"],
+                    "duration_s": round((full["end"] - o["start"]) / fps, 2)})
+    return out
+
+
 def compensate(track, cam_shift):
     """POV: undo the cumulative camera pan so ball positions share one reference view.
 

@@ -15,6 +15,8 @@ Then:  streamlit run dashboard.py
 """
 import argparse
 import json
+import shutil
+import subprocess
 from collections import Counter
 from pathlib import Path
 
@@ -100,11 +102,14 @@ def load_appearance(video, people, start, path):
 
 
 def open_writer(path, fps, size):
-    for codec in ("avc1", "mp4v"):  # avc1 plays in browsers (dashboard); mp4v is the fallback
+    for codec in ("avc1", "mp4v"):  # avc1 if this OpenCV build has it; either way render() re-encodes with ffmpeg
         w = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*codec), fps, size)
         if w.isOpened():
             return w
     raise RuntimeError(f"cannot open video writer for {path}")
+
+
+OPENING_LABELS = {"serve": "serve", "return": "return", "third": "3rd shot"}
 
 
 def render(video, dst, start, players, ball, evs, shots, court, fps):
@@ -119,18 +124,39 @@ def render(video, dst, start, players, ball, evs, shots, court, fps):
         ok, frame = cap.read()
         if not ok:
             break
-        if f in shot_at:
+        if f in shot_at and shot_at[f]["type"] in OPENING_LABELS:  # only serve / return / 3rd shot: no speed, fault or stroke type
             s = shot_at[f]
-            kind = "3rd shot" if s["type"] == "third" else s["type"]
-            label = f"{draw.name(s['player'])} {kind}" + (f" {s['speed_kmh']:.0f} km/h" if s["speed_kmh"] else "")
-            if s["faults"]:
-                label += "  FAULT: " + ", ".join(s["faults"])
+            label = f"{draw.name(s['player'])} {OPENING_LABELS[s['type']]}"
             label_until = f + int(fps * 1.5)
         if f in bounce_at:
             bounces = (bounces + [bounce_at[f]])[-3:]
         trail = ball[max(0, f - 10):f + 1]
         writer.write(draw.annotate(frame, players[f], trail, court, bounces, label if f <= label_until else ""))
     writer.release()
+    to_browser_mp4(dst)
+
+
+# H.264 encoders, fastest first: OpenCV's pip build can't write H.264, so the video is written as mp4v (which
+# browsers won't play) and re-encoded with ffmpeg
+H264 = (["-c:v", "h264_nvenc", "-cq", "26", "-preset", "p4"], ["-c:v", "libx264", "-crf", "23", "-preset", "veryfast"])
+
+
+def to_browser_mp4(path):
+    """Re-encode path in place to H.264 with faststart, so the dashboard can play it (and seek before it has
+    all loaded). Leaves the file as it is, with a warning, if ffmpeg isn't installed or every encoder fails."""
+    path = Path(path)
+    if not shutil.which("ffmpeg"):
+        print(f"warning: ffmpeg not found; {path} stays mp4v, which browsers (the dashboard) can't play")
+        return
+    tmp = path.with_name(path.stem + ".h264.mp4")
+    for enc in H264:
+        cmd = ["ffmpeg", "-y", "-v", "error", "-i", str(path), *enc, "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+               "-an", str(tmp)]
+        if subprocess.run(cmd).returncode == 0:
+            tmp.replace(path)
+            return
+    tmp.unlink(missing_ok=True)
+    print(f"warning: ffmpeg couldn't re-encode {path} to H.264; it stays mp4v, which browsers can't play")
 
 
 def pick_ball(data, court, min_conf=0.15):
@@ -178,12 +204,15 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
         evs = events.infer_returns(evs, ball, players, court, fps)
     shots, rallies = events.classify_shots(evs, players, court, fps, drive_speed=args.drive_speed,
                                            serves_detected=True, offscreen=off)
-    # every hit is found (the third shot's landing and speed depend on what follows), but only the
-    # serve, return and third shot of each rally are reported
+    # every hit is found (the third shot's landing and speed depend on what follows). Shots: only the serve,
+    # return and third shot of each rally are reported. Rallies: every rally with a detected serve, with its
+    # full shot count and length.
     if openings_only:
+        all_rallies = rallies
         shots, rallies, evs = events.opening_shots(shots, rallies, evs, players, court, fps)
+        rallies = events.full_rallies(rallies, all_rallies, fps)
     players = seen
-    return ball, evs, shots, rallies, analytics.player_stats(players, fps)
+    return ball, evs, shots, rallies, analytics.player_stats(players, fps, rallies=rallies, court=court)
 
 
 def analyse_pov(data):
@@ -281,9 +310,15 @@ def main():
         # POV "serves" are just the first hit after a pause (often ball handling), too unreliable to fault.
         add_stroke_form(args.video, shots, players, start, args.pose_model, serve_fault=not pov)
 
+    summary = analytics.shot_stats(shots)
+    if not pov:  # shot types beyond serve / return / third and fault detection aren't reliable yet: not reported
+        for p in summary.values():
+            p.pop("volleys"), p.pop("faults")
+        for s in shots:
+            s.pop("volley"), s.pop("faults")
     stats = {
         "video": str(args.video), "mode": args.mode, "start_s": args.start, "fps": data["fps"], "frames": len(players),
-        "players": player_stats, "shot_summary": analytics.shot_stats(shots),
+        "players": player_stats, "shot_summary": summary,
         "rallies": rallies, "shots": shots, "events": evs,
     }
     (out / "stats.json").write_text(json.dumps(stats, indent=1))

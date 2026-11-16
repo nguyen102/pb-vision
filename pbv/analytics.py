@@ -3,14 +3,26 @@ from collections import Counter
 
 import numpy as np
 
-from .court import Court
+from .court import Court, kitchen_line_zone
 
 # COCO keypoint indices
 L_SHOULDER, R_SHOULDER, L_ELBOW, R_ELBOW, L_WRIST, R_WRIST, L_HIP, R_HIP = 5, 6, 7, 8, 9, 10, 11, 12
 
 
-def player_stats(players, fps, sample_s=0.2, max_speed=8.0):
-    """Distance, speed, kitchen time and side per player id. Tracks shorter than 1 s are noise."""
+def player_stats(players, fps, sample_s=0.2, max_speed=8.0, rallies=None, court=None):
+    """Distance, speed, kitchen time and side per player id. Tracks shorter than 1 s are noise.
+
+    kitchen_pct: time up at the kitchen line (within 3 ft behind it, not inside the kitchen),
+    measured from court's painted kitchen lines (Court.at_kitchen_line), or the nominal 7 ft lines without a court.
+    With rallies, that time during rallies divided by the total time of all rallies (frames start..end), so it
+    ignores time between points; a frame where the player isn't tracked doesn't count. Without rallies, the
+    share of the player's tracked frames.
+    """
+    in_rally = None
+    if rallies is not None:
+        in_rally = np.zeros(len(players), bool)
+        for r in rallies:
+            in_rally[r["start"]:r["end"] + 1] = True
     tracks = {}
     for f, fp in enumerate(players):
         for pid, p in fp.items():
@@ -33,9 +45,20 @@ def player_stats(players, fps, sample_s=0.2, max_speed=8.0):
             "distance_m": round(dist, 1),
             "avg_speed_ms": round(dist / max(float(dt[ok].sum()), 1e-9), 2),
             "max_speed_ms": round(float(v[ok].max()), 2) if ok.any() else 0.0,
-            "kitchen_pct": round(100 * float(np.mean([Court.in_kitchen(p) for p in a[:, 1:]])), 1),
+            "kitchen_pct": round(100 * kitchen_share(a, in_rally, court), 1),
         }
     return stats
+
+
+def kitchen_share(track, in_rally=None, court=None):
+    """track: rows (frame, x, y). Fraction of rally frames spent at the kitchen line (in_rally: per-frame bool
+    mask), or of the track's own frames when there is no mask."""
+    at_line = court.at_kitchen_line if court is not None else kitchen_line_zone
+    kit = np.array([at_line(p) for p in track[:, 1:]], bool)
+    if in_rally is None:
+        return float(kit.mean())
+    total = int(in_rally.sum())
+    return float(in_rally[track[kit, 0].astype(int)].sum() / total) if total else 0.0
 
 
 def shot_stats(shots):

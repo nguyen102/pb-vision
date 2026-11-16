@@ -613,3 +613,57 @@ if __name__ == "__main__":
         if name.startswith("test_"):
             fn()
             print("ok", name)
+
+
+def test_full_rallies_count_every_hit_after_the_opening_shots():
+    fps = 30
+    pos = {"1": (2.0, 13.8), "2": (4.5, 12.5), "3": (2.0, 1.0), "4": (4.5, 1.5)}
+    players = [{pid: _player(*xy) for pid, xy in pos.items()} for _ in range(900)]
+    bpx = lambda x, y: COURT.to_image([[x, y]])[0].tolist()
+    hit = lambda f, pid, **kw: {"frame": f, "type": "hit", "player": pid, "px": [0, 0], **kw}
+    bounce = lambda f, y: {"frame": f, "type": "bounce", "player": None, "px": bpx(3.0, y)}
+    evs = [hit(10, "3"), hit(200, "1", serve=True), bounce(230, 3.0), hit(250, "3"), bounce(280, 11.0),
+           hit(300, "2"), bounce(330, 5.0), hit(360, "4"), hit(400, "1"), hit(600, "1", serve=True),
+           bounce(630, 3.0), hit(650, "3"), hit(680, "4")]
+    shots, rallies = events.classify_shots(evs, players, COURT, fps, serves_detected=True)
+    _, opening, _ = events.opening_shots(shots, rallies, evs, players, COURT, fps)
+    assert [(r["shots"], r["end"]) for r in events.full_rallies(opening, rallies, fps)] == [(5, 400), (3, 680)]
+    assert events.full_rallies(opening, rallies, fps)[0]["duration_s"] == round((400 - 200) / fps, 2)
+
+
+def test_kitchen_pct_is_share_of_total_rally_time_at_the_kitchen_line():
+    fps = 10
+    in_k, out_k = _player(3.0, 4.2), _player(3.0, 1.0)  # far side, 0.4 m behind the kitchen line
+    # 100 frames: at the line for frames 0-39, away after; one rally 20..59 (40 frames): 20 of them at the line
+    frames = [{"1": in_k if f < 40 else out_k} for f in range(100)]
+    st = analytics.player_stats(frames, fps, rallies=[{"start": 20, "end": 59}])["1"]
+    assert st["kitchen_pct"] == 50.0
+    assert analytics.player_stats(frames, fps)["1"]["kitchen_pct"] == 40.0  # no rallies: share of tracked frames
+
+
+def test_at_kitchen_line_is_up_to_3_ft_behind_it_not_inside():
+    from pbv.constants import FT
+    from pbv.court import kitchen_line_zone as at_line
+    line = NET_Y + KITCHEN  # near kitchen line
+    assert not at_line((3.0, line - 0.1))       # inside the kitchen
+    assert not at_line((3.0, line))             # on the line: that's the kitchen
+    assert at_line((3.0, line + 0.5))
+    assert at_line((3.0, NET_Y - KITCHEN - 0.5))  # far side too
+    assert not at_line((3.0, line + 3 * FT + 0.1))  # further back
+    assert not at_line((-0.5, line + 0.5))      # past the sideline
+
+
+def test_kitchen_line_follows_the_clicked_painted_line_not_the_fit():
+    from pbv.constants import FT
+    from pbv.court import LANDMARKS
+    names = list(LANDMARKS)
+    px = COURT.to_image([LANDMARKS[n] for n in names])
+    px[[names.index(n) for n in names if n.startswith("far-kitchen")], 1] -= 4  # far kitchen line painted/clicked off
+    court = Court(px, [LANDMARKS[n] for n in names])
+    far = [court.to_court([p])[0] for n, p in zip(names, px) if n.startswith("far-kitchen")]
+    assert all(abs(p[1] - (NET_Y - KITCHEN)) > 0.02 for p in far)  # the fit doesn't put them at 7 ft
+    for p in far:  # x kept inside the sidelines (the fit can map a sideline click a few cm outside)
+        p = (min(max(p[0], 0.05), COURT_W - 0.05), p[1])
+        assert not court.at_kitchen_line(p)                          # standing on the painted line
+        assert court.at_kitchen_line((p[0], p[1] - 0.05))            # just behind it
+        assert not court.at_kitchen_line((p[0], p[1] - 3 * FT - 0.05))  # past 3 ft from the painted line

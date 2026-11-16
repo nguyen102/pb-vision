@@ -44,8 +44,8 @@ def dataset(out, label):
         for a, b in COURT_LINES_M:
             (x1, y1), (x2, y2) = court.to_image([a, b]).round().tolist()
             lines.append([x1, y1, x2, y2])
-    shots = [{"f": x["frame"] // step, "player": x["player"], "type": x["type"], "volley": x["volley"],
-              "kmh": x["speed_kmh"], "faults": x["faults"], "form": x.get("form")} for x in s["shots"]]
+    shots = [{"f": x["frame"] // step, "player": x["player"], "type": x["type"], "volley": x.get("volley", False),
+              "kmh": x["speed_kmh"], "faults": x.get("faults", []), "form": x.get("form")} for x in s["shots"]]
     seen = sum(b is not None for b in t["ball"])
     return {
         "id": out.name.lower().replace("_", "-"), "label": label, "mode": s["mode"],

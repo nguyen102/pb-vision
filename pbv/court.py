@@ -4,7 +4,7 @@ import json
 import cv2
 import numpy as np
 
-from .constants import COURT_L, COURT_W, KITCHEN, NET_Y
+from .constants import COURT_L, COURT_W, FT, KITCHEN, NET_Y
 
 # Players chase wide balls ~1 m past a sideline but serve and lob-chase up to ~3 m behind a baseline.
 SIDE_MARGIN, END_MARGIN = 1.0, 3.0
@@ -22,6 +22,20 @@ LANDMARKS = {
     "far-kitchen-right": (COURT_W, NET_Y - KITCHEN),
 }
 
+# Kitchen lines as y = a + b * x in court metres, per side; the nominal ones are 7 ft from the net.
+NOMINAL_KITCHEN = {"near": (NET_Y + KITCHEN, 0.0), "far": (NET_Y - KITCHEN, 0.0)}
+
+
+def kitchen_line_zone(p, depth=3 * FT, lines=NOMINAL_KITCHEN):
+    """Up at the net: court point p within depth behind its side's kitchen line, not in the kitchen (the line
+    is the kitchen), between the sidelines. lines: Court.kitchen_lines (the painted lines), else nominal."""
+    if not 0 <= p[0] <= COURT_W:
+        return False
+    side = "far" if p[1] < NET_Y else "near"
+    a, b = lines[side]
+    behind = p[1] - (a + b * p[0]) if side == "near" else (a + b * p[0]) - p[1]
+    return 0 < behind <= depth
+
 
 class Court:
     # shortcut: hand-clicked landmarks; upgrade to a court-keypoint model + RANSAC
@@ -37,6 +51,28 @@ class Court:
             raise ValueError("court points are degenerate (3 or more on one line?)")
         self.H_inv = np.linalg.inv(self.H)
         self.corners_px = self.to_image(CORNERS_M)  # court outline, even if corners are off-screen
+        self.kitchen_lines = self._painted_kitchen_lines()
+
+    def _painted_kitchen_lines(self):
+        """Each kitchen line where the clicked points say it is, mapped through H: a line through the clicked
+        kitchen points (2+), or level through the one clicked point. The homography is a best fit over all the
+        clicks, so it can put a clicked kitchen point several cm off the nominal 7 ft; a foot on the painted
+        line should count as on the line. A side with no kitchen clicks keeps the nominal line."""
+        lines = dict(NOMINAL_KITCHEN)
+        mapped = self.to_court(self.points_px)
+        for side, (y_nominal, _) in NOMINAL_KITCHEN.items():
+            on = np.abs(self.points_m[:, 1] - y_nominal) < 1e-3
+            pts = mapped[on]
+            if len(pts) >= 2 and np.ptp(pts[:, 0]) > 0.5:
+                b, a = np.polyfit(pts[:, 0], pts[:, 1], 1)
+                lines[side] = (float(a), float(b))
+            elif len(pts):
+                lines[side] = (float(pts[:, 1].mean()), 0.0)
+        return lines
+
+    def at_kitchen_line(self, p, depth=3 * FT):
+        """kitchen_line_zone measured from this court's painted kitchen lines."""
+        return kitchen_line_zone(p, depth, self.kitchen_lines)
 
     @classmethod
     def from_landmarks(cls, named_px):

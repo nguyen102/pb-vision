@@ -138,12 +138,12 @@ At every shot by a tracked player:
 ### 📊 Player metrics (fixed)
 - Distance covered (m)
 - Average and top movement speed (m/s)
-- Percentage of time in the kitchen
+- Percentage of rally time up at the kitchen line (within 3 ft behind it, not inside it)
 - Court side
 - Positional **heatmap** per player
 
 ### 🖥️ Outputs and dashboard
-- Annotated video with player boxes and IDs, ball trail, a live mini-court (fixed), and shot/fault labels
+- Annotated video with player boxes and IDs, ball trail, a live mini-court (fixed), and serve / return / 3rd-shot labels
 - `stats.json` with every number above
 - A Streamlit dashboard: replay, player table, shot mix chart, heatmaps, shot log with a fault filter, rally table
 - **Caching.** Tracking (the slow part) is saved to `tracking.json` and reused when only analysis settings change.
@@ -355,18 +355,18 @@ Each run writes to `outputs/<video name>[-pov]/`:
   "video": "...", "mode": "fixed", "start_s": 0, "fps": 30, "frames": 900,
   "players": {                         // fixed: movement metrics; POV: seconds visible
     "3": {"seconds": 28.1, "side": "near", "distance_m": 41.2,
-          "avg_speed_ms": 1.46, "max_speed_ms": 4.9, "kitchen_pct": 37.5}
+          "avg_speed_ms": 1.46, "max_speed_ms": 4.9, "kitchen_pct": 37.5}   // fixed: % of total rally time within 3 ft behind the kitchen line (not inside it)
   },
   "shot_summary": {                    // per player ("me" = you, in POV)
-    "3": {"shots": 9, "volleys": 4, "faults": 1, "n_dink": 5, "n_drive": 2,
+    "3": {"shots": 9, "n_serve": 3, "n_return": 3, "n_third": 3,   // fixed: serve / return / third shot only
           "avg_shot_kmh": 31.4, "max_shot_kmh": 52.0}
   },
-  "rallies": [{"start": 120, "end": 410, "shots": 7, "duration_s": 9.7}],
+  // fixed: every rally with a detected serve; "shots" counts all its hits, not just the three reported below
+  "rallies": [{"start": 120, "end": 410, "shots": 7, "served": true, "duration_s": 9.7}],
   "shots": [{
     "frame": 120, "time_s": 4.0, "player": "3", "rally": 1, "n_in_rally": 1,
-    "type": "serve", "volley": false, "speed_kmh": 38.2,
+    "type": "serve", "speed_kmh": 38.2,
     "hitter": [3.1, 13.2], "landing": [1.9, 2.4],          // court metres (fixed)
-    "faults": [],
     "form": {"arm": "right", "elbow_angle": 142.0,
              "contact_below_waist": true, "overhead": false}
   }],
@@ -382,13 +382,12 @@ Court coordinates: `x` runs across the court (0–6.10 m) and `y` along it (0 = 
 
 `uv run streamlit run dashboard.py` lists every analysed video in `outputs/` and shows:
 
-- **Headline numbers:** duration, rallies, shots, faults
-- **Annotated replay**
-- **Player table:** movement metrics, shot counts by type, volleys, faults, shot speeds
+- **Headline numbers:** duration, rallies, shots
+- **Annotated replay** beside a rally table (#, start, shots, length): click a start time to jump the video to it (1 s before the serve)
+- **Player table:** movement metrics, shot counts by type, shot speeds
 - **Shot mix:** bar chart of shot types per player
 - **Court coverage:** heatmaps (fixed mode)
-- **Shot log:** every shot with timing, type, speed, landing spot, stroke form and faults, filterable to faults only
-- **Rallies:** start, end, shot count, duration
+- **Shot log:** every shot with timing, type, speed, landing spot, stroke form
 
 ---
 
