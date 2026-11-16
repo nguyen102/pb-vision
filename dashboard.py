@@ -35,10 +35,15 @@ video = run / "annotated.mp4"  # frame 0 of the annotated video is frame 0 of th
 # rally table, start time as a link: a plain-text button styled as a hyperlink (a real <a href> would reload the
 # page and the video), in a grid of columns since st.dataframe cells can't run code when clicked
 st.markdown("""<style>
-.st-key-rally-table button {color: #1a73e8; text-decoration: underline; padding: 0; min-height: 0;}
+.st-key-rally-table, .st-key-rally-table [data-testid="stVerticalBlock"] {gap: 0;}
+.st-key-rally-table [data-testid="stHorizontalBlock"] {border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+    padding: 4px 0; align-items: center;}
+.st-key-rally-table [data-testid="stElementContainer"], .st-key-rally-table [data-testid="stMarkdownContainer"],
+.st-key-rally-table [data-testid="stMarkdownContainer"] p {margin: 0; padding: 0; line-height: 1.5;}
+.st-key-rally-table button {color: #1a73e8; text-decoration: underline; padding: 0; min-height: 0; height: auto;
+    line-height: 1.5; font-size: 1rem;}
+.st-key-rally-table button p {font-size: 1rem; line-height: 1.5; margin: 0;}
 .st-key-rally-table button:hover {color: #1558b0;}
-.st-key-rally-table [data-testid="stHorizontalBlock"] {border-bottom: 1px solid rgba(128, 128, 128, 0.2);}
-.st-key-rally-table [data-testid="stMarkdownContainer"] p {margin: 0;}
 </style>""", unsafe_allow_html=True)
 jump = st.session_state.setdefault("jump", {})  # run name -> (rally start in s, clicks)
 
