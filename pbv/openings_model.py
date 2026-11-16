@@ -187,11 +187,12 @@ def assign(pairs, players, ball, court, diag_pen=1.0, baseline_m=1.5):
     return out
 
 
-def detect(models, ball, detected, players, court, fps, width, height, device="cpu", **dec):
+def detect(models, ball, detected, players, court, fps, width, height, device="cpu", feats=None, **dec):
     """Serves, returns and third shots from the trained ensemble -> (serves for events.merge_serves, return and
     third-shot hit events, flagged "model_return" / "model_third").
-    players: with hidden ones filled in."""
-    feats = frame_features(ball, detected, players, court, width, height)
+    players: with hidden ones filled in. feats: frame_features() if already computed."""
+    if feats is None:
+        feats = frame_features(ball, detected, players, court, width, height)
     prob = np.mean([predict(m, feats, device=device) for m in models], 0)
     if prob.shape[1] < len(CLASSES):  # a model trained before third shots were added: no third-shot scores
         prob = np.pad(prob, ((0, 0), (0, len(CLASSES) - prob.shape[1])))

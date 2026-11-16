@@ -30,6 +30,7 @@ from pbv.players import fill_hidden as fill_hidden_players, select_players
 
 PROGRESS_S = 5  # progress bars redraw at most this often, so a run's log stays small
 OPENINGS_MODEL = Path(__file__).parent / "models" / "openings.pt"  # learned serve / return detector
+HITS_MODEL = Path(__file__).parent / "models" / "hits.pt"  # learned hit detector: rally shot counts
 BALL_MODEL = Path(__file__).resolve().parent / "models" / "ball-r1.pt"  # trained by training/ (round 1)
 
 
@@ -182,13 +183,17 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
     evs = events.filter_hits(events.find_events(ball, players), fps,
                              side=lambda e: court.side(players[e["frame"]][e["player"]]["court"]))
     detected = events.real_detections(data["ball"], ball)
-    if OPENINGS_MODEL.exists():
-        # serves and returns from the detector trained on hand labels (training/train_openings.py)
+    feats = None
+    if OPENINGS_MODEL.exists() or HITS_MODEL.exists():
         import torch
         from pbv import openings_model
         device = "cuda" if torch.cuda.is_available() else "cpu"
+        feats = openings_model.frame_features(ball, detected, players, court, data["width"], data["height"])
+    if OPENINGS_MODEL.exists():
+        # serves and returns from the detector trained on hand labels (training/train_openings.py)
         serves, model_hits = openings_model.detect(openings_model.load(OPENINGS_MODEL, device), ball, detected,
-                                                   players, court, fps, data["width"], data["height"], device=device)
+                                                   players, court, fps, data["width"], data["height"], device=device,
+                                                   feats=feats)
         evs = events.merge_serves(evs, serves, players, court, fps)
         evs = sorted([e for e in evs if all(abs(e["frame"] - r["frame"]) > 3 or e.get("serve") for r in model_hits)]
                      + model_hits, key=lambda e: (e["frame"], e["type"] != "hit"))
@@ -211,6 +216,17 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
         all_shots, all_rallies = shots, rallies
         shots, rallies, evs = events.opening_shots(shots, rallies, evs, players, court, fps)
         rallies = events.full_rallies(rallies, all_rallies, fps, shots=all_shots, court=court)
+        if HITS_MODEL.exists():
+            # shot counts from the hit detector trained on hand-marked rallies (training/train_hits.py)
+            from pbv import hits_model
+            models, dec = hits_model.load(HITS_MODEL, device)
+            prob = hits_model.detect(models, None, None, None, None, 0, 0, device, feats=feats)
+            peaks = hits_model.decode(prob, fps, thr=dec.get("thr", 0.5))
+            starts = [r["start"] for r in rallies] + [len(ball)]
+            for i, r in enumerate(rallies):
+                hits = hits_model.rally_hits(r["start"], starts[i + 1], peaks, fps, max_gap_s=dec.get("max_gap_s", 3.0),
+                                             play=prob[:, 3], play_thr=dec.get("play_thr", 0.3))
+                r.update(end=hits[-1], shots=len(hits), duration_s=round((hits[-1] - r["start"]) / fps, 2))
     players = seen
     return ball, evs, shots, rallies, analytics.player_stats(players, fps, rallies=rallies, court=court)
 

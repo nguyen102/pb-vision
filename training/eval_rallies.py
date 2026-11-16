@@ -1,7 +1,9 @@
 """Score rally shot counts against hand counts.
 
 Re-runs the analysis on the labelled clip with the current code and compares each hand-counted rally's
-shot count (serve included) with the reported rally starting within --tol frames of its serve.
+shot count (serve included) with the reported rally starting within --tol frames of its serve. Labels:
+counts.json (counts typed in by hand) and rallies.json (every shot marked, training/annotate_rallies.py),
+whichever the dir has; a rally in both is scored once, from rallies.json.
 
 Usage: python training/eval_rallies.py training/data/rallies-1011 [--run outputs/<clip>] [-v]
 """
@@ -19,6 +21,26 @@ import app  # noqa: E402
 from pbv.court import Court  # noqa: E402
 
 
+def load_labels(d, tol):
+    """-> (meta, [{"serve_frame", "time", "shots"}]) from counts.json and/or rallies.json in dir d."""
+    meta, out = None, []
+    if (d / "rallies.json").exists():
+        doc = json.loads((d / "rallies.json").read_text())
+        meta, fps = doc["meta"], doc["meta"]["fps"]
+        for lab in doc["labels"].values():
+            if lab["kind"] == "rally":
+                f = lab["shots"][0]["contact"]
+                out.append({"serve_frame": f, "time": f"{int(f / fps // 60)}:{f / fps % 60:04.1f}",
+                            "shots": len(lab["shots"])})
+    if (d / "counts.json").exists():
+        doc = json.loads((d / "counts.json").read_text())
+        meta = meta or doc["meta"]
+        out += [c for c in doc["rallies"] if all(abs(c["serve_frame"] - o["serve_frame"]) > tol for o in out)]
+    if meta is None:
+        raise SystemExit(f"no counts.json or rallies.json in {d}")
+    return meta, sorted(out, key=lambda c: c["serve_frame"])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("labels", type=Path, help="dir with counts.json (or the file)")
@@ -26,14 +48,14 @@ def main():
     ap.add_argument("--tol", type=int, default=15, help="frames between labelled and reported serve")
     ap.add_argument("-v", "--verbose", action="store_true", help="list every rally")
     args = ap.parse_args()
-    doc = json.loads((args.labels / "counts.json" if args.labels.is_dir() else args.labels).read_text())
-    run = args.run or Path(doc["meta"]["run"])
+    meta, labels = load_labels(args.labels, args.tol)
+    run = args.run or Path(meta["run"])
     data = json.loads((run / "tracking.json").read_text())
     data.setdefault("ball_offscreen", [False] * len(data["ball"]))
     _, _, _, rallies, _ = app.analyse_fixed(data, Court.load(run / "court.json"), SimpleNamespace(drive_speed=10.0))
 
     truth, got = [], []
-    for lab in doc["rallies"]:
+    for lab in labels:
         r = min(rallies, key=lambda r: abs(r["start"] - lab["serve_frame"]), default=None)
         n = r["shots"] if r is not None and abs(r["start"] - lab["serve_frame"]) <= args.tol else 0
         truth.append(lab["shots"])
