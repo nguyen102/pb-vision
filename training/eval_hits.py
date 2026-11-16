@@ -47,6 +47,10 @@ def score(labels, players, court, evs, tol=8, tol_none=3, same_m=1.2):
         e = min(near, key=lambda e: abs(e["frame"] - c))
         # where the predicted hitter stood at the labelled contact (same frame as the label), if in view then
         at = players[c] if e["player"] in players[c] else players[e["frame"]]
+        if e["player"] not in at:  # an inferred hit (model / infer_returns) whose hitter has no box either frame
+            counts["wrong_player"] += 1
+            rows.append((f, f"P{lab['hitter']}", "wrong_player", f"got P{e['player']} f{e['frame']} (no box)"))
+            continue
         got = at[e["player"]]["court"]
         if np.hypot(*np.subtract(got, lab["court"])) <= same_m:
             out = "right"

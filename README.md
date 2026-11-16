@@ -361,7 +361,7 @@ Each run writes to `outputs/<video name>[-pov]/`:
     "3": {"shots": 9, "n_serve": 3, "n_return": 3, "n_third": 3,   // fixed: serve / return / third shot only
           "avg_shot_kmh": 31.4, "max_shot_kmh": 52.0}
   },
-  // fixed: every rally with a detected serve; "shots" counts all its hits, not just the three reported below
+  // fixed: every rally with a detected serve; "shots" counts all its shots (a run of hits by one side counts once), not just the three reported below
   "rallies": [{"start": 120, "end": 410, "shots": 7, "served": true, "duration_s": 9.7}],
   "shots": [{
     "frame": 120, "time_s": 4.0, "player": "3", "rally": 1, "n_in_rally": 1,

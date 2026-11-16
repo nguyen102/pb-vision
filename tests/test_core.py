@@ -208,8 +208,8 @@ def test_filter_hits_drops_double_detections():
            {"frame": 8, "type": "bounce", "player": None}, {"frame": 20, "type": "hit", "player": "1"},
            {"frame": 35, "type": "hit", "player": "2"}]
     assert [e["frame"] for e in events.filter_hits(evs, fps=30)] == [0, 8, 20, 35]
-    side = {"1": "near", "7": "near", "2": "far"}       # frame 20: near side again 0.67 s later
-    assert [e["frame"] for e in events.filter_hits(evs, 30, side=lambda e: side[e["player"]])] == [0, 8, 35]
+    side = {"1": "near", "7": "near", "2": "far"}       # frame 20: near side again 0.67 s later: it's the shot
+    assert [e["frame"] for e in events.filter_hits(evs, 30, side=lambda e: side[e["player"]])] == [8, 20, 35]
 
 
 def test_pov_shots_rallies_and_net_crossing():
@@ -629,6 +629,9 @@ def test_full_rallies_count_every_hit_after_the_opening_shots():
     _, opening, _ = events.opening_shots(shots, rallies, evs, players, COURT, fps)
     assert [(r["shots"], r["end"]) for r in events.full_rallies(opening, rallies, fps)] == [(5, 400), (3, 680)]
     assert events.full_rallies(opening, rallies, fps)[0]["duration_s"] == round((400 - 200) / fps, 2)
+    # counting sides: rally 2 ends P3 then P4, both far: one shot (the ball can't cross the net in between)
+    full = events.full_rallies(opening, rallies, fps, shots=shots, court=COURT)
+    assert [(r["shots"], r["end"]) for r in full] == [(5, 400), (2, 680)]
 
 
 def test_kitchen_pct_is_share_of_total_rally_time_at_the_kitchen_line():

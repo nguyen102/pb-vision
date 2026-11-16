@@ -144,8 +144,10 @@ def filter_hits(events, fps, min_gap_s=0.35, side=None, same_side_s=1.0, bounce_
 
     - re-detections of one contact: a hit < min_gap_s after the previous kept hit (time only,
       because player IDs churn and one person can show up under two IDs)
-    - with side(event) -> "near"/"far": a hit by the same side < same_side_s after the previous
-      kept hit, since the ball has to cross the net and come back first
+    - with side(event) -> "near"/"far": two hits by the same side < same_side_s apart, since the ball has
+      to cross the net and come back first. The later one is kept: the earlier is usually the ball
+      bouncing, or being handled, before the real contact (hand labels, training/eval_hits.py: keeping
+      the later finds 39/58 real hits instead of 35 and rejects more non-hits)
     Except: two near-side hits bounce_hit_s[0]..[1] s apart are a bounce in front of the player (the
     ball's lowest point on screen, in reach) and then their contact, so the later one is the hit and
     the earlier one becomes a bounce (once: the hit that replaced it isn't replaced in turn). Every
@@ -160,8 +162,11 @@ def filter_hits(events, fps, min_gap_s=0.35, side=None, same_side_s=1.0, bounce_
                     and side(e) == side(last) == "near":
                 last.update(type="bounce", player=None)
                 last, replaced = e, True
-            elif gap < min_gap_s * fps or (side and gap < same_side_s * fps and side(e) == side(last)):
+            elif gap < min_gap_s * fps:
                 continue
+            elif side and gap < same_side_s * fps and side(e) == side(last):
+                out.remove(last)  # same side twice too soon: the later is the shot
+                last, replaced = e, False
             else:
                 last, replaced = e, False
         out.append(e)
@@ -732,14 +737,24 @@ def opening_shots(shots, rallies, events, players, court, fps, min_gap_s=0.5, ma
     return out_shots, out_rallies, out_events
 
 
-def full_rallies(opening, rallies, fps):
-    """Rallies from opening_shots with their whole length: shots, end and duration_s run to the rally's
-    last detected hit, not just the third shot. -> one rally per detected serve."""
+def full_rallies(opening, rallies, fps, shots=None, court=None):
+    """Rallies from opening_shots with their whole length: end and duration_s run to the rally's last
+    detected hit, not just the third shot. -> one rally per detected serve.
+
+    shots: with shots (classify_shots, every hit) and court, a run of consecutive hits by the same side
+    counts as one shot. The ball has to cross the net between shots, so a second hit by the same side is
+    a false hit (the ball bouncing, players knocking it back after the point) or the other side's hit was
+    missed in between; on hand counts of 12 rallies (training/data/rallies-1011) this takes the mean error
+    from 1.8 to 1.3 shots a rally, and the total from 75 to 59 (true: 61). Without shots: every hit.
+    """
     out = []
     for o in opening:
-        full = next(r for r in rallies if r["start"] <= o["start"] <= r["end"])
-        out.append({**o, "end": full["end"], "shots": full["shots"],
-                    "duration_s": round((full["end"] - o["start"]) / fps, 2)})
+        i, full = next((i, r) for i, r in enumerate(rallies, 1) if r["start"] <= o["start"] <= r["end"])
+        n = full["shots"]
+        if shots is not None and court is not None:
+            sides = [court.side(s["hitter"]) for s in shots if s["rally"] == i]
+            n = sum(1 for k, side in enumerate(sides) if k == 0 or side != sides[k - 1])
+        out.append({**o, "end": full["end"], "shots": n, "duration_s": round((full["end"] - o["start"]) / fps, 2)})
     return out
 
 

@@ -208,9 +208,9 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
     # return and third shot of each rally are reported. Rallies: every rally with a detected serve, with its
     # full shot count and length.
     if openings_only:
-        all_rallies = rallies
+        all_shots, all_rallies = shots, rallies
         shots, rallies, evs = events.opening_shots(shots, rallies, evs, players, court, fps)
-        rallies = events.full_rallies(rallies, all_rallies, fps)
+        rallies = events.full_rallies(rallies, all_rallies, fps, shots=all_shots, court=court)
     players = seen
     return ball, evs, shots, rallies, analytics.player_stats(players, fps, rallies=rallies, court=court)
 
