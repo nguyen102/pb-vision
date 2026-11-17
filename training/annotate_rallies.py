@@ -3,7 +3,7 @@ training/eval_rallies.py (rally shot counts).
 
 Like training/annotate_openings.py, but you mark every contact until the point is over, not just the serve,
 return and third shot. For each serve the pipeline detects (random order) it loops the clip from --before s
-before it up to the next detected serve (at most --after s after it; e extends by 5 s), with every
+before it up to the next detected serve (at most --after s, default 30, after it; e extends by 5 s), with every
 player's box and id drawn and the ball circled. Nothing the pipeline detected after the serve is shown, so
 missed hits get labelled too.
 
@@ -73,7 +73,7 @@ def main():
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--n", type=int, default=60, help="rallies to label")
     ap.add_argument("--before", type=float, default=2.0, help="seconds shown before the detected serve")
-    ap.add_argument("--after", type=float, default=15.0, help="at most this many seconds shown after it")
+    ap.add_argument("--after", type=float, default=30.0, help="at most this many seconds shown after it")
     ap.add_argument("--video-start", type=int, default=None,
                     help="video frame of tracking frame 0 (default: the run's --start; 0 for its annotated.mp4)")
     args = ap.parse_args()

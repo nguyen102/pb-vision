@@ -52,7 +52,11 @@ def main():
     run = args.run or Path(meta["run"])
     data = json.loads((run / "tracking.json").read_text())
     data.setdefault("ball_offscreen", [False] * len(data["ball"]))
-    _, _, _, rallies, _ = app.analyse_fixed(data, Court.load(run / "court.json"), SimpleNamespace(drive_speed=10.0))
+    stats = run / "stats.json"  # the video, so a hit model that listens for paddle pops gets the sound
+    video = Path(json.loads(stats.read_text())["video"]) if stats.exists() else None
+    start_s = data.get("params", {}).get("start", 0) / data["fps"]
+    _, _, _, rallies, _ = app.analyse_fixed(data, Court.load(run / "court.json"),
+                                            SimpleNamespace(drive_speed=10.0, video=video, start=start_s))
 
     truth, got = [], []
     for lab in labels:

@@ -17,6 +17,7 @@ N_OUT = len(CLASSES) + 2  # + ball in play / not (the point is over, or not star
 
 
 def load(path, device="cpu"):
+    """-> (ensemble, decode settings, whether its input includes pbv.audio features after the frame features)."""
     import torch
     ck = torch.load(path, map_location=device)
     models = []
@@ -24,7 +25,7 @@ def load(path, device="cpu"):
         m = ContactNet(ck["n_in"], ck.get("hidden", 64), N_OUT).to(device)
         m.load_state_dict(state)
         models.append(m)
-    return models, ck.get("decode", {})
+    return models, ck.get("decode", {}), ck.get("audio", False)
 
 
 def predict(model, feats, chunk=3000, overlap=300, device="cpu"):

@@ -24,7 +24,8 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
-from pbv import analytics, balltrack, draw, events
+from pbv import analytics, audio, balltrack, draw, events
+from pbv.constants import DASHBOARD_KEYFRAME_S
 from pbv.court import Court
 from pbv.players import fill_hidden as fill_hidden_players, select_players
 
@@ -113,13 +114,39 @@ def open_writer(path, fps, size):
 OPENING_LABELS = {"serve": "serve", "return": "return", "third": "3rd shot"}
 
 
-def render(video, dst, start, players, ball, evs, shots, court, fps):
+DASHBOARD_PLAYERS_S = 30  # dashboard.mp4: player boxes and IDs only this long, so you can see who is who
+HIT_MARK_S = 0.4  # dashboard.mp4: how long a hit's ring stays up
+
+
+def hit_spot(f, ball, shot, players, near=6):
+    """Where to draw a hit at frame f: the ball (at f or the nearest frame within near where it's seen), else
+    the top of the hitter's box (shot: the shot at f, if any), else None."""
+    for d in sorted(range(-near, near + 1), key=abs):
+        if 0 <= f + d < len(ball) and not np.isnan(ball[f + d][0]):
+            return ball[f + d][:2]
+    p = players[f].get(shot["player"]) if shot else None
+    return ((p["bbox"][0] + p["bbox"][2]) / 2, p["bbox"][1]) if p else None
+
+
+def render(video, dst, start, players, ball, evs, shots, court, fps, dash_dst=None, hit_frames=()):
+    """annotated video -> dst (boxes and IDs, ball trail, shot labels, mini-court). dash_dst: also the dashboard's
+    video, from the same frames: boxes and IDs for the first DASHBOARD_PLAYERS_S s only, no ball trail or court
+    outline, and a growing ring where each hit in hit_frames happens.
+
+    Both are written to .part files and only replace dst / dash_dst once they're browser-playable H.264, so the
+    dashboard keeps playing the previous videos while a run renders."""
+    part = lambda p: Path(p).with_name(Path(p).stem + ".part.mp4")
     cap = cv2.VideoCapture(str(video))
     cap.set(cv2.CAP_PROP_POS_FRAMES, start)
     size = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    writer = open_writer(dst, fps, size)
+    writer = open_writer(part(dst), fps, size)
+    dash = open_writer(part(dash_dst), fps, size) if dash_dst else None
+    ball = np.asarray(ball, float)
     shot_at = {s["frame"]: s for s in shots}
     bounce_at = {e["frame"]: court.to_court([e["px"]])[0] for e in evs if e["type"] == "bounce"} if court else {}
+    hit_len = max(1, int(HIT_MARK_S * fps))
+    spots = {f: hit_spot(f, ball, shot_at.get(f), players) for f in sorted(set(hit_frames)) if f < len(players)}
+    spots = {f: p for f, p in spots.items() if p is not None}
     label, label_until, bounces = "", -1, []
     for f in tqdm(range(len(players)), desc="rendering", mininterval=PROGRESS_S):
         ok, frame = cap.read()
@@ -131,10 +158,21 @@ def render(video, dst, start, players, ball, evs, shots, court, fps):
             label_until = f + int(fps * 1.5)
         if f in bounce_at:
             bounces = (bounces + [bounce_at[f]])[-3:]
+        text = label if f <= label_until else ""
+        if dash is not None:
+            hits = [(spots[h], f - h, hit_len) for h in range(f - hit_len + 1, f + 1) if h in spots]
+            dash.write(draw.annotate(frame.copy(), players[f], (), court, bounces, text,
+                                     show_players=f < DASHBOARD_PLAYERS_S * fps, show_ball=False, hits=hits,
+                                     show_court=False))
         trail = ball[max(0, f - 10):f + 1]
-        writer.write(draw.annotate(frame, players[f], trail, court, bounces, label if f <= label_until else ""))
+        writer.write(draw.annotate(frame, players[f], trail, court, bounces, text))
     writer.release()
-    to_browser_mp4(dst)
+    to_browser_mp4(part(dst))
+    part(dst).replace(dst)
+    if dash is not None:
+        dash.release()
+        to_browser_mp4(part(dash_dst), keyframe_s=DASHBOARD_KEYFRAME_S)
+        part(dash_dst).replace(dash_dst)
 
 
 # H.264 encoders, fastest first: OpenCV's pip build can't write H.264, so the video is written as mp4v (which
@@ -142,7 +180,7 @@ def render(video, dst, start, players, ball, evs, shots, court, fps):
 H264 = (["-c:v", "h264_nvenc", "-cq", "26", "-preset", "p4"], ["-c:v", "libx264", "-crf", "23", "-preset", "veryfast"])
 
 
-def to_browser_mp4(path):
+def to_browser_mp4(path, keyframe_s=None):
     """Re-encode path in place to H.264 with faststart, so the dashboard can play it (and seek before it has
     all loaded). Leaves the file as it is, with a warning, if ffmpeg isn't installed or every encoder fails."""
     path = Path(path)
@@ -151,8 +189,13 @@ def to_browser_mp4(path):
         return
     tmp = path.with_name(path.stem + ".h264.mp4")
     for enc in H264:
-        cmd = ["ffmpeg", "-y", "-v", "error", "-i", str(path), *enc, "-pix_fmt", "yuv420p", "-movflags", "+faststart",
-               "-an", str(tmp)]
+        # keyframe_s: a keyframe exactly every keyframe_s seconds (more only at scene cuts). -g sets the encoder's
+        # keyframe interval (NVENC makes the forced frames plain I-frames, which players can't seek to, without it)
+        fps = cv2.VideoCapture(str(path)).get(cv2.CAP_PROP_FPS) or 30.0
+        keys = ["-g", str(round(fps * keyframe_s)), "-force_key_frames", f"expr:gte(t,n_forced*{keyframe_s})"] \
+            if keyframe_s else []
+        cmd = ["ffmpeg", "-y", "-v", "error", "-i", str(path), *enc, *keys,
+               "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", str(tmp)]
         if subprocess.run(cmd).returncode == 0:
             tmp.replace(path)
             return
@@ -182,6 +225,7 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
     ball = events.clean_ball(data["ball"], max_jump=0.08 * data["width"], offscreen=off)
     evs = events.filter_hits(events.find_events(ball, players), fps,
                              side=lambda e: court.side(players[e["frame"]][e["player"]]["court"]))
+    ball_hits = [e["frame"] for e in evs if e["type"] == "hit"]  # from the ball track alone: syncs the sound
     detected = events.real_detections(data["ball"], ball)
     feats = None
     if OPENINGS_MODEL.exists() or HITS_MODEL.exists():
@@ -219,14 +263,21 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
         if HITS_MODEL.exists():
             # shot counts from the hit detector trained on hand-marked rallies (training/train_hits.py)
             from pbv import hits_model
-            models, dec = hits_model.load(HITS_MODEL, device)
-            prob = hits_model.detect(models, None, None, None, None, 0, 0, device, feats=feats)
+            models, dec, uses_audio = hits_model.load(HITS_MODEL, device)
+            hit_feats = feats
+            if uses_audio:  # paddle pops (pbv/audio.py); zeros if the video has no sound or isn't given
+                video = getattr(args, "video", None)
+                af = audio.features(video, getattr(args, "start", 0.0), len(ball), fps, ball_hits)[0] if video \
+                    else np.zeros((len(ball), audio.N_FEATS), np.float32)
+                hit_feats = np.concatenate([feats, af], 1)
+            prob = hits_model.detect(models, None, None, None, None, 0, 0, device, feats=hit_feats)
             peaks = hits_model.decode(prob, fps, thr=dec.get("thr", 0.5))
             starts = [r["start"] for r in rallies] + [len(ball)]
             for i, r in enumerate(rallies):
                 hits = hits_model.rally_hits(r["start"], starts[i + 1], peaks, fps, max_gap_s=dec.get("max_gap_s", 3.0),
                                              play=prob[:, 3], play_thr=dec.get("play_thr", 0.3))
-                r.update(end=hits[-1], shots=len(hits), duration_s=round((hits[-1] - r["start"]) / fps, 2))
+                r.update(end=hits[-1], shots=len(hits), duration_s=round((hits[-1] - r["start"]) / fps, 2),
+                         hit_frames=hits)  # for the dashboard video; not written to stats.json
     players = seen
     return ball, evs, shots, rallies, analytics.player_stats(players, fps, rallies=rallies, court=court)
 
@@ -332,6 +383,8 @@ def main():
             p.pop("volleys"), p.pop("faults")
         for s in shots:
             s.pop("volley"), s.pop("faults")
+    # every counted hit, for the dashboard video's hit markers: the hit detector's, else every detected shot
+    hit_frames = [f for r in rallies for f in r.pop("hit_frames", [])] or [s["frame"] for s in shots]
     stats = {
         "video": str(args.video), "mode": args.mode, "start_s": args.start, "fps": data["fps"], "frames": len(players),
         "players": player_stats, "shot_summary": summary,
@@ -342,7 +395,8 @@ def main():
         for pid in player_stats:
             cv2.imwrite(str(out / f"heatmap_P{pid}.png"),
                         draw.heatmap_image([fp[pid]["court"] for fp in players if pid in fp]))
-    render(args.video, out / "annotated.mp4", start, players, ball, evs, shots, court, data["fps"])
+    render(args.video, out / "annotated.mp4", start, players, ball, evs, shots, court, data["fps"],
+           dash_dst=out / "dashboard.mp4", hit_frames=hit_frames)
     print(f"done ({args.mode}): {len(player_stats)} players, {len(rallies)} rallies, {len(shots)} shots -> {out}")
 
 

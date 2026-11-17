@@ -51,19 +51,37 @@ def heatmap_image(positions, scale=25, pad=15):
     return court_lines(img, P)
 
 
-def annotate(frame, frame_players, trail, court, bounces, label=""):
-    """Boxes + IDs, ball trail, court outline + mini-court (fixed mode only), current shot label."""
-    if court is not None:
+def hit_marker(frame, pos, age, duration):
+    """A ring that grows and thins out over duration frames where a hit happened (age: frames since it)."""
+    s = frame.shape[1] / 1280
+    k = age / max(duration, 1)
+    r = int((14 + 26 * k) * s)
+    thick = max(1, int((5 - 3 * k) * s))
+    x, y = map(int, pos)
+    cv2.circle(frame, (x, y), r, (0, 0, 0), thick + 2)
+    cv2.circle(frame, (x, y), r, BALL, thick)
+
+
+def annotate(frame, frame_players, trail, court, bounces, label="", show_players=True, show_ball=True, hits=(),
+             show_court=True):
+    """Boxes + IDs, ball trail, court outline + mini-court (fixed mode only), current shot label.
+    show_players / show_ball / show_court: draw the boxes and IDs / the ball trail / the court outline on the
+    picture. hits: [(pos, age, duration)] hit_marker()s."""
+    if court is not None and show_court:
         cv2.polylines(frame, [court.corners_px.astype(np.int32)], True, (255, 255, 255), 1)
-    for pid, p in frame_players.items():
-        x1, y1, x2, y2 = map(int, p["bbox"])
-        cv2.rectangle(frame, (x1, y1), (x2, y2), color(pid), 2)
-        cv2.putText(frame, name(pid), (x1, y1 - 6), FONT, 0.6, color(pid), 2)
-    pts = [tuple(map(int, p)) for p in trail if not np.isnan(p[0])]
-    for a, b in zip(pts, pts[1:]):
-        cv2.line(frame, a, b, BALL, 2)
-    if pts:
-        cv2.circle(frame, pts[-1], 5, BALL, -1)
+    if show_players:
+        for pid, p in frame_players.items():
+            x1, y1, x2, y2 = map(int, p["bbox"])
+            cv2.rectangle(frame, (x1, y1), (x2, y2), color(pid), 2)
+            cv2.putText(frame, name(pid), (x1, y1 - 6), FONT, 0.6, color(pid), 2)
+    if show_ball:
+        pts = [tuple(map(int, p)) for p in trail if not np.isnan(p[0])]
+        for a, b in zip(pts, pts[1:]):
+            cv2.line(frame, a, b, BALL, 2)
+        if pts:
+            cv2.circle(frame, pts[-1], 5, BALL, -1)
+    for pos, age, duration in hits:
+        hit_marker(frame, pos, age, duration)
 
     if court is not None:
         mini, P = court_canvas(scale=12, pad=8)

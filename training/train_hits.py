@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "training"))
 import app  # noqa: E402
-from pbv import events  # noqa: E402
+from pbv import audio, events  # noqa: E402
 from pbv import hits_model as hm  # noqa: E402
 from pbv.constants import COURT_W, NET_Y  # noqa: E402
 from pbv.court import Court  # noqa: E402
@@ -57,6 +57,21 @@ class Run:
             np.save(cache, self.feats)
         ball = events.clean_ball(data["ball"], max_jump=0.08 * data["width"], offscreen=data["ball_offscreen"])
         self.ball = np.asarray(ball, float)
+        # paddle pops (pbv/audio.py), synced on the ball track's own hits as app.py does; zeros without sound
+        acache = path / "audio_feats.npy"
+        if acache.exists():
+            self.audio = np.load(acache)
+        else:
+            players = fill_hidden(data["players"])
+            hits = [e["frame"] for e in events.filter_hits(
+                events.find_events(ball, players), self.fps,
+                side=lambda e: self.court.side(players[e["frame"]][e["player"]]["court"])) if e["type"] == "hit"]
+            video = json.loads((path / "stats.json").read_text())["video"]
+            start_s = data.get("params", {}).get("start", 0) / self.fps
+            self.audio, off = audio.features(video, start_s, len(self.feats), self.fps, hits)
+            print(f"  {path.name}: " + (f"sound, offset {off:+.2f} s" if off is not None else "no sound"), flush=True)
+            np.save(acache, self.audio)
+        self.has_audio = bool(self.audio[:, -1].any())
         self.net_px = self.court.to_image([[COURT_W / 2, NET_Y]])[0][1]
         _, _, _, rallies, _ = app.analyse_fixed(data, self.court, SimpleNamespace(drive_speed=10.0))
         self.starts = [r["start"] for r in rallies]  # the pipeline's serves
@@ -143,7 +158,7 @@ def targets(run, items):
     return np.stack([y, play], 1)
 
 
-def train(runs, keep, epochs=60, crop=240, batch=32, device="cuda", seed=0, hidden=64, frac=1.0):
+def train(runs, keep, epochs=60, crop=240, batch=32, device="cuda", seed=0, hidden=64, frac=1.0, drop_audio=0.3):
     """keep(run, item) -> whether a labelled rally is trained on."""
     torch.manual_seed(seed)
     rng = np.random.default_rng(seed)
@@ -153,8 +168,9 @@ def train(runs, keep, epochs=60, crop=240, batch=32, device="cuda", seed=0, hidd
         if frac < 1:  # learning curve: a random share of the training rallies
             mine = [it for it in mine if np.random.default_rng(hash(it["win"]) % 2**32).random() < frac]
         y = targets(r, mine)
-        items += [(r.feats, y, *it["win"]) for it in mine]
-    model = hm.ContactNet(runs[0].feats.shape[1], hidden, n_out=hm.N_OUT).to(device)
+        items += [(r.inputs, y, *it["win"], r.has_audio) for it in mine]
+    hm_audio_n = audio.N_FEATS
+    model = hm.ContactNet(runs[0].inputs.shape[1], hidden, n_out=hm.N_OUT).to(device)
     opt = torch.optim.Adam(model.parameters(), lr=2e-3, weight_decay=1e-4)
     w = torch.tensor([1.0, 10.0, 10.0], device=device)
     for _ in range(epochs):
@@ -163,10 +179,14 @@ def train(runs, keep, epochs=60, crop=240, batch=32, device="cuda", seed=0, hidd
         for i in range(0, len(order), batch):
             xs, ys = [], []
             for j in order[i:i + batch]:
-                feats, y, a, z = items[j]
+                feats, y, a, z, has_audio = items[j]
                 lo = rng.integers(max(0, a - crop // 4), max(a - crop // 4, z - crop // 2) + 1)
                 lo = min(max(0, lo), max(0, len(feats) - crop))
-                xs.append(feats[lo:lo + crop])
+                x = feats[lo:lo + crop]
+                if has_audio and rng.random() < drop_audio:  # as if the video had no sound
+                    x = x.copy()
+                    x[:, -hm_audio_n:] = 0
+                xs.append(x)
                 yy = y[lo:lo + crop].copy()
                 yy[:max(0, a - lo)] = -100  # outside the labelled stretch: unknown
                 yy[max(0, z - lo):] = -100
@@ -214,10 +234,13 @@ def main():
     ap.add_argument("--ensemble", type=int, default=3)
     ap.add_argument("--out", type=Path, default=ROOT / "models" / "hits.pt")
     ap.add_argument("-v", "--verbose", action="store_true")
+    ap.add_argument("--audio", choices=["on", "off"], default="on", help="off: no sound features (to compare)")
     ap.add_argument("--dump", type=Path, help="save each fold's held-out scores here (.npz) for diagnosis")
     args = ap.parse_args()
     device = "cuda" if torch.cuda.is_available() else "cpu"
     runs = load_runs(args.labels)
+    for r in runs:  # the model's input: frame features, then the sound's (zeros with --audio off)
+        r.inputs = np.concatenate([r.feats, r.audio if args.audio == "on" else np.zeros_like(r.audio)], 1)
     for r in runs:
         print(f"{r.path.name}: {len(r.full)} full rallies, {len(r.partial)} openings, {len(r.counts)} counts only")
     params = dict(thr=0.4, max_gap_s=3.0, play_thr=0.5)
@@ -231,7 +254,7 @@ def main():
             keep = lambda r, it: (fold.get(id(it), -1) != k and
                                   not any(r is tr and overlap(it["win"], t["win"]) for tr, t in test_wins))
             models = [train(runs, keep, args.epochs, args.crop, device=device, seed=s, hidden=args.hidden, frac=args.frac) for s in range(args.ensemble)]
-            probs = {id(r): np.mean([hm.predict(m, r.feats, device=device) for m in models], 0) for r in runs}
+            probs = {id(r): np.mean([hm.predict(m, r.inputs, device=device) for m in models], 0) for r in runs}
             held += [(k, r, probs[id(r)], it["serve"], it["n"]) for r, it in tests if fold[id(it)] == k]
             if args.dump:
                 dump.update({f"{k}|{r.path}": probs[id(r)] for r in runs})
@@ -259,8 +282,8 @@ def main():
         params = best_params([c[1:] for c in held])
         print("decode settings for the saved model:", params)
     models = [train(runs, lambda r, it: True, args.epochs, args.crop, device=device, seed=s, hidden=args.hidden) for s in range(args.ensemble)]
-    torch.save({"states": [m.state_dict() for m in models], "n_in": runs[0].feats.shape[1], "hidden": args.hidden,
-                "classes": hm.CLASSES, "decode": params}, args.out)
+    torch.save({"states": [m.state_dict() for m in models], "n_in": runs[0].inputs.shape[1], "hidden": args.hidden,
+                "classes": hm.CLASSES, "decode": params, "audio": args.audio == "on"}, args.out)
     print("saved", args.out)
 
 
