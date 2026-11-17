@@ -17,7 +17,8 @@ N_OUT = len(CLASSES) + 2  # + ball in play / not (the point is over, or not star
 
 
 def load(path, device="cpu"):
-    """-> (ensemble, decode settings, whether its input includes pbv.audio features after the frame features)."""
+    """-> (ensemble, decode settings, inputs): inputs says which extra features follow the frame features, in
+    this order: {"formation": serve_formation(), "audio": pbv.audio features}."""
     import torch
     ck = torch.load(path, map_location=device)
     models = []
@@ -25,7 +26,7 @@ def load(path, device="cpu"):
         m = ContactNet(ck["n_in"], ck.get("hidden", 64), N_OUT).to(device)
         m.load_state_dict(state)
         models.append(m)
-    return models, ck.get("decode", {}), ck.get("audio", False)
+    return models, ck.get("decode", {}), {"formation": ck.get("formation", False), "audio": ck.get("audio", False)}
 
 
 def predict(model, feats, chunk=3000, overlap=300, device="cpu"):
@@ -60,10 +61,11 @@ def decode(prob, fps, thr=0.3, nms_s=0.3, smooth=1):
     return sorted(out)
 
 
-def rally_hits(start, until, peaks, fps, serve_s=0.3, max_gap_s=3.0, play=None, play_thr=0.0):
+def rally_hits(start, until, peaks, fps, serve_s=0.3, max_gap_s=3.0, play=None, play_thr=0.0, play_at=0.0):
     """Hit frames of the rally served at frame start (the next serve at until): the serve, then each peak
     after it while the gap to the previous hit is at most max_gap_s and the ball is in play (play: the
-    in-play score per frame, smoothed over the stretch since the last hit)."""
+    in-play score per frame; its mean over the stretch since the last hit must reach play_thr, and its value
+    at the hit itself play_at: after the point, ball handling peaks come with a low in-play score)."""
     hits = [start]
     for f, _, _ in peaks:
         if f <= start + serve_s * fps:
@@ -71,6 +73,8 @@ def rally_hits(start, until, peaks, fps, serve_s=0.3, max_gap_s=3.0, play=None, 
         if f >= until or f - hits[-1] > max_gap_s * fps:
             break
         if play is not None and play_thr > 0 and play[hits[-1]:f + 1].mean() < play_thr:
+            break
+        if play is not None and play_at > 0 and play[f] < play_at:
             break
         hits.append(f)
     return hits
@@ -81,3 +85,30 @@ def detect(models, ball, detected, players, court, width, height, device="cpu", 
     if feats is None:
         feats = frame_features(ball, detected, players, court, width, height)
     return np.mean([predict(m, feats, device=device) for m in models], 0)
+
+
+FORMATION_FEATS = 2
+BASE_M, KITCHEN_M = 1.5, 1.5  # "at the baseline" / "at the kitchen line": within this many metres of it
+
+
+def serve_formation(players, fps, hold_s=1.0):
+    """Per frame -> float32 [T, 2]: whether the players stand as they do before a serve (one team both at their
+    baseline, the other with one player at the kitchen line and one at the baseline), and how long that has held
+    (up to hold_s, as a share of it). Before a serve this holds in ~90% of the labelled rallies; it also comes
+    back once a point is over and players get ready for the next, which tells the in-play score the point ended.
+    players: with hidden ones filled in."""
+    from .constants import COURT_L, KITCHEN, NET_Y
+    kitchen = NET_Y - KITCHEN  # the kitchen line's distance in from a baseline
+    base = lambda d: d <= BASE_M
+    kit = lambda d: abs(d - kitchen) <= KITCHEN_M
+    out = np.zeros((len(players), FORMATION_FEATS), np.float32)
+    run = 0
+    for f, fp in enumerate(players):
+        near = sorted(COURT_L - p["court"][1] for p in fp.values() if p["court"][1] > NET_Y)
+        far = sorted(p["court"][1] for p in fp.values() if p["court"][1] <= NET_Y)
+        ok = len(near) == 2 and len(far) == 2 and (
+            (base(near[0]) and base(near[1]) and base(far[0]) and kit(far[1])) or
+            (base(far[0]) and base(far[1]) and base(near[0]) and kit(near[1])))
+        run = run + 1 if ok else 0
+        out[f] = (float(ok), min(run / (hold_s * fps), 1.0))
+    return out

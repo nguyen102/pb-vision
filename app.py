@@ -128,10 +128,11 @@ def hit_spot(f, ball, shot, players, near=6):
     return ((p["bbox"][0] + p["bbox"][2]) / 2, p["bbox"][1]) if p else None
 
 
-def render(video, dst, start, players, ball, evs, shots, court, fps, dash_dst=None, hit_frames=()):
+def render(video, dst, start, players, ball, evs, shots, court, fps, dash_dst=None, hit_frames=(), dash_sound=None):
     """annotated video -> dst (boxes and IDs, ball trail, shot labels, mini-court). dash_dst: also the dashboard's
     video, from the same frames: boxes and IDs for the first DASHBOARD_PLAYERS_S s only, no ball trail or court
-    outline, and a growing ring where each hit in hit_frames happens.
+    outline, and a growing ring where each hit in hit_frames happens. dash_sound: (video, seconds) for its
+    soundtrack (to_browser_mp4), shifted so the pops play with the picture.
 
     Both are written to .part files and only replace dst / dash_dst once they're browser-playable H.264, so the
     dashboard keeps playing the previous videos while a run renders."""
@@ -171,7 +172,7 @@ def render(video, dst, start, players, ball, evs, shots, court, fps, dash_dst=No
     part(dst).replace(dst)
     if dash is not None:
         dash.release()
-        to_browser_mp4(part(dash_dst), keyframe_s=DASHBOARD_KEYFRAME_S)
+        to_browser_mp4(part(dash_dst), keyframe_s=DASHBOARD_KEYFRAME_S, sound=dash_sound)
         part(dash_dst).replace(dash_dst)
 
 
@@ -180,9 +181,10 @@ def render(video, dst, start, players, ball, evs, shots, court, fps, dash_dst=No
 H264 = (["-c:v", "h264_nvenc", "-cq", "26", "-preset", "p4"], ["-c:v", "libx264", "-crf", "23", "-preset", "veryfast"])
 
 
-def to_browser_mp4(path, keyframe_s=None):
+def to_browser_mp4(path, keyframe_s=None, sound=None):
     """Re-encode path in place to H.264 with faststart, so the dashboard can play it (and seek before it has
-    all loaded). Leaves the file as it is, with a warning, if ffmpeg isn't installed or every encoder fails."""
+    all loaded). Leaves the file as it is, with a warning, if ffmpeg isn't installed or every encoder fails.
+    sound: (video, seconds): add that video's soundtrack from that point on (negative: delayed by that much)."""
     path = Path(path)
     if not shutil.which("ffmpeg"):
         print(f"warning: ffmpeg not found; {path} stays mp4v, which browsers (the dashboard) can't play")
@@ -194,13 +196,31 @@ def to_browser_mp4(path, keyframe_s=None):
         fps = cv2.VideoCapture(str(path)).get(cv2.CAP_PROP_FPS) or 30.0
         keys = ["-g", str(round(fps * keyframe_s)), "-force_key_frames", f"expr:gte(t,n_forced*{keyframe_s})"] \
             if keyframe_s else []
-        cmd = ["ffmpeg", "-y", "-v", "error", "-i", str(path), *enc, *keys,
-               "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", str(tmp)]
+        cmd = ["ffmpeg", "-y", "-v", "error", "-i", str(path), *enc, *keys, "-pix_fmt", "yuv420p", "-an",
+               "-movflags", "+faststart", str(tmp)]
         if subprocess.run(cmd).returncode == 0:
             tmp.replace(path)
+            if sound:
+                mux_sound(path, *sound)
             return
     tmp.unlink(missing_ok=True)
     print(f"warning: ffmpeg couldn't re-encode {path} to H.264; it stays mp4v, which browsers can't play")
+
+
+def mux_sound(path, src, at):
+    """Put src's soundtrack into the video at path (the picture copied as it is): the sound from at seconds on,
+    or delayed by -at if at is negative. It trims the decoded sound, as pbv.audio.load() does, rather than
+    seeking in the file (which can land tens of ms off), so the pops play where the audio features put them."""
+    path = Path(path)
+    tmp = path.with_name(path.stem + ".sound.mp4")
+    shift = f"atrim=start={at:.4f},asetpts=PTS-STARTPTS" if at >= 0 else f"adelay={-at * 1000:.0f}:all=1"
+    cmd = ["ffmpeg", "-y", "-v", "error", "-i", str(path), "-i", str(src), "-map", "0:v:0", "-map", "1:a:0?",
+           "-c:v", "copy", "-af", shift, "-c:a", "aac", "-b:a", "128k", "-shortest", "-movflags", "+faststart", str(tmp)]
+    if subprocess.run(cmd).returncode == 0:
+        tmp.replace(path)
+    else:
+        tmp.unlink(missing_ok=True)
+        print(f"warning: couldn't add the sound to {path}")
 
 
 def pick_ball(data, court, min_conf=0.15):
@@ -263,21 +283,28 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
         if HITS_MODEL.exists():
             # shot counts from the hit detector trained on hand-marked rallies (training/train_hits.py)
             from pbv import hits_model
-            models, dec, uses_audio = hits_model.load(HITS_MODEL, device)
+            models, dec, inputs = hits_model.load(HITS_MODEL, device)
             hit_feats = feats
-            if uses_audio:  # paddle pops (pbv/audio.py); zeros if the video has no sound or isn't given
+            if inputs["formation"]:  # where players stand before a serve
+                hit_feats = np.concatenate([hit_feats, hits_model.serve_formation(players, fps)], 1)
+            af = None
+            if inputs["audio"]:  # paddle pops (pbv/audio.py); zeros if the video has no sound or isn't given
                 video = getattr(args, "video", None)
-                af = audio.features(video, getattr(args, "start", 0.0), len(ball), fps, ball_hits)[0] if video \
-                    else np.zeros((len(ball), audio.N_FEATS), np.float32)
-                hit_feats = np.concatenate([feats, af], 1)
+                af, sound_offset = audio.features(video, getattr(args, "start", 0.0), len(ball), fps, ball_hits) \
+                    if video else (np.zeros((len(ball), audio.N_FEATS), np.float32), None)
+                hit_feats = np.concatenate([hit_feats, af], 1)
+                args.sound_offset = sound_offset  # render() syncs the dashboard video's sound with it
             prob = hits_model.detect(models, None, None, None, None, 0, 0, device, feats=hit_feats)
             peaks = hits_model.decode(prob, fps, thr=dec.get("thr", 0.5))
             starts = [r["start"] for r in rallies] + [len(ball)]
             for i, r in enumerate(rallies):
                 hits = hits_model.rally_hits(r["start"], starts[i + 1], peaks, fps, max_gap_s=dec.get("max_gap_s", 3.0),
-                                             play=prob[:, 3], play_thr=dec.get("play_thr", 0.3))
+                                             play=prob[:, 3], play_thr=dec.get("play_thr", 0.3),
+                                             play_at=dec.get("play_at", 0.0))
+                # the dashboard video's rings: on the paddle pop, when there's a clear one within 0.1 s
+                rings = audio.snap_to_pops(hits, af) if af is not None and af[:, -1].any() else hits
                 r.update(end=hits[-1], shots=len(hits), duration_s=round((hits[-1] - r["start"]) / fps, 2),
-                         hit_frames=hits)  # for the dashboard video; not written to stats.json
+                         hit_frames=rings)  # for the dashboard video; not written to stats.json
     players = seen
     return ball, evs, shots, rallies, analytics.player_stats(players, fps, rallies=rallies, court=court)
 
@@ -396,7 +423,10 @@ def main():
             cv2.imwrite(str(out / f"heatmap_P{pid}.png"),
                         draw.heatmap_image([fp[pid]["court"] for fp in players if pid in fp]))
     render(args.video, out / "annotated.mp4", start, players, ball, evs, shots, court, data["fps"],
-           dash_dst=out / "dashboard.mp4", hit_frames=hit_frames)
+           dash_dst=out / "dashboard.mp4", hit_frames=hit_frames,
+           # the soundtrack runs sound_offset s late (or early): start it that much later, so pops play with hits
+           dash_sound=(args.video, args.start + args.sound_offset) if getattr(args, "sound_offset", None) is not None
+           else None)
     print(f"done ({args.mode}): {len(player_stats)} players, {len(rallies)} rallies, {len(shots)} shots -> {out}")
 
 

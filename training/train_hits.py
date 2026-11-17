@@ -35,7 +35,8 @@ from pbv.court import Court  # noqa: E402
 from pbv.players import fill_hidden  # noqa: E402
 
 PREFIXES = (("serve",), ("serve", "return"), ("serve", "return", "third shot"))
-GRID = dict(thr=(0.2, 0.3, 0.4, 0.5, 0.6), max_gap_s=(2.0, 2.5, 3.0, 3.5, 4.0), play_thr=(0.0, 0.3, 0.5, 0.7))
+GRID = dict(thr=(0.4, 0.5, 0.6), max_gap_s=(2.0, 2.5, 3.0, 3.5), play_thr=(0.0, 0.3, 0.5),
+            play_at=(0.0, 0.3, 0.5, 0.7))
 
 
 class Run:
@@ -72,6 +73,7 @@ class Run:
             print(f"  {path.name}: " + (f"sound, offset {off:+.2f} s" if off is not None else "no sound"), flush=True)
             np.save(acache, self.audio)
         self.has_audio = bool(self.audio[:, -1].any())
+        self.formation = hm.serve_formation(fill_hidden(data["players"]), self.fps)
         self.net_px = self.court.to_image([[COURT_W / 2, NET_Y]])[0][1]
         _, _, _, rallies, _ = app.analyse_fixed(data, self.court, SimpleNamespace(drive_speed=10.0))
         self.starts = [r["start"] for r in rallies]  # the pipeline's serves
@@ -202,15 +204,26 @@ def train(runs, keep, epochs=60, crop=240, batch=32, device="cuda", seed=0, hidd
     return model
 
 
-def count(run, prob, serve, thr, max_gap_s, play_thr, tol=15):
+_PEAKS = {}
+
+
+def peaks(prob, fps, thr):
+    """hm.decode, cached: the settings search decodes the same scores many times."""
+    key = (id(prob), thr)
+    if key not in _PEAKS:
+        _PEAKS[key] = hm.decode(prob, fps, thr=thr)
+    return _PEAKS[key]
+
+
+def count(run, prob, serve, thr, max_gap_s, play_thr, play_at=0.0, tol=15):
     """The pipeline's count for the rally served at frame serve (0: no detected serve within tol)."""
     starts = sorted(run.starts)
     i = min(range(len(starts)), key=lambda i: abs(starts[i] - serve), default=None)
     if i is None or abs(starts[i] - serve) > tol:
         return 0
     until = starts[i + 1] if i + 1 < len(starts) else run.T
-    return len(hm.rally_hits(starts[i], until, hm.decode(prob, run.fps, thr=thr), run.fps, max_gap_s=max_gap_s,
-                             play=prob[:, 3], play_thr=play_thr))
+    return len(hm.rally_hits(starts[i], until, peaks(prob, run.fps, thr), run.fps, max_gap_s=max_gap_s,
+                             play=prob[:, 3], play_thr=play_thr, play_at=play_at))
 
 
 def score(cases, params):
@@ -228,22 +241,25 @@ def main():
     ap.add_argument("labels", type=Path, nargs="+")
     ap.add_argument("--cv", type=int, default=0)
     ap.add_argument("--epochs", type=int, default=60)
-    ap.add_argument("--crop", type=int, default=240, help="training crop, frames")
+    ap.add_argument("--crop", type=int, default=360, help="training crop, frames (12 s: better than 8 s held-out)")
     ap.add_argument("--hidden", type=int, default=64)
     ap.add_argument("--frac", type=float, default=1.0, help="share of training rallies used (learning curve)")
     ap.add_argument("--ensemble", type=int, default=3)
     ap.add_argument("--out", type=Path, default=ROOT / "models" / "hits.pt")
     ap.add_argument("-v", "--verbose", action="store_true")
     ap.add_argument("--audio", choices=["on", "off"], default="on", help="off: no sound features (to compare)")
+    ap.add_argument("--formation", choices=["on", "off"], default="off",
+                    help="serve formation features (hits_model.serve_formation); off: without (to compare)")
     ap.add_argument("--dump", type=Path, help="save each fold's held-out scores here (.npz) for diagnosis")
     args = ap.parse_args()
     device = "cuda" if torch.cuda.is_available() else "cpu"
     runs = load_runs(args.labels)
     for r in runs:  # the model's input: frame features, then the sound's (zeros with --audio off)
-        r.inputs = np.concatenate([r.feats, r.audio if args.audio == "on" else np.zeros_like(r.audio)], 1)
+        r.inputs = np.concatenate([r.feats] + ([r.formation] if args.formation == "on" else [])
+                                  + [r.audio if args.audio == "on" else np.zeros_like(r.audio)], 1)
     for r in runs:
         print(f"{r.path.name}: {len(r.full)} full rallies, {len(r.partial)} openings, {len(r.counts)} counts only")
-    params = dict(thr=0.4, max_gap_s=3.0, play_thr=0.5)
+    params = dict(thr=0.6, max_gap_s=3.0, play_thr=0.0, play_at=0.5)
     if args.cv:
         rng = np.random.default_rng(0)
         tests = [(r, it) for r in runs for it in r.full + r.counts]
@@ -283,7 +299,8 @@ def main():
         print("decode settings for the saved model:", params)
     models = [train(runs, lambda r, it: True, args.epochs, args.crop, device=device, seed=s, hidden=args.hidden) for s in range(args.ensemble)]
     torch.save({"states": [m.state_dict() for m in models], "n_in": runs[0].inputs.shape[1], "hidden": args.hidden,
-                "classes": hm.CLASSES, "decode": params, "audio": args.audio == "on"}, args.out)
+                "classes": hm.CLASSES, "decode": params, "audio": args.audio == "on",
+                "formation": args.formation == "on"}, args.out)
     print("saved", args.out)
 
 

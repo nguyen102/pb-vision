@@ -32,7 +32,10 @@ def load(video, start_s=0.0):
                             "-of", "csv=p=0", str(video)], capture_output=True, text=True)
     if not probe.stdout.strip():
         return None
-    out = subprocess.run(["ffmpeg", "-v", "error", "-ss", str(start_s), "-i", str(video), "-vn", "-ac", "1",
+    # trim the decoded sound rather than seek (-ss) in the file: seeking can land tens of ms off, and
+    # app.mux_sound() trims the same way, so the dashboard video's pops land where these features put them
+    trim = ["-af", f"atrim=start={start_s},asetpts=PTS-STARTPTS"] if start_s > 0 else []
+    out = subprocess.run(["ffmpeg", "-v", "error", "-i", str(video), "-vn", *trim, "-ac", "1",
                           "-ar", str(SR), "-f", "f32le", "-"], capture_output=True)
     x = np.frombuffer(out.stdout, np.float32)
     return x if len(x) > SR else None
@@ -95,3 +98,16 @@ def features(video, start_s, n_frames, fps, hit_frames):
     level, onset = onsets(x)
     off = estimate_offset(onset, hit_frames, fps) if len(hit_frames) else 0.0
     return frame_features(level, onset, n_frames, fps, off), off
+
+
+def snap_to_pops(frames, feats, near=3, min_pop=0.5):
+    """Move each hit frame to the frame within near of it with the strongest high-band pop (feats: from
+    frame_features(), already in sync with the picture), if that pop reaches min_pop; else leave it. Used for the
+    dashboard video's hit rings, so a ring shows up with the pop you hear."""
+    hi = feats[:, len(BANDS) - 1]
+    out = []
+    for f in frames:
+        a, z = max(0, f - near), min(len(hi), f + near + 1)
+        k = a + int(np.argmax(hi[a:z])) if z > a else f
+        out.append(k if z > a and hi[k] >= min_pop else f)
+    return out
