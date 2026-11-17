@@ -11,7 +11,7 @@ Find the frame where the paddle meets the ball, then press the hitter's id on th
 The hitter's box and court position are saved too, so labels still score after a re-track renumbers ids.
 Labels are saved after every hit to <out>/hits.json.
 
-Usage: python training/annotate_hits.py outputs/10-11-BBB-mb-tim-cut ~/yt-vids/10-11-BBB-mb-tim-cut.mkv \
+Usage: python training/annotate_hits.py outputs/10-11-BBB-mb-tim-cut /mnt/d/Videos/PB/BBB-Games/10-11-BBB-mb-tim-cut.mkv \
            --out training/data/hits-1011 [--n 150]
 """
 import argparse

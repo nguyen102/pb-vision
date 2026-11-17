@@ -7,7 +7,7 @@ so a full-frame pass plus a full-res crop around the predicted ball). Frames tha
 Long videos: --window 180 --every 600 scans the first 3 minutes of every 10 (decoding the rest is cheap).
 Self-training: pass a trained model as --teacher (and a new --name) to relabel with the better detector.
 
-Usage: python training/scan.py ~/yt-vids/match.mp4 [--teacher yolov8m.pt --imgsz 1920 --name match-r0]
+Usage: python training/scan.py /mnt/d/Videos/PB/BBB-Games/match.mp4 [--teacher yolov8m.pt --imgsz 1920 --name match-r0]
 """
 import argparse
 import json

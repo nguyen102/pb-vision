@@ -10,7 +10,7 @@
 # changed for STALL_S seconds (default 1800: the clothing-colour pass between tracking and analysis prints nothing
 # for several minutes). app.py can't resume mid-tracking, but tracking.json is cached once tracking finishes, so a
 # restart after that point goes straight to the later stages. Gives up after MAX_RESTARTS (default 3) restarts.
-# Example: nohup training/run_app.sh outputs/10-11-v5 ~/yt-vids/10-11-BBB-mb-tim-cut.mkv --no-pose >/dev/null 2>&1 &
+# Example: nohup training/run_app.sh outputs/10-11-v5 /mnt/d/Videos/PB/BBB-Games/10-11-BBB-mb-tim-cut.mkv --no-pose >/dev/null 2>&1 &
 cd "$(dirname "$0")/.."
 STALL_S=${STALL_S:-1800}
 MAX_RESTARTS=${MAX_RESTARTS:-3}

@@ -8,7 +8,7 @@ Left half of the window is the frame; the right half is a 3x zoom around the mou
 Labels are saved after every frame to <out>/labels.json in the format training/evaluate.py --gt reads
 (frame -> [[x, y, w, h, False]]; a frame with no ball has an empty list).
 
-Usage: python training/annotate.py ~/yt-vids/10-11-BBB-mb-tim-cut.mkv --out training/data/gt-1011 [--n 300]
+Usage: python training/annotate.py /mnt/d/Videos/PB/BBB-Games/10-11-BBB-mb-tim-cut.mkv --out training/data/gt-1011 [--n 300]
 """
 import argparse
 import json

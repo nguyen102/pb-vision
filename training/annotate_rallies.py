@@ -22,7 +22,7 @@ Labels are saved after every rally to <out>/rallies.json, each shot with its con
 court position (so they still score after a re-track renumbers ids). The first three shots have the roles
 serve / return / third shot, as in openings.json, and the rest "shot".
 
-Usage: python training/annotate_rallies.py outputs/10-11-BBB-mb-tim-cut ~/yt-vids/10-11-BBB-mb-tim-cut.mkv \
+Usage: python training/annotate_rallies.py outputs/10-11-BBB-mb-tim-cut /mnt/d/Videos/PB/BBB-Games/10-11-BBB-mb-tim-cut.mkv \
            --out training/data/rallies-1011 [--n 60]
 """
 import argparse

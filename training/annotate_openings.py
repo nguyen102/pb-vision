@@ -17,7 +17,7 @@ If the real serve is before the window (the detected one is late), mark it anywa
 Labels are saved after every rally to <out>/openings.json, with each hitter's box and court position, so
 they still score after a re-track renumbers ids.
 
-Usage: python training/annotate_openings.py outputs/11-11-jon-bel-1 ~/yt-vids/11-11-jon-bel-1.mp4 \
+Usage: python training/annotate_openings.py outputs/11-11-jon-bel-1 /mnt/d/Videos/PB/BBB-Games/11-11-jon-bel-1.mp4 \
            --out training/data/openings-jb [--n 60]
 """
 import argparse

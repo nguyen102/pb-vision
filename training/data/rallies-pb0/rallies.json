@@ -1,7 +1,7 @@
 {
  "meta": {
   "run": "/home/tim/workspace/pb-vision/outputs/10-30-BBB-pool-B-m0",
-  "video": "/home/tim/yt-vids/10-30-BBB-pool-B-m0.mp4",
+  "video": "/mnt/d/Videos/PB/BBB-Games/10-30-BBB-pool-B-m0.mp4",
   "fps": 30.0
  },
  "labels": {
