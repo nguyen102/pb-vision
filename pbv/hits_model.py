@@ -10,7 +10,7 @@ ball handling isn't counted as a shot).
 """
 import numpy as np
 
-from .openings_model import ContactNet, frame_features  # noqa: F401  (re-exported)
+from .openings_model import SLOT_FEATS, ContactNet, frame_features  # noqa: F401  (re-exported)
 
 CLASSES = ("none", "hit-near", "hit-far")
 N_OUT = len(CLASSES) + 2  # + ball in play / not (the point is over, or not started)
@@ -23,7 +23,8 @@ def load(path, device="cpu"):
     ck = torch.load(path, map_location=device)
     models = []
     for state in ck["states"]:
-        m = ContactNet(ck["n_in"], ck.get("hidden", 64), N_OUT).to(device)
+        m = ContactNet(ck["n_in"], ck.get("hidden", 64), N_OUT, gru_layers=ck.get("gru_layers", 1),
+                       dilations=tuple(ck.get("dilations", (1, 2, 4, 8, 16)))).to(device)
         m.load_state_dict(state)
         models.append(m)
     return models, ck.get("decode", {}), {"formation": ck.get("formation", False), "audio": ck.get("audio", False)}
@@ -61,13 +62,16 @@ def decode(prob, fps, thr=0.3, nms_s=0.3, smooth=1):
     return sorted(out)
 
 
-def rally_hits(start, until, peaks, fps, serve_s=0.3, max_gap_s=3.0, play=None, play_thr=0.0, play_at=0.0):
+def rally_hits(start, until, peaks, fps, serve_s=0.3, max_gap_s=3.0, play=None, play_thr=0.0, play_at=0.0,
+               alternate=False, serve_side=None):
     """Hit frames of the rally served at frame start (the next serve at until): the serve, then each peak
     after it while the gap to the previous hit is at most max_gap_s and the ball is in play (play: the
     in-play score per frame; its mean over the stretch since the last hit must reach play_thr, and its value
-    at the hit itself play_at: after the point, ball handling peaks come with a low in-play score)."""
-    hits = [start]
-    for f, _, _ in peaks:
+    at the hit itself play_at: after the point, ball handling peaks come with a low in-play score).
+    alternate: shots alternate sides of the net, so a peak on the same side as the previous hit replaces it (the
+    later of two same-side peaks is kept) instead of adding a shot; serve_side: the serve's side, if known."""
+    hits, sides = [start], [serve_side]
+    for f, side, _ in peaks:
         if f <= start + serve_s * fps:
             continue
         if f >= until or f - hits[-1] > max_gap_s * fps:
@@ -76,7 +80,11 @@ def rally_hits(start, until, peaks, fps, serve_s=0.3, max_gap_s=3.0, play=None, 
             break
         if play is not None and play_at > 0 and play[f] < play_at:
             break
+        if alternate and side == sides[-1] and len(hits) > 1:
+            hits[-1] = f
+            continue
         hits.append(f)
+        sides.append(side)
     return hits
 
 

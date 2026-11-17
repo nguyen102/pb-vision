@@ -67,19 +67,21 @@ def frame_features(ball, detected, players, court, width, height):
 
 
 class ContactNet(nn.Module):
-    def __init__(self, n_in, hidden=64, n_out=len(CLASSES)):
+    def __init__(self, n_in, hidden=64, n_out=len(CLASSES), gru_layers=1, dropout=0.0, dilations=(1, 2, 4, 8, 16)):
         super().__init__()
         self.inp = nn.Conv1d(n_in, hidden, 5, padding=2)
-        self.blocks = nn.ModuleList(nn.Conv1d(hidden, hidden, 3, padding=d, dilation=d) for d in (1, 2, 4, 8, 16))
-        self.gru = nn.GRU(hidden, hidden, batch_first=True, bidirectional=True)
+        self.blocks = nn.ModuleList(nn.Conv1d(hidden, hidden, 3, padding=d, dilation=d) for d in dilations)
+        self.drop = nn.Dropout(dropout)
+        self.gru = nn.GRU(hidden, hidden, num_layers=gru_layers, batch_first=True, bidirectional=True,
+                          dropout=dropout if gru_layers > 1 else 0.0)
         self.out = nn.Linear(2 * hidden, n_out)
 
     def forward(self, x):  # x [B, T, F] -> logits [B, T, C]
         h = torch.relu(self.inp(x.transpose(1, 2)))
         for conv in self.blocks:
-            h = h + torch.relu(conv(h))
+            h = h + self.drop(torch.relu(conv(h)))
         h, _ = self.gru(h.transpose(1, 2))
-        return self.out(h)
+        return self.out(self.drop(h))
 
 
 def predict(model, feats, chunk=3000, overlap=300, device="cpu"):

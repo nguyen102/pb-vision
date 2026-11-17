@@ -300,7 +300,7 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
             for i, r in enumerate(rallies):
                 hits = hits_model.rally_hits(r["start"], starts[i + 1], peaks, fps, max_gap_s=dec.get("max_gap_s", 3.0),
                                              play=prob[:, 3], play_thr=dec.get("play_thr", 0.3),
-                                             play_at=dec.get("play_at", 0.0))
+                                             play_at=dec.get("play_at", 0.0), alternate=dec.get("alternate", False))
                 # the dashboard video's rings: on the paddle pop, when there's a clear one within 0.1 s
                 rings = audio.snap_to_pops(hits, af) if af is not None and af[:, -1].any() else hits
                 r.update(end=hits[-1], shots=len(hits), duration_s=round((hits[-1] - r["start"]) / fps, 2),

@@ -160,7 +160,34 @@ def targets(run, items):
     return np.stack([y, play], 1)
 
 
-def train(runs, keep, epochs=60, crop=240, batch=32, device="cuda", seed=0, hidden=64, frac=1.0, drop_audio=0.3):
+def mirror_index(n_in):
+    """Left-right mirror of the model input (hm.frame_features layout, then formation / audio, which don't flip):
+    -> (column order, columns that become 1 - x where present)."""
+    order = list(range(n_in))
+    flip = [0]  # ball x
+    S = hm.SLOT_FEATS
+    for a, b in ((0, 1), (2, 3)):  # near-left <-> near-right, far-left <-> far-right
+        for j in range(S):
+            order[7 + a * S + j], order[7 + b * S + j] = 7 + b * S + j, 7 + a * S + j
+    for k in range(4):
+        flip += [7 + k * S + 2, 7 + k * S + 4]  # court x, box centre x
+    return np.array(order), flip
+
+
+def mirror(x, order, flip):
+    x = x[:, order].copy()
+    x[:, 4] = -x[:, 4]  # ball dx
+    known = x[:, 2] > 0
+    x[known, 0] = 1 - x[known, 0]
+    S = hm.SLOT_FEATS
+    for c in flip[1:]:
+        present = x[:, 7 + ((c - 7) // S) * S] > 0
+        x[present, c] = 1 - x[present, c]
+    return x
+
+
+def train(runs, keep, epochs=60, crop=240, batch=32, device="cuda", seed=0, hidden=64, frac=1.0, drop_audio=0.3,
+          gru_layers=1, dropout=0.0, dilations=(1, 2, 4, 8, 16), lr=2e-3, flip=0.0):
     """keep(run, item) -> whether a labelled rally is trained on."""
     torch.manual_seed(seed)
     rng = np.random.default_rng(seed)
@@ -172,8 +199,9 @@ def train(runs, keep, epochs=60, crop=240, batch=32, device="cuda", seed=0, hidd
         y = targets(r, mine)
         items += [(r.inputs, y, *it["win"], r.has_audio) for it in mine]
     hm_audio_n = audio.N_FEATS
-    model = hm.ContactNet(runs[0].inputs.shape[1], hidden, n_out=hm.N_OUT).to(device)
-    opt = torch.optim.Adam(model.parameters(), lr=2e-3, weight_decay=1e-4)
+    model = hm.ContactNet(runs[0].inputs.shape[1], hidden, n_out=hm.N_OUT, gru_layers=gru_layers, dropout=dropout,
+                          dilations=dilations).to(device)
+    opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-4)
     w = torch.tensor([1.0, 10.0, 10.0], device=device)
     for _ in range(epochs):
         model.train()
@@ -185,6 +213,8 @@ def train(runs, keep, epochs=60, crop=240, batch=32, device="cuda", seed=0, hidd
                 lo = rng.integers(max(0, a - crop // 4), max(a - crop // 4, z - crop // 2) + 1)
                 lo = min(max(0, lo), max(0, len(feats) - crop))
                 x = feats[lo:lo + crop]
+                if flip and rng.random() < flip:  # the same rally seen in a mirror
+                    x = mirror(x, *mirror_index(x.shape[1]))
                 if has_audio and rng.random() < drop_audio:  # as if the video had no sound
                     x = x.copy()
                     x[:, -hm_audio_n:] = 0
@@ -215,7 +245,7 @@ def peaks(prob, fps, thr):
     return _PEAKS[key]
 
 
-def count(run, prob, serve, thr, max_gap_s, play_thr, play_at=0.0, tol=15):
+def count(run, prob, serve, thr, max_gap_s, play_thr, play_at=0.0, alternate=False, tol=15):
     """The pipeline's count for the rally served at frame serve (0: no detected serve within tol)."""
     starts = sorted(run.starts)
     i = min(range(len(starts)), key=lambda i: abs(starts[i] - serve), default=None)
@@ -223,7 +253,7 @@ def count(run, prob, serve, thr, max_gap_s, play_thr, play_at=0.0, tol=15):
         return 0
     until = starts[i + 1] if i + 1 < len(starts) else run.T
     return len(hm.rally_hits(starts[i], until, peaks(prob, run.fps, thr), run.fps, max_gap_s=max_gap_s,
-                             play=prob[:, 3], play_thr=play_thr, play_at=play_at))
+                             play=prob[:, 3], play_thr=play_thr, play_at=play_at, alternate=alternate))
 
 
 def score(cases, params):
@@ -242,7 +272,15 @@ def main():
     ap.add_argument("--cv", type=int, default=0)
     ap.add_argument("--epochs", type=int, default=100)
     ap.add_argument("--crop", type=int, default=360, help="training crop, frames (12 s: better than 8 s held-out)")
-    ap.add_argument("--hidden", type=int, default=64)
+    ap.add_argument("--hidden", type=int, default=128)
+    ap.add_argument("--gru-layers", type=int, default=2)
+    ap.add_argument("--dropout", type=float, default=0.2)
+    ap.add_argument("--dilations", default="1,2,4,8,16", help="conv blocks' dilations (more: deeper, wider view)")
+    ap.add_argument("--lr", type=float, default=2e-3)
+    ap.add_argument("--flip", type=float, default=0.0, help="share of training crops mirrored left-right")
+    ap.add_argument("--alternate", choices=["search", "off"], default="off",
+                    help="search: also try decoding with shots alternating sides of the net")
+    ap.add_argument("--split-seed", type=int, default=0, help="seed of the --cv fold split (to measure its noise)")
     ap.add_argument("--frac", type=float, default=1.0, help="share of training rallies used (learning curve)")
     ap.add_argument("--ensemble", type=int, default=5)
     ap.add_argument("--out", type=Path, default=ROOT / "models" / "hits.pt")
@@ -254,6 +292,10 @@ def main():
                     help="runs (output dir names) left out of training but still tested (to judge their labels)")
     ap.add_argument("--dump", type=Path, help="save each fold's held-out scores here (.npz) for diagnosis")
     args = ap.parse_args()
+    net = dict(hidden=args.hidden, gru_layers=args.gru_layers, dropout=args.dropout,
+               dilations=tuple(int(d) for d in args.dilations.split(",")), lr=args.lr, flip=args.flip)
+    if args.alternate == "search":
+        GRID["alternate"] = (False, True)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     runs = load_runs(args.labels)
     for r in runs:  # the model's input: frame features, then the sound's (zeros with --audio off)
@@ -263,7 +305,7 @@ def main():
         print(f"{r.path.name}: {len(r.full)} full rallies, {len(r.partial)} openings, {len(r.counts)} counts only")
     params = dict(thr=0.6, max_gap_s=3.0, play_thr=0.0, play_at=0.5)
     if args.cv:
-        rng = np.random.default_rng(0)
+        rng = np.random.default_rng(args.split_seed)
         tests = [(r, it) for r in runs for it in r.full + r.counts]
         fold = {id(it): f for (_, it), f in zip(tests, rng.permutation(len(tests)) % args.cv)}
         held, dump = [], {}  # (fold, run, prob, serve, n)
@@ -271,7 +313,7 @@ def main():
             test_wins = [(r, it) for r, it in tests if fold[id(it)] == k and "win" in it]
             keep = lambda r, it: (r.path.name not in args.no_train and fold.get(id(it), -1) != k and
                                   not any(r is tr and overlap(it["win"], t["win"]) for tr, t in test_wins))
-            models = [train(runs, keep, args.epochs, args.crop, device=device, seed=s, hidden=args.hidden, frac=args.frac) for s in range(args.ensemble)]
+            models = [train(runs, keep, args.epochs, args.crop, device=device, seed=s, frac=args.frac, **net) for s in range(args.ensemble)]
             probs = {id(r): np.mean([hm.predict(m, r.inputs, device=device) for m in models], 0) for r in runs}
             held += [(k, r, probs[id(r)], it["serve"], it["n"]) for r, it in tests if fold[id(it)] == k]
             if args.dump:
@@ -299,8 +341,9 @@ def main():
         print(f"HELD-OUT: exact {exact}/{N} ({exact / N:.0%})  within 1 {close}/{N}  mean abs error {err / N:.2f}")
         params = best_params([c[1:] for c in held])
         print("decode settings for the saved model:", params)
-    models = [train(runs, lambda r, it: r.path.name not in args.no_train, args.epochs, args.crop, device=device, seed=s, hidden=args.hidden) for s in range(args.ensemble)]
+    models = [train(runs, lambda r, it: r.path.name not in args.no_train, args.epochs, args.crop, device=device, seed=s, **net) for s in range(args.ensemble)]
     torch.save({"states": [m.state_dict() for m in models], "n_in": runs[0].inputs.shape[1], "hidden": args.hidden,
+                "gru_layers": args.gru_layers, "dilations": list(net["dilations"]),
                 "classes": hm.CLASSES, "decode": params, "audio": args.audio == "on",
                 "formation": args.formation == "on"}, args.out)
     print("saved", args.out)
