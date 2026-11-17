@@ -240,16 +240,18 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("labels", type=Path, nargs="+")
     ap.add_argument("--cv", type=int, default=0)
-    ap.add_argument("--epochs", type=int, default=60)
+    ap.add_argument("--epochs", type=int, default=100)
     ap.add_argument("--crop", type=int, default=360, help="training crop, frames (12 s: better than 8 s held-out)")
     ap.add_argument("--hidden", type=int, default=64)
     ap.add_argument("--frac", type=float, default=1.0, help="share of training rallies used (learning curve)")
-    ap.add_argument("--ensemble", type=int, default=3)
+    ap.add_argument("--ensemble", type=int, default=5)
     ap.add_argument("--out", type=Path, default=ROOT / "models" / "hits.pt")
     ap.add_argument("-v", "--verbose", action="store_true")
     ap.add_argument("--audio", choices=["on", "off"], default="on", help="off: no sound features (to compare)")
-    ap.add_argument("--formation", choices=["on", "off"], default="off",
+    ap.add_argument("--formation", choices=["on", "off"], default="on",
                     help="serve formation features (hits_model.serve_formation); off: without (to compare)")
+    ap.add_argument("--no-train", nargs="*", default=[], metavar="RUN",
+                    help="runs (output dir names) left out of training but still tested (to judge their labels)")
     ap.add_argument("--dump", type=Path, help="save each fold's held-out scores here (.npz) for diagnosis")
     args = ap.parse_args()
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -267,7 +269,7 @@ def main():
         held, dump = [], {}  # (fold, run, prob, serve, n)
         for k in range(args.cv):
             test_wins = [(r, it) for r, it in tests if fold[id(it)] == k and "win" in it]
-            keep = lambda r, it: (fold.get(id(it), -1) != k and
+            keep = lambda r, it: (r.path.name not in args.no_train and fold.get(id(it), -1) != k and
                                   not any(r is tr and overlap(it["win"], t["win"]) for tr, t in test_wins))
             models = [train(runs, keep, args.epochs, args.crop, device=device, seed=s, hidden=args.hidden, frac=args.frac) for s in range(args.ensemble)]
             probs = {id(r): np.mean([hm.predict(m, r.inputs, device=device) for m in models], 0) for r in runs}
@@ -297,7 +299,7 @@ def main():
         print(f"HELD-OUT: exact {exact}/{N} ({exact / N:.0%})  within 1 {close}/{N}  mean abs error {err / N:.2f}")
         params = best_params([c[1:] for c in held])
         print("decode settings for the saved model:", params)
-    models = [train(runs, lambda r, it: True, args.epochs, args.crop, device=device, seed=s, hidden=args.hidden) for s in range(args.ensemble)]
+    models = [train(runs, lambda r, it: r.path.name not in args.no_train, args.epochs, args.crop, device=device, seed=s, hidden=args.hidden) for s in range(args.ensemble)]
     torch.save({"states": [m.state_dict() for m in models], "n_in": runs[0].inputs.shape[1], "hidden": args.hidden,
                 "classes": hm.CLASSES, "decode": params, "audio": args.audio == "on",
                 "formation": args.formation == "on"}, args.out)
