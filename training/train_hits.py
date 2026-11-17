@@ -74,8 +74,17 @@ class Run:
             np.save(acache, self.audio)
         self.has_audio = bool(self.audio[:, -1].any())
         self.formation = hm.serve_formation(fill_hidden(data["players"]), self.fps)
+        self.pose = None  # player keypoints (training/extract_pose.py), when extracted
+        if (path / "pose.npz").exists():
+            pcache = path / "pose_feats.npy"
+            if pcache.exists():
+                self.pose = np.load(pcache)
+            else:
+                pz = np.load(path / "pose.npz")
+                self.pose = hm.pose_features(pz["kp"], pz["ids"], fill_hidden(data["players"]), self.ball, self.court)
+                np.save(pcache, self.pose)
         self.net_px = self.court.to_image([[COURT_W / 2, NET_Y]])[0][1]
-        _, _, _, rallies, _ = app.analyse_fixed(data, self.court, SimpleNamespace(drive_speed=10.0))
+        _, _, _, rallies, _ = app.analyse_fixed(data, self.court, SimpleNamespace(drive_speed=10.0, pose_cache=path / "pose.npz"))
         self.starts = [r["start"] for r in rallies]  # the pipeline's serves
         self.T = len(self.feats)
         self.full, self.partial, self.counts = [], [], []  # rallies: dicts with window, contacts, sides, n
@@ -290,6 +299,8 @@ def main():
                     help="serve formation features (hits_model.serve_formation); off: without (to compare)")
     ap.add_argument("--no-train", nargs="*", default=[], metavar="RUN",
                     help="runs (output dir names) left out of training but still tested (to judge their labels)")
+    ap.add_argument("--pose", choices=["on", "off"], default="off",
+                    help="player keypoint features (hits_model.pose_features; needs training/extract_pose.py)")
     ap.add_argument("--dump", type=Path, help="save each fold's held-out scores here (.npz) for diagnosis")
     args = ap.parse_args()
     net = dict(hidden=args.hidden, gru_layers=args.gru_layers, dropout=args.dropout,
@@ -299,7 +310,12 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     runs = load_runs(args.labels)
     for r in runs:  # the model's input: frame features, then the sound's (zeros with --audio off)
+        if args.pose == "on" and args.flip:
+            sys.exit("--flip doesn't mirror the pose features yet")
+        if args.pose == "on" and r.pose is None:
+            sys.exit(f"--pose on: no pose.npz in {r.path} (run training/extract_pose.py)")
         r.inputs = np.concatenate([r.feats] + ([r.formation] if args.formation == "on" else [])
+                                  + ([r.pose] if args.pose == "on" else [])
                                   + [r.audio if args.audio == "on" else np.zeros_like(r.audio)], 1)
     for r in runs:
         print(f"{r.path.name}: {len(r.full)} full rallies, {len(r.partial)} openings, {len(r.counts)} counts only")
@@ -345,7 +361,7 @@ def main():
     torch.save({"states": [m.state_dict() for m in models], "n_in": runs[0].inputs.shape[1], "hidden": args.hidden,
                 "gru_layers": args.gru_layers, "dilations": list(net["dilations"]),
                 "classes": hm.CLASSES, "decode": params, "audio": args.audio == "on",
-                "formation": args.formation == "on"}, args.out)
+                "formation": args.formation == "on", "pose": args.pose == "on"}, args.out)
     print("saved", args.out)
 
 

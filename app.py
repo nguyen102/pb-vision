@@ -287,6 +287,8 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
             hit_feats = feats
             if inputs["formation"]:  # where players stand before a serve
                 hit_feats = np.concatenate([hit_feats, hits_model.serve_formation(players, fps)], 1)
+            if inputs["pose"]:  # every player's keypoints, every frame (pbv/pose.py; cached as pose.npz)
+                hit_feats = np.concatenate([hit_feats, pose_features(args, data, seen, players, ball, court)], 1)
             af = None
             if inputs["audio"]:  # paddle pops (pbv/audio.py); zeros if the video has no sound or isn't given
                 video = getattr(args, "video", None)
@@ -307,6 +309,20 @@ def analyse_fixed(data, court, args, openings_only=True, fill_hidden=True):
                          hit_frames=rings)  # for the dashboard video; not written to stats.json
     players = seen
     return ball, evs, shots, rallies, analytics.player_stats(players, fps, rallies=rallies, court=court)
+
+
+def pose_features(args, data, seen, players, ball, court):
+    """The hit model's pose inputs: keypoints from pose.npz in the output folder, extracted from the video (a few
+    minutes) when missing; zeros, with a warning, when there's neither (training/train_hits.py's serve search)."""
+    from pbv import hits_model, pose
+    cache, video = getattr(args, "pose_cache", None), getattr(args, "video", None)
+    if cache is None or (video is None and not Path(cache).exists()):
+        print("warning: no video for the hit model's pose features: zeros", flush=True)
+        return np.zeros((len(ball), 4 * hits_model.POSE_FEATS), np.float32)
+    progress = lambda r: tqdm(r, desc="pose", mininterval=PROGRESS_S)
+    kp, ids = pose.load_or_extract(cache, video, seen, data.get("params", {}).get("start", 0),
+                                   getattr(args, "pose_model", "yolov8n-pose.pt"), progress=progress)
+    return hits_model.pose_features(kp, ids, players, ball, court)
 
 
 def analyse_pov(data):
@@ -345,7 +361,8 @@ def main():
                     "which also finds the paddle used to confirm swings)")
     ap.add_argument("--ball-class", type=int, help="class id of the ball (default: from the model's class names; -1 = any)")
     ap.add_argument("--pose-model", default="yolov8n-pose.pt")
-    ap.add_argument("--no-pose", action="store_true")
+    ap.add_argument("--no-pose", action="store_true", help="skip stroke form at each shot (the hit model still uses "
+                    "pose when it was trained with it: pose.npz in the output folder)")
     ap.add_argument("--drive-speed", type=float, default=10.0, help="fixed mode: m/s above which a shot is a drive")
     ap.add_argument("--start", type=float, default=0.0, help="seconds into the video to start at")
     ap.add_argument("--max-frames", type=int)
@@ -399,6 +416,7 @@ def main():
     cache.write_text(json.dumps(data))
     players = data["players"]
 
+    args.pose_cache = out / "pose.npz"  # the hit model's keypoints (analyse_fixed)
     ball, evs, shots, rallies, player_stats = analyse_pov(data) if pov else analyse_fixed(data, court, args)
     if not args.no_pose and shots:
         # POV "serves" are just the first hit after a pause (often ball handling), too unreliable to fault.

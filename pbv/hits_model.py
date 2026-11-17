@@ -18,7 +18,7 @@ N_OUT = len(CLASSES) + 2  # + ball in play / not (the point is over, or not star
 
 def load(path, device="cpu"):
     """-> (ensemble, decode settings, inputs): inputs says which extra features follow the frame features, in
-    this order: {"formation": serve_formation(), "audio": pbv.audio features}."""
+    this order: {"formation": serve_formation(), "pose": pose_features(), "audio": pbv.audio features}."""
     import torch
     ck = torch.load(path, map_location=device)
     models = []
@@ -27,7 +27,8 @@ def load(path, device="cpu"):
                        dilations=tuple(ck.get("dilations", (1, 2, 4, 8, 16)))).to(device)
         m.load_state_dict(state)
         models.append(m)
-    return models, ck.get("decode", {}), {"formation": ck.get("formation", False), "audio": ck.get("audio", False)}
+    return models, ck.get("decode", {}), {"formation": ck.get("formation", False), "pose": ck.get("pose", False),
+                                          "audio": ck.get("audio", False)}
 
 
 def predict(model, feats, chunk=3000, overlap=300, device="cpu"):
@@ -120,3 +121,64 @@ def serve_formation(players, fps, hold_s=1.0):
         run = run + 1 if ok else 0
         out[f] = (float(ok), min(run / (hold_s * fps), 1.0))
     return out
+
+
+POSE_FEATS = 8
+L_SHO, R_SHO, L_WRI, R_WRI = 5, 6, 9, 10  # COCO keypoints
+
+
+def slot_players(fp, court):
+    """The player ids in frame_features' four slots (near-left, near-right, far-left, far-right), None if empty."""
+    from .constants import COURT_W
+    out = []
+    for side in ("near", "far"):
+        mine = sorted(((pid, p) for pid, p in fp.items() if court.side(p["court"]) == side),
+                      key=lambda kv: kv[1]["court"][0])[:2]
+        if len(mine) == 1:
+            mine = [mine[0], None] if mine[0][1]["court"][0] < COURT_W / 2 else [None, mine[0]]
+        mine += [None] * (2 - len(mine))
+        out += [m[0] if m else None for m in mine]
+    return out
+
+
+def pose_features(kp, ids, players, ball, court, min_conf=0.3):
+    """Per frame -> float32 [T, 4 * POSE_FEATS], in frame_features' slot order: for each player, whether the
+    wrists were found, each wrist's place relative to the box (in box heights), the faster wrist's speed, how
+    far the higher wrist is above its shoulder, and the nearer wrist's distance to the ball.
+    kp: [T, P, 17, 3] (training/extract_pose.py); ids: the player id of each P; players: with hidden filled in."""
+    T = min(len(kp), len(players))
+    col = {str(pid): i for i, pid in enumerate(ids)}
+    ball = np.asarray(ball, float)
+    out = np.zeros((len(players), 4, POSE_FEATS), np.float32)
+    prev = {}
+    for f in range(T):
+        fp = players[f]
+        for s, pid in enumerate(slot_players(fp, court)):
+            if pid is None or pid not in col or fp[pid].get("hidden"):
+                continue
+            k = kp[f, col[pid]].astype(float)
+            x1, y1, x2, y2 = fp[pid]["bbox"]
+            h = max(y2 - y1, 1.0)
+            cx = (x1 + x2) / 2
+            wr = [k[j] for j in (R_WRI, L_WRI)]
+            ok = [w[2] >= min_conf for w in wr]
+            if not any(ok):
+                prev.pop(pid, None)
+                continue
+            v = [1.0]
+            for w, o in zip(wr, ok):
+                v += [(w[0] - cx) / h, (w[1] - y1) / h] if o else [0.0, 0.0]
+            speed = 0.0
+            for j, (w, o) in enumerate(zip(wr, ok)):
+                p = prev.get(pid, [None, None])[j]
+                if o and p is not None:
+                    speed = max(speed, np.hypot(w[0] - p[0], w[1] - p[1]) / h * 10)
+            prev[pid] = [w[:2] if o else None for w, o in zip(wr, ok)]
+            above = max(((k[sh][1] - w[1]) / h for w, o, sh in zip(wr, ok, (R_SHO, L_SHO))
+                         if o and k[sh][2] >= min_conf), default=0.0)
+            if not np.isnan(ball[f, 0]):
+                dist = min(min(np.hypot(w[0] - ball[f, 0], w[1] - ball[f, 1]) / h for w, o in zip(wr, ok) if o), 5.0)
+            else:
+                dist = 5.0
+            out[f, s] = v + [min(speed, 3.0), float(np.clip(above, -1, 1)), dist]
+    return out.reshape(len(players), -1)
