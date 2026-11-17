@@ -36,11 +36,16 @@ and the loaders must read them from there with defaults that match older checkpo
 
 ## Data
 
-- Videos live in `~/yt-vids/`. `outputs/` and `training/data/` are gitignored (`models/*.pt` is committed):
-  hand labels are NOT in git, so never delete or overwrite them. Labels removed from training go to
-  `training/data/removed/`, outside the `rallies-*` / `openings-*` globs.
-- Each label file names its run in `meta.run` (an `outputs/<run>` folder). Training skips labels whose run folder is
-  gone (currently `openings-bbb2..7`), so re-run `app.py` on that video to use them again.
+- Videos live in `~/yt-vids/` (copies of most on `/mnt/d/Videos/PB/BBB-Games/`; not all are byte-identical, and labels
+  need the exact file they were made on). Never delete or overwrite hand labels.
+- In git: hand labels (`training/data/{rallies,openings,gt,ids,hits}-*`) and, for each labelled game, the training
+  inputs in `outputs/<run>/` (`tracking.json`, `court.json`, `stats.json`, `audio_feats.npy`, `pose.npz`), so
+  training works from a clone without the videos. `outputs/` is otherwise ignored: when a new game is labelled,
+  `git add -f` those five files. Built datasets (`ds-*`) and scan output (`train-*`, `test-*`) stay out.
+- Labels removed from training go to `training/data/removed/` (not committed), outside the training globs.
+- Each label file names its run in `meta.run` (an `outputs/<run>` folder, absolute path) and its source video in
+  `meta.video` (absolute path in `~/yt-vids/`). Training skips labels whose run folder is gone.
+  `removed/openings-bbb1..7` label `11-11-BBB.mp4`, whose video and runs no longer exist.
 - `train_hits.py` caches per-run features next to the run (`openings_feats.npy`, `audio_feats.npy`,
   `pose_feats.npy`). Delete them after changing the feature code.
 

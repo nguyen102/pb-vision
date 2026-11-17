@@ -1,0 +1,7 @@
+{"run": "outputs/10-11-v5",
+ "people": {"R": "man, red shirt", "K": "kid, cap, beige t-shirt", "G": "bearded man, grey shirt", "L": "man, light-blue shirt"},
+ "note": "boxes are the raw tracker people inside the play area at that frame, sorted left to right (x1); letters a.. in order",
+ "labels": {
+  "700": "RKGL", "2290": "RKL", "3880": "RKGL", "5470": "LKGR", "7060": "LKGR", "8650": "LGR", "10240": "LRG",
+  "11830": "RGL", "13420": "LR?", "15010": "KG", "16600": "GRLK", "18190": "LRG", "19780": "GRK", "21370": "RLG",
+  "22960": "LK", "24550": "GRLK", "26140": "GKL", "27730": "RLK", "29320": "GLRK", "30910": "KLR"}}

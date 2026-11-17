@@ -1,0 +1,9 @@
+{"run": "outputs/11-11-jon-bel-1",
+ "people": {"T": "man, black tank top", "B": "bald man, grey t-shirt", "K": "woman, dark long outfit", "P": "woman, purple shirt"},
+ "note": "boxes are the raw tracker people inside the play area at that frame, sorted left to right (x1); letters a.. in order",
+ "labels": {
+  "300": "TBKP", "861": "TBK", "1422": "TK", "1983": "BKP", "2544": "TKP", "3105": "TBK", "3666": "BTP", "4227": "BTP",
+  "4788": "TB", "5349": "BKP", "5910": "TKP", "6471": "TBKP", "7032": "TB", "7593": "BKP", "8154": "BTKP", "8715": "TBKP",
+  "9276": "TKP", "9837": "TBKP", "10398": "TP", "10959": "BKP", "11520": "TBKP", "12081": "PK", "12642": "TP", "13203": "TBP",
+  "13764": "BKT?", "14325": "TBKP", "14886": "TBP", "15447": "TKP", "16008": "TB", "16569": "KTBP", "17130": "TBPK", "17691": "T",
+  "18252": "TBP", "18813": "BKT", "19374": "TKP", "19935": "KTP", "20496": "PB?", "21057": "BT", "21618": "KT?", "22179": "KPBT"}}

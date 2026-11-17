@@ -1,0 +1,70 @@
+{
+ "meta": {
+  "run": "/home/tim/workspace/pb-vision/outputs/10-11-BBB-mb-tim-cut",
+  "video": "/home/tim/yt-vids/10-11-BBB-mb-tim-cut.mkv",
+  "fps": 30.0,
+  "note": "true shot count (serve included) of the first 12 served rallies, counted by hand from the video"
+ },
+ "rallies": [
+  {
+   "serve_frame": 239,
+   "time": "0:08.0",
+   "shots": 3
+  },
+  {
+   "serve_frame": 599,
+   "time": "0:20.0",
+   "shots": 6
+  },
+  {
+   "serve_frame": 1276,
+   "time": "0:42.5",
+   "shots": 6
+  },
+  {
+   "serve_frame": 1651,
+   "time": "0:55.0",
+   "shots": 5
+  },
+  {
+   "serve_frame": 2570,
+   "time": "1:25.7",
+   "shots": 5
+  },
+  {
+   "serve_frame": 2900,
+   "time": "1:36.7",
+   "shots": 5
+  },
+  {
+   "serve_frame": 3288,
+   "time": "1:49.6",
+   "shots": 6
+  },
+  {
+   "serve_frame": 3904,
+   "time": "2:10.1",
+   "shots": 2
+  },
+  {
+   "serve_frame": 4212,
+   "time": "2:20.4",
+   "shots": 6
+  },
+  {
+   "serve_frame": 4683,
+   "time": "2:36.1",
+   "shots": 4
+  },
+  {
+   "serve_frame": 5160,
+   "time": "2:52.0",
+   "shots": 8
+  },
+  {
+   "serve_frame": 6225,
+   "time": "3:27.5",
+   "shots": 5
+  }
+ ]
+}

@@ -3,7 +3,7 @@ __pycache__/
 .DS_Store
 outputs/
 PICKLEBALLPOV/
-data/
+/data/
 *.pt
 *.mp4
 *.MP4
@@ -13,8 +13,16 @@ demo/replay.html
 .claude/
 docs/test-clip.mp4
 brag-output*/
-training/data/
+# hand labels are committed (small JSON); built datasets and scan output aren't
+training/data/*
+!training/data/rallies-*/
+!training/data/openings-*/
+!training/data/gt-*/
+!training/data/ids-*/
+!training/data/hits-*/
 training/runs/
 training/*.log
 training/logs/
 !models/*.pt
+# outputs/ stays ignored; a labelled game's training inputs are force-added (see CLAUDE.md):
+#   git add -f outputs/<run>/{tracking.json,court.json,stats.json,audio_feats.npy,pose.npz}
