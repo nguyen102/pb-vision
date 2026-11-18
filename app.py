@@ -412,7 +412,12 @@ def main():
         data = {**track(args.video, court, start, args), "params": params}
     if not pov:  # cheap, so always re-run: picks the 4 players and gives each a stable id
         load_appearance(args.video, data["people"], start, out / "appearance.npy")
+        before = data.get("players")
         data["players"] = select_players(data["people"], data["fps"])
+        if before:  # pose.npz holds keypoints per player id: follow the boxes to their new ids
+            from pbv import pose
+            if pose.remap(out / "pose.npz", before, data["players"]) > 0.01:
+                (out / "pose.npz").unlink()  # many boxes never had keypoints: extract them again
         for fp in data["people"]:  # descriptors live in appearance.npy, not the JSON cache
             for p in fp:
                 p.pop("look", None)

@@ -26,6 +26,11 @@ long jobs run under the watchdog scripts in `training/` (`run_app.sh`, `run_trai
   slots) and `ContactNet` (temporal convs + bidirectional GRU), shared with the hit model.
 - `pbv/hits_model.py` (`models/hits.pt`): rally shot counter. Inputs in this order: frame features, serve formation,
   pose features, audio (audio must stay last: training zeroes its columns). `rally_hits` turns hit peaks into a count.
+- `pbv/players.py`: picks the four players and their ids P1–P4 for the whole clip (module docstring has the
+  steps): teams locked to their end until they change ends, clothes and apparent height per player and end,
+  partners told apart over whole stretches. `app.py` re-runs it every time and remaps `pose.npz` (keypoints are
+  stored per id) when ids move. Measure changes with `training/eval_ids.py training/data/ids-<x>/labels.json`
+  (jb, lvj, lvc: 373 labelled boxes) before adopting them.
 - `pbv/audio.py`: paddle-pop features; `pbv/pose.py`: per-frame keypoints of every player (cached as
   `outputs/<run>/pose.npz`, a few minutes per video on first run).
 - `training/`: labelling tools (`annotate_*.py`), trainers (`train_hits.py`, `train_openings.py`, `train.py` for the

@@ -70,6 +70,40 @@ def keypoints(video, players, start=0, model="yolov8n-pose.pt", batch=64, progre
     return kp, np.array(ids)
 
 
+def remap(path, old, new):
+    """Keep the pose cache at path in step with new player ids: the keypoints were found for boxes, and old / new
+    are the same boxes under (possibly) different ids (pbv.players.select_players re-run). Each new player's
+    keypoints are those of the old player with the same box in that frame.
+    -> share of new boxes with no keypoints (they had no id before); the cache is rewritten when anything moved."""
+    from pathlib import Path
+    path = Path(path)
+    if not path.exists():
+        return 0.0
+    z = np.load(path)
+    kp, ids = z["kp"], [str(i) for i in z["ids"]]
+    if len(kp) != len(new) or len(old) != len(new):
+        return 0.0
+    new_ids = sorted({pid for fp in new for pid in fp}, key=lambda s: (len(s), s))
+    col = {pid: i for i, pid in enumerate(ids)}
+    out = np.zeros((len(new), len(new_ids), 17, 3), kp.dtype)
+    moved = missing = total = 0
+    for f, (fo, fn) in enumerate(zip(old, new)):
+        for j, pid in enumerate(new_ids):
+            if pid not in fn:
+                continue
+            total += 1
+            src = next((q for q, p in fo.items() if q in col and p["bbox"] == fn[pid]["bbox"]), None)
+            if src is None:
+                missing += 1
+                moved += 1
+            else:
+                out[f, j] = kp[f, col[src]]
+                moved += src != pid
+    if moved:
+        np.savez_compressed(path, kp=out, ids=np.array(new_ids))
+    return missing / max(total, 1)
+
+
 def load_or_extract(path, video, players, start=0, model="yolov8n-pose.pt", progress=None):
     """Keypoints cached at path (pose.npz), extracted when missing or for a different number of frames."""
     from pathlib import Path

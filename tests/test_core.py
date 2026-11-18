@@ -427,6 +427,90 @@ def test_reid_keeps_strangers_out_of_a_missing_players_id():
     assert len({pid for fp in out for pid in fp}) == 4
 
 
+def test_player_ids_never_cross_the_net():
+    from pbv.players import select_players
+    fps = 30
+    a, b = _look((0, 0, 220), (40, 40, 40)), _look((220, 220, 220), (220, 0, 0))
+    c, d = _look((0, 200, 0), (0, 200, 200)), _look((200, 100, 0), (255, 255, 255))
+
+    def plan(f):
+        out = [("2", 4.5, 12.0, b), ("7", 2.0, 1.0, c)]
+        if f < 60:  # A (near) walks out of the picture for good after 2 s; far player D is lost too ...
+            out += [("1", 1.5, 12.0, a), ("8", 4.0, 1.0, d)]
+        elif f >= 120:  # ... and comes back 2 s later with a new ByteTrack id, now in colours like A's
+            out.append(("21", 4.0, 1.0, a))
+        return out
+
+    for fixed, crosses in ((False, True), (True, False)):  # the old matcher gave A's id to the far player
+        out = select_players(_walkers(fps, 6, plan), fps, fixed_ends=fixed, use_height=False)
+        id_a = next(pid for pid, p in out[0].items() if p["court"] == [1.5, 12.0])
+        assert any(Court.side(fp[id_a]["court"]) == "far" for fp in out if id_a in fp) == crosses
+
+
+def test_partners_in_the_same_kit_are_told_apart_by_height():
+    from pbv.players import select_players
+    fps = 30
+    kit = _look((40, 40, 40), (30, 30, 30))  # both near players in black
+    far = [("7", 2.0, 1.0, _look((0, 200, 0), (0, 200, 200))), ("8", 4.0, 1.0, _look((200, 100, 0), (255, 255, 255)))]
+
+    def plan(f):
+        if f < 90:            # tall player left, short player right
+            return [("1", 1.5, 12.0, kit, 230), ("2", 4.5, 12.0, kit, 170)] + far
+        if f < 180:           # both out of the picture for 3 s ...
+            return far
+        # ... and back with new ByteTrack ids, having swapped sides
+        return [("21", 1.5, 12.0, kit, 170), ("22", 4.5, 12.0, kit, 230)] + far
+
+    frames = [[{**_person(pid, x, y, h=rest[0] if rest else (200 if y > NET_Y else 60)), "look": look}
+               for pid, x, y, look, *rest in plan(f)] for f in range(10 * fps)]
+    out = select_players(frames, fps)
+    tall = next(pid for pid, p in out[0].items() if p["court"] == [1.5, 12.0])
+    assert out[250][tall]["court"] == [4.5, 12.0]
+
+
+def test_teams_change_ends_and_keep_their_ids():
+    from pbv.players import select_players
+    fps = 10
+    a, b = _look((0, 0, 220), (40, 40, 40)), _look((220, 220, 220), (220, 0, 0))
+    c, d = _look((0, 200, 0), (0, 200, 200)), _look((200, 100, 0), (255, 255, 255))
+    half = 140 * fps  # a game each way round
+
+    def plan(f):
+        if half <= f < half + 20 * fps:
+            return []  # walking round the net, out of the picture
+        near, far = ((a, b), (c, d)) if f < half else ((c, d), (a, b))
+        k = "" if f < half else "x"  # new ByteTrack ids after the change of ends
+        return [(k + "1", 1.5, 12.0, near[0]), (k + "2", 4.5, 12.0, near[1]),
+                (k + "3", 1.5, 1.0, far[0]), (k + "4", 4.5, 1.0, far[1])]
+
+    out = select_players(_walkers(fps, 300, plan), fps)
+    before = {pid: tuple(p["court"]) for pid, p in out[10].items()}
+    after = {pid: tuple(p["court"]) for pid, p in out[-10].items()}
+    assert len(before) == len(after) == 4
+    for pid, (x, y) in before.items():  # everyone is on the other end, at the same x
+        assert after[pid] == (x, 13.0 - y)
+
+
+def test_pose_cache_follows_boxes_to_new_ids(tmp=None):
+    import tempfile
+    from pathlib import Path
+    from pbv import pose
+    box = lambda x: {"bbox": [x, 0, x + 10, 30], "court": [0, 0]}
+    old = [{"1": box(0), "2": box(50)}, {"1": box(1)}]
+    new = [{"1": box(50), "2": box(0)}, {"2": box(1), "3": box(90)}]
+    kp = np.zeros((2, 2, 17, 3), np.float16)
+    kp[0, 0], kp[0, 1], kp[1, 0] = 1, 2, 3
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "pose.npz"
+        np.savez_compressed(path, kp=kp, ids=np.array(["1", "2"]))
+        missing = pose.remap(path, old, new)
+        z = np.load(path)
+        ids = list(z["ids"])
+        assert ids == ["1", "2", "3"] and abs(missing - 1 / 4) < 1e-9
+        assert z["kp"][0, 0, 0, 0] == 2 and z["kp"][0, 1, 0, 0] == 1  # swapped ids, keypoints follow the boxes
+        assert z["kp"][1, 1, 0, 0] == 3 and not z["kp"][1, 2].any()   # a box that had no id: no keypoints
+
+
 def _serve_scene(fps, server_y=13.8, go=True, incoming=False):
     """Server on the near side holds the ball still for 1.5 s, then (go=True) serves it over the net.
     incoming=True: instead of being held, the ball flies in from the far side and is hit straight back."""
