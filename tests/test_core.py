@@ -427,6 +427,37 @@ def test_reid_keeps_strangers_out_of_a_missing_players_id():
     assert len({pid for fp in out for pid in fp}) == 4
 
 
+def test_kitchen_arrival_serving_receiving_and_both_partners():
+    from pbv.analytics import kitchen_arrival
+    from pbv.constants import COURT_L
+    fps = 10
+    kit_far, kit_near = 4.0, COURT_L - 4.0  # 0.6 m behind each nominal kitchen line (2.13 m from the net)
+    back_far, back_near = 0.5, COURT_L - 0.5
+
+    def rally(far_up, near_up, n=60):
+        """Far team serves; each player stands back, then (if up) moves to the kitchen line halfway through."""
+        frames = []
+        for f in range(n):
+            late = f >= n // 2
+            frames.append({"1": {"court": [1.5, kit_far if far_up[0] and late else back_far]},
+                           "2": {"court": [4.5, kit_far if far_up[1] and late else back_far]},
+                           "3": {"court": [1.5, kit_near if near_up[0] and late else back_near]},
+                           "4": {"court": [4.5, kit_near if near_up[1] and late else back_near]}})
+        return frames
+
+    players = rally((True, False), (True, True)) + rally((True, True), (True, True)) + rally((True, True), (True, True))
+    rallies = [{"start": 0, "end": 59, "shots": 6}, {"start": 60, "end": 119, "shots": 6},
+               {"start": 120, "end": 179, "shots": 2}]  # the last ends on the return: too short for anyone
+    shots = [{"rally": i, "role": "serve", "player": "1", "hitter": [1.5, back_far]} for i in (1, 2, 3)]
+    per, teams = kitchen_arrival(players, rallies, shots, fps)
+    assert per["1"]["kitchen_serving_pct"] == 100.0 and per["2"]["kitchen_serving_pct"] == 50.0
+    assert per["1"]["kitchen_serving_of"] == 2 and per["3"]["kitchen_receiving_of"] == 2
+    assert per["1"]["kitchen_receiving_pct"] is None  # never received
+    team = {tuple(t["players"]): t for t in teams}
+    assert team[("1", "2")]["both_kitchen_serving_pct"] == 50.0
+    assert team[("3", "4")]["both_kitchen_receiving_pct"] == 100.0
+
+
 def test_player_ids_never_cross_the_net():
     from pbv.players import select_players
     fps = 30

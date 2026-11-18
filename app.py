@@ -442,9 +442,14 @@ def main():
             s.pop("volley"), s.pop("faults")
     # every counted hit, for the dashboard video's hit markers: the hit detector's, else every detected shot
     hit_frames = [f for r in rallies for f in r.pop("hit_frames", [])] or [s["frame"] for s in shots]
+    teams = None
+    if not pov:  # getting up to the kitchen, serving and receiving, alone and as a team
+        kitchen, teams = analytics.kitchen_arrival(players, rallies, shots, data["fps"], court=court)
+        for pid, k in kitchen.items():
+            player_stats.setdefault(pid, {}).update(k)
     stats = {
         "video": str(args.video), "mode": args.mode, "start_s": args.start, "fps": data["fps"], "frames": len(players),
-        "players": player_stats, "shot_summary": summary,
+        "players": player_stats, "shot_summary": summary, **({"teams": teams} if teams is not None else {}),
         "rallies": rallies, "shots": shots, "events": evs,
     }
     (out / "stats.json").write_text(json.dumps(stats, indent=1))

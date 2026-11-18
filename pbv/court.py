@@ -26,15 +26,16 @@ LANDMARKS = {
 NOMINAL_KITCHEN = {"near": (NET_Y + KITCHEN, 0.0), "far": (NET_Y - KITCHEN, 0.0)}
 
 
-def kitchen_line_zone(p, depth=3 * FT, lines=NOMINAL_KITCHEN):
+def kitchen_line_zone(p, depth=3 * FT, lines=NOMINAL_KITCHEN, inside=False):
     """Up at the net: court point p within depth behind its side's kitchen line, not in the kitchen (the line
-    is the kitchen), between the sidelines. lines: Court.kitchen_lines (the painted lines), else nominal."""
+    is the kitchen), between the sidelines. lines: Court.kitchen_lines (the painted lines), else nominal.
+    inside: the kitchen itself counts too (someone who has got up to the net, rather than one standing there)."""
     if not 0 <= p[0] <= COURT_W:
         return False
     side = "far" if p[1] < NET_Y else "near"
     a, b = lines[side]
     behind = p[1] - (a + b * p[0]) if side == "near" else (a + b * p[0]) - p[1]
-    return 0 < behind <= depth
+    return (behind <= depth) if inside else (0 < behind <= depth)
 
 
 class Court:
@@ -70,9 +71,9 @@ class Court:
                 lines[side] = (float(pts[:, 1].mean()), 0.0)
         return lines
 
-    def at_kitchen_line(self, p, depth=3 * FT):
+    def at_kitchen_line(self, p, depth=3 * FT, inside=False):
         """kitchen_line_zone measured from this court's painted kitchen lines."""
-        return kitchen_line_zone(p, depth, self.kitchen_lines)
+        return kitchen_line_zone(p, depth, self.kitchen_lines, inside)
 
     @classmethod
     def from_landmarks(cls, named_px):

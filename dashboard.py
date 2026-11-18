@@ -75,6 +75,11 @@ st.markdown("""<style>
     line-height: 1.5; font-size: 1rem;}
 .st-key-rally-table button p {font-size: 1rem; line-height: 1.5; margin: 0;}
 .st-key-rally-table button:hover {color: #1558b0;}
+.st-key-rally-table .pbv-current {background: rgba(26, 115, 232, 0.18); box-shadow: inset 3px 0 0 #1a73e8;}
+.pbv-team {display: inline-block; padding: 0 6px; border-radius: 8px; font-size: 0.8rem; line-height: 1.4;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; vertical-align: middle;}
+.pbv-team-0 {background: rgba(26, 115, 232, 0.2); color: #1a73e8;}
+.pbv-team-1 {background: rgba(230, 120, 20, 0.22); color: #d36a00;}
 </style>""", unsafe_allow_html=True)
 jump = st.session_state.setdefault("jump", {})  # run name -> (rally start in s, clicks)
 
@@ -84,13 +89,30 @@ def go_to(start_s):
     jump[run.name] = (start_s, clicks + 1)
 
 
-WIDTHS = [1, 2, 1.3, 1.7]
-col_video, col_rallies = st.columns([3, 1.2]) if s["rallies"] else (st.container(), None)
+# who served each rally, and the team they're on (teams: from app.py; older runs have none: just the server)
+server = {sh["rally"]: str(sh["player"]) for sh in shots if sh.get("role", sh.get("type")) == "serve"}
+team_of = {str(pid): k for k, t in enumerate(s.get("teams") or []) for pid in t["players"]}
+
+
+def serving_tag(i):
+    pid = server.get(i)
+    if pid is None:
+        return ""
+    k = team_of.get(pid)
+    if k is None:
+        return name(pid)
+    label = " & ".join(name(p) for p in s["teams"][k]["players"])
+    return f'<span class="pbv-team pbv-team-{k % 2}" title="{label} serving ({name(pid)} served)">{label}</span>'
+
+
+WIDTHS = [0.8, 1.8, 1.1, 1.4, 2.6]
+col_video, col_rallies = st.columns([3, 1.6]) if s["rallies"] else (st.container(), None)
 if col_rallies is not None:
     with col_rallies:
         st.markdown("**Rallies**")
         with st.container(height=440, key="rally-table"):
-            for c, h in zip(st.columns(WIDTHS, vertical_alignment="center"), ("#", "start", "shots", "length (s)")):
+            for c, h in zip(st.columns(WIDTHS, vertical_alignment="center"),
+                            ("#", "start", "shots", "length (s)", "serving")):
                 c.markdown(f"**{h}**")
             for i, r in enumerate(s["rallies"], 1):
                 at = r["start"] / s["fps"]
@@ -100,6 +122,7 @@ if col_rallies is not None:
                             args=(max(0.0, at - LEAD_S),), help=f"Jump to rally {i}")
                 c[2].markdown(str(r.get("shots", "")))
                 c[3].markdown(str(r.get("duration_s", "")))
+                c[4].markdown(serving_tag(i), unsafe_allow_html=True)
 # playback controls for the video, all in the browser (a Streamlit widget would rerun the page and reload the
 # video from the start): 0.5x / 1x speed; d steps forward one frame (hold to keep going slowly), a jumps back to
 # the previous keyframe (dashboard.mp4 has one every DASHBOARD_KEYFRAME_S s: a keyframe shows at once, while an
@@ -125,6 +148,31 @@ setInterval(() => {  // st.video's element is replaced when a rally link is clic
   const v = video();
   if (v && v.playbackRate !== P.__pbvRate) v.playbackRate = P.__pbvRate;
 }, 250);
+// the rally the video is on: the last one started (LEAD_S before its serve) by the current time, highlighted in
+// the rally table and scrolled into view inside it. One timer for the page; each render gives it this match's rallies.
+P.__pbvStarts = %(starts)s; P.__pbvPrefix = %(prefix)s; P.__pbvShown = null;
+if (!P.__pbvRallyTimer) {
+  P.__pbvRallyTimer = P.setInterval(() => {
+    const v = video(), starts = P.__pbvStarts || [];
+    let i = -1;
+    if (v) for (let k = 0; k < starts.length && starts[k] <= v.currentTime + 1e-3; k++) i = k;
+    const id = i < 0 ? null : P.__pbvPrefix + (i + 1);
+    const btn = id && D.querySelector('.' + CSS.escape(id));
+    const row = btn && btn.closest('[data-testid="stHorizontalBlock"]');
+    if (row && row.classList.contains('pbv-current')) return;
+    D.querySelectorAll('.pbv-current').forEach(e => e.classList.remove('pbv-current'));
+    if (!row) return;
+    row.classList.add('pbv-current');
+    for (let box = row.parentElement; box && box !== D.body; box = box.parentElement) {  // the table's scroll box
+      const st = P.getComputedStyle(box).overflowY;
+      if ((st === 'auto' || st === 'scroll') && box.scrollHeight > box.clientHeight) {
+        const r = row.getBoundingClientRect(), b = box.getBoundingClientRect();
+        if (r.top < b.top || r.bottom > b.bottom) box.scrollTop += r.top - b.top - (b.height - r.height) / 2;
+        break;
+      }
+    }
+  }, 300);
+}
 if (!P.__pbvKeys) {
   P.__pbvKeys = true;
   let timer = null, held = null;
@@ -160,7 +208,10 @@ if (!P.__pbvKeys) {
 
 with col_video:
     if video.exists():
-        components.html(PLAYER_HTML % {"key": DASHBOARD_KEYFRAME_S}, height=30)
+        # rally starts (from LEAD_S before the serve, as the links jump) for highlighting the rally being played
+        starts = [max(0.0, r["start"] / s["fps"] - LEAD_S) for r in s["rallies"]]
+        components.html(PLAYER_HTML % {"key": DASHBOARD_KEYFRAME_S, "starts": json.dumps(starts),
+                                       "prefix": json.dumps(f"st-key-rally-{run.name}-")}, height=30)
         start_s, clicks = jump.get(run.name, (0, 0))
         # the player only seeks when start_time changes (whole seconds), so a repeat click on the same rally
         # alternates between LEAD_S and LEAD_S + 1 s before the serve
@@ -168,12 +219,33 @@ with col_video:
     else:
         st.caption("No annotated video in this run.")
 
+def with_kitchen(row, prefix=""):
+    """Each kitchen percentage and the number of rallies it is of, as one readable column ("91% of 23")."""
+    out = dict(row)
+    for role in ("serving", "receiving"):
+        pct, of = out.pop(f"{prefix}kitchen_{role}_pct", None), out.pop(f"{prefix}kitchen_{role}_of", None)
+        if of is not None:
+            label = f"{'Both at kitchen' if prefix else 'Kitchen'}, {role}"
+            out[label] = f"{pct:.0f}% of {of}" if pct is not None else "–"
+    return out
+
+
 st.subheader("Players")
 SPEED = ("avg_speed_ms", "max_speed_ms", "avg_shot_kmh", "max_shot_kmh")  # not shown: not reliable yet
-st.dataframe(pd.DataFrame([{"player": name(pid), **{k: v for k, v in {**s["players"].get(pid, {}),
-                                                                      **s["shot_summary"].get(pid, {})}.items()
-                                                     if k not in SPEED}}
+st.dataframe(pd.DataFrame([with_kitchen({"player": name(pid), **{k: v for k, v in {**s["players"].get(pid, {}),
+                                                                                   **s["shot_summary"].get(pid, {})}.items()
+                                                                  if k not in SPEED}})
                            for pid in pids]).fillna(0), hide_index=True)
+st.caption("Kitchen, serving / receiving: how often the player got up to the kitchen line when their team served "
+           "or received, of the rallies long enough to get there (5+ shots serving, 3+ receiving).")
+
+if s.get("teams"):
+    st.subheader("Teams")
+    st.caption("Both partners up at the kitchen line (or in the kitchen) together at some point in the rally, "
+               "of the rallies long enough to get there: 5+ shots when serving, 3+ when receiving.")
+    st.dataframe(pd.DataFrame([with_kitchen({"team": " & ".join(name(p) for p in t["players"]),
+                                             **{k: v for k, v in t.items() if k != "players"}}, prefix="both_")
+                               for t in s["teams"]]), hide_index=True)
 
 if shots:
     st.subheader("Shot mix")

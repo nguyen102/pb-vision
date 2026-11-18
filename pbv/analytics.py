@@ -61,6 +61,66 @@ def kitchen_share(track, in_rally=None, court=None):
     return float(in_rally[track[kit, 0].astype(int)].sum() / total) if total else 0.0
 
 
+def kitchen_arrival(players, rallies, shots, fps, court=None, min_shots_receiving=3, min_shots_serving=5,
+                    min_s=0.2):
+    """How often players, and both members of a team together, get up to the kitchen in a rally.
+
+    A player has got there when they spend min_s seconds (not necessarily in one go) at the kitchen line or in
+    the kitchen between the serve and the rally's last hit; a team, when both of them are there at the same
+    time for min_s seconds. Split by whether their team is serving or receiving. A rally only counts when it
+    lasts long enough to get up: the receiving team runs in behind the return, so the third shot must be hit
+    (min_shots_receiving); the serving team waits for its third shot to land and moves in after it, so the
+    rally needs min_shots_serving shots. players: per-frame players as seen (not filled in while hidden: a
+    player out of the picture isn't at the kitchen, which is always in view).
+
+    -> ({pid: {"kitchen_serving_pct", "kitchen_serving_of", "kitchen_receiving_pct", "kitchen_receiving_of"}},
+        [{"players": [pid, pid], "both_kitchen_serving_pct", "both_kitchen_serving_of", ...receiving...}]).
+    _of: how many rallies the percentage is of; the pct is None when that's 0.
+    """
+    at_line = (lambda p: court.at_kitchen_line(p, inside=True)) if court is not None else \
+        (lambda p: kitchen_line_zone(p, inside=True))
+    serves = {s["rally"]: s for s in shots if s.get("role") == "serve" or s.get("type") == "serve"}
+    need = int(round(min_s * fps))
+    per, teams = {}, {}
+    for i, r in enumerate(rallies, 1):
+        serve = serves.get(i)
+        if serve is None or serve.get("hitter") is None:
+            continue
+        lo, hi = r["start"], r["end"] + 1
+        serving_side = Court.side(serve["hitter"])
+        # each player's side this rally: where they were seen most
+        sides = {}
+        for fp in players[lo:hi]:
+            for pid, p in fp.items():
+                sides.setdefault(pid, Counter())[Court.side(p["court"])] += 1
+        sides = {pid: c.most_common(1)[0][0] for pid, c in sides.items()}
+        up = {pid: np.array([pid in fp and at_line(fp[pid]["court"]) for fp in players[lo:hi]], bool)
+              for pid in sides}
+        for side in ("near", "far"):
+            role = "serving" if side == serving_side else "receiving"
+            if r["shots"] < (min_shots_serving if role == "serving" else min_shots_receiving):
+                continue
+            team = sorted(pid for pid, sd in sides.items() if sd == side)
+            for pid in team:
+                c = per.setdefault(pid, Counter())
+                c[role] += 1
+                c[role + "_up"] += int(up[pid].sum() >= need)
+            if len(team) == 2:
+                c = teams.setdefault(tuple(team), Counter())
+                c[role] += 1
+                c[role + "_up"] += int((up[team[0]] & up[team[1]]).sum() >= need)
+
+    def pct(c, role):
+        return round(100 * c[role + "_up"] / c[role], 1) if c[role] else None
+
+    players_out = {pid: {f"kitchen_{role}_pct": pct(c, role) for role in ("serving", "receiving")}
+                   | {f"kitchen_{role}_of": c[role] for role in ("serving", "receiving")} for pid, c in per.items()}
+    teams_out = [{"players": list(t)} | {f"both_kitchen_{role}_pct": pct(c, role) for role in ("serving", "receiving")}
+                 | {f"both_kitchen_{role}_of": c[role] for role in ("serving", "receiving")}
+                 for t, c in sorted(teams.items())]
+    return players_out, teams_out
+
+
 def shot_stats(shots):
     """Shot counts by type, volleys, faults, and shot speed per player."""
     per = {}

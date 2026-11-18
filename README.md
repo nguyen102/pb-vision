@@ -139,6 +139,10 @@ At every shot by a tracked player:
 - Distance covered (m)
 - Average and top movement speed (m/s)
 - Percentage of rally time up at the kitchen line (within 3 ft behind it, not inside it)
+- **Getting to the kitchen**: how often a player gets up to the kitchen line (or into the kitchen) in a rally,
+  when their team is serving and when it is receiving, and how often **both partners** are up there together.
+  Only rallies long enough to get there count: 5+ shots when serving (the serving team moves in after its third
+  shot), 3+ when receiving (in behind the return). "Got there" = 0.2 s there between the serve and the last hit.
 - Court side
 - Positional **heatmap** per player
 
@@ -356,8 +360,14 @@ Each run writes to `outputs/<video name>[-pov]/`:
   "video": "...", "mode": "fixed", "start_s": 0, "fps": 30, "frames": 900,
   "players": {                         // fixed: movement metrics; POV: seconds visible
     "3": {"seconds": 28.1, "side": "near", "distance_m": 41.2,
-          "avg_speed_ms": 1.46, "max_speed_ms": 4.9, "kitchen_pct": 37.5}   // fixed: % of total rally time within 3 ft behind the kitchen line (not inside it)
+          "avg_speed_ms": 1.46, "max_speed_ms": 4.9, "kitchen_pct": 37.5,   // fixed: % of total rally time within 3 ft behind the kitchen line (not inside it)
+          "kitchen_serving_pct": 60.0, "kitchen_serving_of": 25,       // fixed: got up to the kitchen in 60% of 25 rallies their team served (5+ shots)
+          "kitchen_receiving_pct": 100.0, "kitchen_receiving_of": 25}  // ... and when receiving (3+ shots); pct null when _of is 0
   },
+  "teams": [                           // fixed: both partners up at the kitchen together, same rallies as above
+    {"players": ["1", "2"], "both_kitchen_serving_pct": 44.0, "both_kitchen_serving_of": 25,
+     "both_kitchen_receiving_pct": 72.0, "both_kitchen_receiving_of": 25}
+  ],
   "shot_summary": {                    // per player ("me" = you, in POV)
     "3": {"shots": 9, "n_serve": 3, "n_return": 3, "n_third": 3,   // fixed: serve / return / third shot only
           "avg_shot_kmh": 31.4, "max_shot_kmh": 52.0}
