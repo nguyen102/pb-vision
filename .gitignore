@@ -20,6 +20,7 @@ training/data/*
 !training/data/gt-*/
 !training/data/ids-*/
 !training/data/hits-*/
+!training/data/removed/
 training/runs/
 training/*.log
 training/logs/

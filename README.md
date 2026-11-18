@@ -319,6 +319,7 @@ uv run app.py IMG_1577.MOV --court-points "near-left=1537,1613;near-baseline-cen
 | `--no-pose` | off | Skip stroke-form analysis |
 | `--drive-speed` | `10.0` | Fixed mode: shot speed (m/s) above which a shot is a drive |
 | `--force` | off | Re-run tracking even if a matching `tracking.json` exists |
+| `--no-render` | off | Skip `annotated.mp4` and `dashboard.mp4` (about 1 GB per 40 minutes of play). Training needs only the data files |
 
 ### `calibrate.py`
 ```bash

@@ -1,0 +1,11681 @@
+{
+ "video": "/mnt/d/Videos/PB/BBB-Games/11-11-BBB.mp4",
+ "mode": "fixed",
+ "start_s": 30.0,
+ "fps": 30.0,
+ "frames": 71100,
+ "players": {
+  "2": {
+   "seconds": 1659.4,
+   "side": "near",
+   "distance_m": 1899.5,
+   "avg_speed_ms": 0.81,
+   "max_speed_ms": 7.88,
+   "kitchen_pct": 26.7
+  },
+  "4": {
+   "seconds": 1570.4,
+   "side": "near",
+   "distance_m": 1947.3,
+   "avg_speed_ms": 0.83,
+   "max_speed_ms": 7.94,
+   "kitchen_pct": 28.0
+  },
+  "3": {
+   "seconds": 1515.7,
+   "side": "far",
+   "distance_m": 2371.3,
+   "avg_speed_ms": 1.02,
+   "max_speed_ms": 8.0,
+   "kitchen_pct": 23.8
+  },
+  "1": {
+   "seconds": 1531.2,
+   "side": "near",
+   "distance_m": 1464.8,
+   "avg_speed_ms": 0.63,
+   "max_speed_ms": 7.94,
+   "kitchen_pct": 30.0
+  }
+ },
+ "shot_summary": {
+  "1": {
+   "shots": 92,
+   "n_serve": 28,
+   "n_third": 37,
+   "n_return": 27,
+   "avg_shot_kmh": 60.6,
+   "max_shot_kmh": 335.9
+  },
+  "2": {
+   "shots": 70,
+   "n_return": 24,
+   "n_serve": 28,
+   "n_third": 18,
+   "avg_shot_kmh": 51.3,
+   "max_shot_kmh": 174.1
+  },
+  "3": {
+   "shots": 70,
+   "n_return": 26,
+   "n_serve": 26,
+   "n_third": 18,
+   "avg_shot_kmh": 219.3,
+   "max_shot_kmh": 2418.2
+  },
+  "4": {
+   "shots": 75,
+   "n_return": 23,
+   "n_third": 28,
+   "n_serve": 24,
+   "avg_shot_kmh": 183.2,
+   "max_shot_kmh": 1494.7
+  }
+ },
+ "rallies": [
+  {
+   "start": 3920,
+   "end": 3920,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 6121,
+   "end": 6209,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.93
+  },
+  {
+   "start": 7248,
+   "end": 7248,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 7492,
+   "end": 7492,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 7731,
+   "end": 7904,
+   "shots": 5,
+   "served": true,
+   "duration_s": 5.77
+  },
+  {
+   "start": 8720,
+   "end": 9196,
+   "shots": 17,
+   "served": true,
+   "duration_s": 15.87
+  },
+  {
+   "start": 11446,
+   "end": 11446,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 12266,
+   "end": 12387,
+   "shots": 4,
+   "served": true,
+   "duration_s": 4.03
+  },
+  {
+   "start": 12662,
+   "end": 12877,
+   "shots": 7,
+   "served": true,
+   "duration_s": 7.17
+  },
+  {
+   "start": 13155,
+   "end": 13190,
+   "shots": 2,
+   "served": true,
+   "duration_s": 1.17
+  },
+  {
+   "start": 13436,
+   "end": 13670,
+   "shots": 9,
+   "served": true,
+   "duration_s": 7.8
+  },
+  {
+   "start": 13933,
+   "end": 14034,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.37
+  },
+  {
+   "start": 14283,
+   "end": 14458,
+   "shots": 8,
+   "served": true,
+   "duration_s": 5.83
+  },
+  {
+   "start": 14693,
+   "end": 14862,
+   "shots": 8,
+   "served": true,
+   "duration_s": 5.63
+  },
+  {
+   "start": 15225,
+   "end": 15343,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.93
+  },
+  {
+   "start": 15566,
+   "end": 15808,
+   "shots": 10,
+   "served": true,
+   "duration_s": 8.07
+  },
+  {
+   "start": 16112,
+   "end": 16215,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.43
+  },
+  {
+   "start": 16424,
+   "end": 16527,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.43
+  },
+  {
+   "start": 16820,
+   "end": 17018,
+   "shots": 8,
+   "served": true,
+   "duration_s": 6.6
+  },
+  {
+   "start": 17392,
+   "end": 17489,
+   "shots": 3,
+   "served": true,
+   "duration_s": 3.23
+  },
+  {
+   "start": 17768,
+   "end": 18370,
+   "shots": 23,
+   "served": true,
+   "duration_s": 20.07
+  },
+  {
+   "start": 18629,
+   "end": 18834,
+   "shots": 8,
+   "served": true,
+   "duration_s": 6.83
+  },
+  {
+   "start": 19116,
+   "end": 19284,
+   "shots": 7,
+   "served": true,
+   "duration_s": 5.6
+  },
+  {
+   "start": 19753,
+   "end": 20074,
+   "shots": 13,
+   "served": true,
+   "duration_s": 10.7
+  },
+  {
+   "start": 20392,
+   "end": 20471,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.63
+  },
+  {
+   "start": 20777,
+   "end": 20853,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.53
+  },
+  {
+   "start": 21058,
+   "end": 21266,
+   "shots": 9,
+   "served": true,
+   "duration_s": 6.93
+  },
+  {
+   "start": 21565,
+   "end": 21669,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.47
+  },
+  {
+   "start": 21892,
+   "end": 21929,
+   "shots": 2,
+   "served": true,
+   "duration_s": 1.23
+  },
+  {
+   "start": 22138,
+   "end": 22174,
+   "shots": 2,
+   "served": true,
+   "duration_s": 1.2
+  },
+  {
+   "start": 22516,
+   "end": 22677,
+   "shots": 5,
+   "served": true,
+   "duration_s": 5.37
+  },
+  {
+   "start": 22959,
+   "end": 23306,
+   "shots": 12,
+   "served": true,
+   "duration_s": 11.57
+  },
+  {
+   "start": 23623,
+   "end": 23884,
+   "shots": 10,
+   "served": true,
+   "duration_s": 8.7
+  },
+  {
+   "start": 24098,
+   "end": 24613,
+   "shots": 17,
+   "served": true,
+   "duration_s": 17.17
+  },
+  {
+   "start": 24889,
+   "end": 24978,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.97
+  },
+  {
+   "start": 25240,
+   "end": 25324,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.8
+  },
+  {
+   "start": 25725,
+   "end": 25954,
+   "shots": 8,
+   "served": true,
+   "duration_s": 7.63
+  },
+  {
+   "start": 26242,
+   "end": 26358,
+   "shots": 5,
+   "served": true,
+   "duration_s": 3.87
+  },
+  {
+   "start": 26692,
+   "end": 26826,
+   "shots": 5,
+   "served": true,
+   "duration_s": 4.47
+  },
+  {
+   "start": 27255,
+   "end": 27621,
+   "shots": 14,
+   "served": true,
+   "duration_s": 12.2
+  },
+  {
+   "start": 27954,
+   "end": 28053,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.3
+  },
+  {
+   "start": 28370,
+   "end": 28524,
+   "shots": 5,
+   "served": true,
+   "duration_s": 5.13
+  },
+  {
+   "start": 28862,
+   "end": 29010,
+   "shots": 5,
+   "served": true,
+   "duration_s": 4.93
+  },
+  {
+   "start": 29348,
+   "end": 29444,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.2
+  },
+  {
+   "start": 29644,
+   "end": 29748,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.47
+  },
+  {
+   "start": 30075,
+   "end": 30211,
+   "shots": 5,
+   "served": true,
+   "duration_s": 4.53
+  },
+  {
+   "start": 30496,
+   "end": 30582,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.87
+  },
+  {
+   "start": 30931,
+   "end": 31006,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.5
+  },
+  {
+   "start": 31324,
+   "end": 31400,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.53
+  },
+  {
+   "start": 31709,
+   "end": 31867,
+   "shots": 6,
+   "served": true,
+   "duration_s": 5.27
+  },
+  {
+   "start": 32129,
+   "end": 32340,
+   "shots": 7,
+   "served": true,
+   "duration_s": 7.03
+  },
+  {
+   "start": 32648,
+   "end": 32833,
+   "shots": 5,
+   "served": true,
+   "duration_s": 6.17
+  },
+  {
+   "start": 33113,
+   "end": 33296,
+   "shots": 6,
+   "served": true,
+   "duration_s": 6.1
+  },
+  {
+   "start": 33540,
+   "end": 33694,
+   "shots": 5,
+   "served": true,
+   "duration_s": 5.13
+  },
+  {
+   "start": 33953,
+   "end": 34086,
+   "shots": 5,
+   "served": true,
+   "duration_s": 4.43
+  },
+  {
+   "start": 34279,
+   "end": 34603,
+   "shots": 11,
+   "served": true,
+   "duration_s": 10.8
+  },
+  {
+   "start": 41050,
+   "end": 41130,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.67
+  },
+  {
+   "start": 41364,
+   "end": 41364,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 41602,
+   "end": 41731,
+   "shots": 5,
+   "served": true,
+   "duration_s": 4.3
+  },
+  {
+   "start": 41951,
+   "end": 41990,
+   "shots": 2,
+   "served": true,
+   "duration_s": 1.3
+  },
+  {
+   "start": 42187,
+   "end": 42301,
+   "shots": 5,
+   "served": true,
+   "duration_s": 3.8
+  },
+  {
+   "start": 42590,
+   "end": 42836,
+   "shots": 8,
+   "served": true,
+   "duration_s": 8.2
+  },
+  {
+   "start": 43270,
+   "end": 43547,
+   "shots": 10,
+   "served": true,
+   "duration_s": 9.23
+  },
+  {
+   "start": 43766,
+   "end": 44034,
+   "shots": 10,
+   "served": true,
+   "duration_s": 8.93
+  },
+  {
+   "start": 44393,
+   "end": 44393,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 44812,
+   "end": 45000,
+   "shots": 8,
+   "served": true,
+   "duration_s": 6.27
+  },
+  {
+   "start": 45226,
+   "end": 45226,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 45621,
+   "end": 45737,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.87
+  },
+  {
+   "start": 46023,
+   "end": 46099,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.53
+  },
+  {
+   "start": 46463,
+   "end": 46463,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 47052,
+   "end": 47083,
+   "shots": 2,
+   "served": true,
+   "duration_s": 1.03
+  },
+  {
+   "start": 47364,
+   "end": 47554,
+   "shots": 7,
+   "served": true,
+   "duration_s": 6.33
+  },
+  {
+   "start": 47694,
+   "end": 47694,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 47832,
+   "end": 47914,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.73
+  },
+  {
+   "start": 48139,
+   "end": 48217,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.6
+  },
+  {
+   "start": 48531,
+   "end": 48712,
+   "shots": 7,
+   "served": true,
+   "duration_s": 6.03
+  },
+  {
+   "start": 48957,
+   "end": 49070,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.77
+  },
+  {
+   "start": 49643,
+   "end": 49792,
+   "shots": 6,
+   "served": true,
+   "duration_s": 4.97
+  },
+  {
+   "start": 50104,
+   "end": 50256,
+   "shots": 6,
+   "served": true,
+   "duration_s": 5.07
+  },
+  {
+   "start": 50460,
+   "end": 50460,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 50814,
+   "end": 51143,
+   "shots": 11,
+   "served": true,
+   "duration_s": 10.97
+  },
+  {
+   "start": 51417,
+   "end": 51644,
+   "shots": 10,
+   "served": true,
+   "duration_s": 7.57
+  },
+  {
+   "start": 51992,
+   "end": 52126,
+   "shots": 6,
+   "served": true,
+   "duration_s": 4.47
+  },
+  {
+   "start": 52348,
+   "end": 52422,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.47
+  },
+  {
+   "start": 52869,
+   "end": 53021,
+   "shots": 6,
+   "served": true,
+   "duration_s": 5.07
+  },
+  {
+   "start": 53339,
+   "end": 53590,
+   "shots": 11,
+   "served": true,
+   "duration_s": 8.37
+  },
+  {
+   "start": 53906,
+   "end": 54239,
+   "shots": 13,
+   "served": true,
+   "duration_s": 11.1
+  },
+  {
+   "start": 54550,
+   "end": 54550,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 55216,
+   "end": 55216,
+   "shots": 1,
+   "served": true,
+   "duration_s": 0.0
+  },
+  {
+   "start": 55422,
+   "end": 55546,
+   "shots": 5,
+   "served": true,
+   "duration_s": 4.13
+  },
+  {
+   "start": 55805,
+   "end": 56016,
+   "shots": 9,
+   "served": true,
+   "duration_s": 7.03
+  },
+  {
+   "start": 56320,
+   "end": 56579,
+   "shots": 10,
+   "served": true,
+   "duration_s": 8.63
+  },
+  {
+   "start": 56855,
+   "end": 56889,
+   "shots": 2,
+   "served": true,
+   "duration_s": 1.13
+  },
+  {
+   "start": 57136,
+   "end": 57267,
+   "shots": 5,
+   "served": true,
+   "duration_s": 4.37
+  },
+  {
+   "start": 57565,
+   "end": 57646,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.7
+  },
+  {
+   "start": 57972,
+   "end": 58451,
+   "shots": 15,
+   "served": true,
+   "duration_s": 15.97
+  },
+  {
+   "start": 58827,
+   "end": 59380,
+   "shots": 20,
+   "served": true,
+   "duration_s": 18.43
+  },
+  {
+   "start": 59698,
+   "end": 59942,
+   "shots": 8,
+   "served": true,
+   "duration_s": 8.13
+  },
+  {
+   "start": 60250,
+   "end": 60722,
+   "shots": 17,
+   "served": true,
+   "duration_s": 15.73
+  },
+  {
+   "start": 61076,
+   "end": 61153,
+   "shots": 3,
+   "served": true,
+   "duration_s": 2.57
+  },
+  {
+   "start": 61156,
+   "end": 61185,
+   "shots": 2,
+   "served": true,
+   "duration_s": 0.97
+  },
+  {
+   "start": 61522,
+   "end": 61626,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.47
+  },
+  {
+   "start": 61851,
+   "end": 61970,
+   "shots": 4,
+   "served": true,
+   "duration_s": 3.97
+  },
+  {
+   "start": 62223,
+   "end": 62701,
+   "shots": 17,
+   "served": true,
+   "duration_s": 15.93
+  },
+  {
+   "start": 70500,
+   "end": 70623,
+   "shots": 4,
+   "served": true,
+   "duration_s": 4.1
+  },
+  {
+   "start": 70972,
+   "end": 71093,
+   "shots": 4,
+   "served": true,
+   "duration_s": 4.03
+  }
+ ],
+ "shots": [
+  {
+   "frame": 3920,
+   "time_s": 130.67,
+   "player": "1",
+   "rally": 1,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 97.2,
+   "hitter": [
+    5.16,
+    13.57
+   ],
+   "landing": [
+    0.6000000238418579,
+    -4.769999980926514
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 3942,
+   "time_s": 131.4,
+   "player": "2",
+   "rally": 1,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 33.2,
+   "hitter": [
+    2.07,
+    4.38
+   ],
+   "landing": [
+    1.7699999809265137,
+    10.529999732971191
+   ],
+   "role": "return"
+  },
+  {
+   "frame": 3983,
+   "time_s": 132.77,
+   "player": "1",
+   "rally": 1,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    2.26,
+    13.55
+   ],
+   "landing": null,
+   "role": "third"
+  },
+  {
+   "frame": 6121,
+   "time_s": 204.03,
+   "player": "1",
+   "rally": 2,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 54.6,
+   "hitter": [
+    1.18,
+    13.49
+   ],
+   "landing": [
+    4.670000076293945,
+    0.8100000023841858
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 6159,
+   "time_s": 205.3,
+   "player": "2",
+   "rally": 2,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 33.8,
+   "hitter": [
+    5.2,
+    -0.59
+   ],
+   "landing": [
+    4.130000114440918,
+    11.260000228881836
+   ],
+   "role": "return"
+  },
+  {
+   "frame": 6209,
+   "time_s": 206.97,
+   "player": "1",
+   "rally": 2,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 127.2,
+   "hitter": [
+    3.51,
+    13.55
+   ],
+   "landing": [
+    0.49000000953674316,
+    -6.25
+   ],
+   "role": "third"
+  },
+  {
+   "frame": 7248,
+   "time_s": 241.6,
+   "player": "1",
+   "rally": 3,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 12.5,
+   "hitter": [
+    4.69,
+    13.56
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 7347,
+   "time_s": 244.9,
+   "player": "1",
+   "rally": 3,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 90.1,
+   "hitter": [
+    3.64,
+    12.55
+   ],
+   "landing": [
+    0.019999999552965164,
+    -6.300000190734863
+   ],
+   "role": "third"
+  },
+  {
+   "frame": 7492,
+   "time_s": 249.73,
+   "player": "1",
+   "rally": 4,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 74.6,
+   "hitter": [
+    2.37,
+    13.53
+   ],
+   "landing": [
+    4.289999961853027,
+    -5.019999980926514
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 7579,
+   "time_s": 252.63,
+   "player": "1",
+   "rally": 4,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 4.8,
+   "hitter": [
+    3.48,
+    13.55
+   ],
+   "landing": [
+    3.0,
+    12.4399995803833
+   ],
+   "role": "third"
+  },
+  {
+   "frame": 7731,
+   "time_s": 257.7,
+   "player": "1",
+   "rally": 5,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": null,
+   "hitter": [
+    2.19,
+    13.53
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 7764,
+   "time_s": 258.8,
+   "player": "3",
+   "rally": 5,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    4.74,
+    -1.23
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 7819,
+   "time_s": 260.63,
+   "player": "1",
+   "rally": 5,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 268.3,
+   "hitter": [
+    2.23,
+    13.53
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 8720,
+   "time_s": 290.67,
+   "player": "3",
+   "rally": 6,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 29.7,
+   "hitter": [
+    4.87,
+    -0.42
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 8760,
+   "time_s": 292.0,
+   "player": "4",
+   "rally": 6,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    1.4,
+    10.0
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 11446,
+   "time_s": 381.53,
+   "player": "1",
+   "rally": 7,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 13.5,
+   "hitter": [
+    3.7,
+    13.55
+   ],
+   "landing": [
+    6.809999942779541,
+    -35.27000045776367
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 12266,
+   "time_s": 408.87,
+   "player": "3",
+   "rally": 8,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 41.6,
+   "hitter": [
+    1.53,
+    0.29
+   ],
+   "landing": [
+    4.440000057220459,
+    10.65999984741211
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 12305,
+   "time_s": 410.17,
+   "player": "2",
+   "rally": 8,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 50.0,
+   "hitter": [
+    4.7,
+    13.58
+   ],
+   "landing": [
+    2.569999933242798,
+    1.2699999809265137
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 12340,
+   "time_s": 411.33,
+   "player": "3",
+   "rally": 8,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 7.8,
+   "hitter": [
+    2.05,
+    -0.14
+   ],
+   "landing": [
+    4.079999923706055,
+    3.190000057220459
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 12662,
+   "time_s": 422.07,
+   "player": "2",
+   "rally": 9,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 68.0,
+   "hitter": [
+    4.82,
+    13.59
+   ],
+   "landing": [
+    1.2400000095367432,
+    -0.4300000071525574
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 12695,
+   "time_s": 423.17,
+   "player": "3",
+   "rally": 9,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 39.6,
+   "hitter": [
+    1.4,
+    -0.25
+   ],
+   "landing": [
+    2.5199999809265137,
+    10.699999809265137
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 12736,
+   "time_s": 424.53,
+   "player": "1",
+   "rally": 9,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 5.4,
+   "hitter": [
+    2.22,
+    13.55
+   ],
+   "landing": [
+    3.859999895095825,
+    11.180000305175781
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 13155,
+   "time_s": 438.5,
+   "player": "1",
+   "rally": 10,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 57.5,
+   "hitter": [
+    1.21,
+    13.46
+   ],
+   "landing": [
+    6.090000152587891,
+    -1.7300000190734863
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 13189,
+   "time_s": 439.63,
+   "player": "4",
+   "rally": 10,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 24.2,
+   "hitter": [
+    5.33,
+    -0.3
+   ],
+   "landing": [
+    6.579999923706055,
+    5.159999847412109
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 13224,
+   "time_s": 440.8,
+   "player": "1",
+   "rally": 10,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 117.1,
+   "hitter": [
+    2.08,
+    13.5
+   ],
+   "landing": [
+    5.210000038146973,
+    0.8799999952316284
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 13436,
+   "time_s": 447.87,
+   "player": "3",
+   "rally": 11,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 49.6,
+   "hitter": [
+    1.78,
+    -0.52
+   ],
+   "landing": [
+    4.349999904632568,
+    11.149999618530273
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 13473,
+   "time_s": 449.1,
+   "player": "2",
+   "rally": 11,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 45.5,
+   "hitter": [
+    4.76,
+    13.58
+   ],
+   "landing": [
+    4.53000020980835,
+    -0.3100000023841858
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 13513,
+   "time_s": 450.43,
+   "player": "4",
+   "rally": 11,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 16.1,
+   "hitter": [
+    4.83,
+    -0.11
+   ],
+   "landing": [
+    7.150000095367432,
+    -3.4100000858306885
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 13933,
+   "time_s": 464.43,
+   "player": "4",
+   "rally": 12,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 49.7,
+   "hitter": [
+    4.26,
+    0.04
+   ],
+   "landing": [
+    1.5399999618530273,
+    11.210000038146973
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 13968,
+   "time_s": 465.6,
+   "player": "1",
+   "rally": 12,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 101.5,
+   "hitter": [
+    0.2,
+    12.27
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 14008,
+   "time_s": 466.93,
+   "player": "4",
+   "rally": 12,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    4.73,
+    0.42
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 14283,
+   "time_s": 476.1,
+   "player": "2",
+   "rally": 13,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 61.7,
+   "hitter": [
+    4.8,
+    13.59
+   ],
+   "landing": [
+    1.4700000286102295,
+    -0.3100000023841858
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 14318,
+   "time_s": 477.27,
+   "player": "3",
+   "rally": 13,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 33.2,
+   "hitter": [
+    1.64,
+    -0.56
+   ],
+   "landing": [
+    3.3499999046325684,
+    10.380000114440918
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 14365,
+   "time_s": 478.83,
+   "player": "1",
+   "rally": 13,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 335.9,
+   "hitter": [
+    2.95,
+    13.4
+   ],
+   "landing": [
+    11.369999885559082,
+    -32.4900016784668
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 14693,
+   "time_s": 489.77,
+   "player": "2",
+   "rally": 14,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 61.8,
+   "hitter": [
+    2.21,
+    13.53
+   ],
+   "landing": [
+    4.329999923706055,
+    -1.1799999475479126
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 14727,
+   "time_s": 490.9,
+   "player": "4",
+   "rally": 14,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 48.7,
+   "hitter": [
+    4.97,
+    -0.39
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 14767,
+   "time_s": 492.23,
+   "player": "2",
+   "rally": 14,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 72.8,
+   "hitter": [
+    4.27,
+    13.57
+   ],
+   "landing": [
+    4.829999923706055,
+    -3.2799999713897705
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 15225,
+   "time_s": 507.5,
+   "player": "2",
+   "rally": 15,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 63.6,
+   "hitter": [
+    5.06,
+    13.6
+   ],
+   "landing": [
+    0.9100000262260437,
+    -2.3499999046325684
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 15259,
+   "time_s": 508.63,
+   "player": "3",
+   "rally": 15,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 36.0,
+   "hitter": [
+    1.4,
+    -0.16
+   ],
+   "landing": [
+    3.9200000762939453,
+    11.59000015258789
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 15305,
+   "time_s": 510.17,
+   "player": "1",
+   "rally": 15,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    3.4,
+    13.55
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 15566,
+   "time_s": 518.87,
+   "player": "1",
+   "rally": 16,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 56.6,
+   "hitter": [
+    1.34,
+    13.49
+   ],
+   "landing": [
+    4.869999885559082,
+    -0.20999999344348907
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 15600,
+   "time_s": 520.0,
+   "player": "4",
+   "rally": 16,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 37.0,
+   "hitter": [
+    5.57,
+    -0.57
+   ],
+   "landing": [
+    4.550000190734863,
+    10.670000076293945
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 15642,
+   "time_s": 521.4,
+   "player": "1",
+   "rally": 16,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    3.68,
+    12.97
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 16112,
+   "time_s": 537.07,
+   "player": "3",
+   "rally": 17,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 40.9,
+   "hitter": [
+    1.71,
+    0.25
+   ],
+   "landing": [
+    4.21999979019165,
+    10.15999984741211
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 16153,
+   "time_s": 538.43,
+   "player": "2",
+   "rally": 17,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 50.5,
+   "hitter": [
+    4.63,
+    13.59
+   ],
+   "landing": [
+    5.010000228881836,
+    -0.4300000071525574
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 16190,
+   "time_s": 539.67,
+   "player": "4",
+   "rally": 17,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 14.7,
+   "hitter": [
+    4.94,
+    0.09
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 16424,
+   "time_s": 547.47,
+   "player": "3",
+   "rally": 18,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 41.3,
+   "hitter": [
+    4.57,
+    0.11
+   ],
+   "landing": [
+    1.7200000286102295,
+    9.619999885559082
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 16465,
+   "time_s": 548.83,
+   "player": "1",
+   "rally": 18,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 38.9,
+   "hitter": [
+    0.59,
+    12.0
+   ],
+   "landing": [
+    1.4700000286102295,
+    3.049999952316284
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 16500,
+   "time_s": 550.0,
+   "player": "4",
+   "rally": 18,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    1.86,
+    0.58
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 16820,
+   "time_s": 560.67,
+   "player": "3",
+   "rally": 19,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 58.1,
+   "hitter": [
+    1.21,
+    -0.38
+   ],
+   "landing": [
+    4.199999809265137,
+    11.069999694824219
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 16851,
+   "time_s": 561.7,
+   "player": "2",
+   "rally": 19,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 45.1,
+   "hitter": [
+    5.21,
+    13.56
+   ],
+   "landing": [
+    3.5899999141693115,
+    0.2800000011920929
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 16893,
+   "time_s": 563.1,
+   "player": "4",
+   "rally": 19,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    4.03,
+    0.47
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 17392,
+   "time_s": 579.73,
+   "player": "4",
+   "rally": 20,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 1494.7,
+   "hitter": [
+    4.35,
+    0.1
+   ],
+   "landing": [
+    4.590000152587891,
+    -13.729999542236328
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 17428,
+   "time_s": 580.93,
+   "player": "1",
+   "rally": 20,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 23.0,
+   "hitter": [
+    0.69,
+    12.93
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 17486,
+   "time_s": 582.87,
+   "player": "3",
+   "rally": 20,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 64.2,
+   "hitter": [
+    1.79,
+    0.61
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 17768,
+   "time_s": 592.27,
+   "player": "2",
+   "rally": 21,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 58.2,
+   "hitter": [
+    4.87,
+    13.59
+   ],
+   "landing": [
+    1.7899999618530273,
+    0.47999998927116394
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 17803,
+   "time_s": 593.43,
+   "player": "3",
+   "rally": 21,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 34.7,
+   "hitter": [
+    1.78,
+    -0.49
+   ],
+   "landing": [
+    4.050000190734863,
+    10.829999923706055
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 17849,
+   "time_s": 594.97,
+   "player": "1",
+   "rally": 21,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    3.44,
+    13.56
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 18629,
+   "time_s": 620.97,
+   "player": "1",
+   "rally": 22,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 61.1,
+   "hitter": [
+    1.21,
+    13.48
+   ],
+   "landing": [
+    4.289999961853027,
+    2.0
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 18660,
+   "time_s": 622.0,
+   "player": "4",
+   "rally": 22,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 43.5,
+   "hitter": [
+    5.18,
+    -0.67
+   ],
+   "landing": [
+    3.4000000953674316,
+    10.470000267028809
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 18698,
+   "time_s": 623.27,
+   "player": "1",
+   "rally": 22,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 3.3,
+   "hitter": [
+    2.9,
+    13.39
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 19116,
+   "time_s": 637.2,
+   "player": "3",
+   "rally": 23,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 44.7,
+   "hitter": [
+    1.78,
+    0.2
+   ],
+   "landing": [
+    4.510000228881836,
+    9.760000228881836
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 19154,
+   "time_s": 638.47,
+   "player": "2",
+   "rally": 23,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 112.5,
+   "hitter": [
+    4.89,
+    13.6
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 19192,
+   "time_s": 639.73,
+   "player": "4",
+   "rally": 23,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 3.1,
+   "hitter": [
+    3.82,
+    0.29
+   ],
+   "landing": [
+    4.039999961853027,
+    -1.0700000524520874
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 19753,
+   "time_s": 658.43,
+   "player": "4",
+   "rally": 24,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 27.5,
+   "hitter": [
+    4.37,
+    0.12
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 19789,
+   "time_s": 659.63,
+   "player": "1",
+   "rally": 24,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 33.6,
+   "hitter": [
+    0.44,
+    12.64
+   ],
+   "landing": [
+    4.03000020980835,
+    3.009999990463257
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 19832,
+   "time_s": 661.07,
+   "player": "4",
+   "rally": 24,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 24.7,
+   "hitter": [
+    4.5,
+    1.27
+   ],
+   "landing": [
+    0.30000001192092896,
+    -4.730000019073486
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 20392,
+   "time_s": 679.73,
+   "player": "2",
+   "rally": 25,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 58.3,
+   "hitter": [
+    5.98,
+    12.89
+   ],
+   "landing": [
+    1.5499999523162842,
+    -1.0
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 20427,
+   "time_s": 680.9,
+   "player": "3",
+   "rally": 25,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 36.9,
+   "hitter": [
+    1.72,
+    -0.88
+   ],
+   "landing": [
+    3.109999895095825,
+    10.65999984741211
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 20471,
+   "time_s": 682.37,
+   "player": "1",
+   "rally": 25,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 5.4,
+   "hitter": [
+    2.83,
+    13.26
+   ],
+   "landing": [
+    5.349999904632568,
+    10.65999984741211
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 20777,
+   "time_s": 692.57,
+   "player": "1",
+   "rally": 26,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 58.3,
+   "hitter": [
+    1.23,
+    13.47
+   ],
+   "landing": [
+    3.619999885559082,
+    1.850000023841858
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 20809,
+   "time_s": 693.63,
+   "player": "4",
+   "rally": 26,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 39.8,
+   "hitter": [
+    4.44,
+    -0.22
+   ],
+   "landing": [
+    2.809999942779541,
+    12.949999809265137
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 20852,
+   "time_s": 695.07,
+   "player": "1",
+   "rally": 26,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 5.3,
+   "hitter": [
+    2.04,
+    13.53
+   ],
+   "landing": [
+    5.090000152587891,
+    12.289999961853027
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 21058,
+   "time_s": 701.93,
+   "player": "3",
+   "rally": 27,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 41.2,
+   "hitter": [
+    1.59,
+    0.45
+   ],
+   "landing": [
+    4.409999847412109,
+    10.760000228881836
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 21097,
+   "time_s": 703.23,
+   "player": "2",
+   "rally": 27,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 65.5,
+   "hitter": [
+    4.58,
+    13.59
+   ],
+   "landing": [
+    4.239999771118164,
+    -0.3499999940395355
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 21130,
+   "time_s": 704.33,
+   "player": "4",
+   "rally": 27,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 15.3,
+   "hitter": [
+    4.33,
+    0.29
+   ],
+   "landing": [
+    5.400000095367432,
+    -2.7799999713897705
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 21565,
+   "time_s": 718.83,
+   "player": "4",
+   "rally": 28,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 1369.0,
+   "hitter": [
+    4.75,
+    0.12
+   ],
+   "landing": [
+    5.150000095367432,
+    -12.550000190734863
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 21599,
+   "time_s": 719.97,
+   "player": "1",
+   "rally": 28,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 97.4,
+   "hitter": [
+    0.07,
+    11.99
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 21639,
+   "time_s": 721.3,
+   "player": "4",
+   "rally": 28,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    4.71,
+    1.05
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 21892,
+   "time_s": 729.73,
+   "player": "2",
+   "rally": 29,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 60.1,
+   "hitter": [
+    4.66,
+    13.58
+   ],
+   "landing": [
+    1.7400000095367432,
+    -2.8399999141693115
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 21926,
+   "time_s": 730.87,
+   "player": "3",
+   "rally": 29,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 33.8,
+   "hitter": [
+    1.97,
+    -0.75
+   ],
+   "landing": [
+    3.369999885559082,
+    6.309999942779541
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 22138,
+   "time_s": 737.93,
+   "player": "1",
+   "rally": 30,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 53.1,
+   "hitter": [
+    1.36,
+    13.5
+   ],
+   "landing": [
+    4.929999828338623,
+    0.20000000298023224
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 22173,
+   "time_s": 739.1,
+   "player": "4",
+   "rally": 30,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 90.4,
+   "hitter": [
+    5.5,
+    -0.24
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 22190,
+   "time_s": 739.67,
+   "player": "1",
+   "rally": 30,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 35.6,
+   "hitter": [
+    1.93,
+    13.53
+   ],
+   "landing": [
+    2.1700000762939453,
+    7.260000228881836
+   ],
+   "role": "third"
+  },
+  {
+   "frame": 22516,
+   "time_s": 750.53,
+   "player": "3",
+   "rally": 31,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 46.5,
+   "hitter": [
+    1.68,
+    -0.07
+   ],
+   "landing": [
+    4.480000019073486,
+    10.779999732971191
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 22553,
+   "time_s": 751.77,
+   "player": "2",
+   "rally": 31,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 144.7,
+   "hitter": [
+    4.84,
+    13.59
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 22596,
+   "time_s": 753.2,
+   "player": "4",
+   "rally": 31,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 17.4,
+   "hitter": [
+    4.53,
+    0.43
+   ],
+   "landing": [
+    5.860000133514404,
+    6.909999847412109
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 22959,
+   "time_s": 765.3,
+   "player": "4",
+   "rally": 32,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 1260.4,
+   "hitter": [
+    4.31,
+    -0.08
+   ],
+   "landing": [
+    4.340000152587891,
+    -11.75
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 22992,
+   "time_s": 766.4,
+   "player": "1",
+   "rally": 32,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 33.3,
+   "hitter": [
+    0.94,
+    13.34
+   ],
+   "landing": [
+    3.8399999141693115,
+    1.3700000047683716
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 23040,
+   "time_s": 768.0,
+   "player": "4",
+   "rally": 32,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 17.7,
+   "hitter": [
+    4.58,
+    0.34
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 23623,
+   "time_s": 787.43,
+   "player": "2",
+   "rally": 33,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 55.0,
+   "hitter": [
+    4.95,
+    13.59
+   ],
+   "landing": [
+    2.0799999237060547,
+    1.2000000476837158
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 23659,
+   "time_s": 788.63,
+   "player": "3",
+   "rally": 33,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 34.1,
+   "hitter": [
+    2.15,
+    -0.2
+   ],
+   "landing": [
+    2.930000066757202,
+    11.140000343322754
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 23707,
+   "time_s": 790.23,
+   "player": "1",
+   "rally": 33,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 99.2,
+   "hitter": [
+    2.37,
+    13.52
+   ],
+   "landing": [
+    2.25,
+    -5.769999980926514
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 24098,
+   "time_s": 803.27,
+   "player": "2",
+   "rally": 34,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 52.6,
+   "hitter": [
+    2.52,
+    13.54
+   ],
+   "landing": [
+    4.769999980926514,
+    1.5700000524520874
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 24132,
+   "time_s": 804.4,
+   "player": "4",
+   "rally": 34,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 39.6,
+   "hitter": [
+    5.64,
+    -1.35
+   ],
+   "landing": [
+    3.7300000190734863,
+    10.979999542236328
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 24177,
+   "time_s": 805.9,
+   "player": "1",
+   "rally": 34,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 223.0,
+   "hitter": [
+    2.81,
+    13.5
+   ],
+   "landing": [
+    8.199999809265137,
+    -21.18000030517578
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 24889,
+   "time_s": 829.63,
+   "player": "2",
+   "rally": 35,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 68.8,
+   "hitter": [
+    4.8,
+    13.58
+   ],
+   "landing": [
+    2.3299999237060547,
+    -0.8600000143051147
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 24924,
+   "time_s": 830.8,
+   "player": "3",
+   "rally": 35,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    2.29,
+    -2.04
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 24975,
+   "time_s": 832.5,
+   "player": "1",
+   "rally": 35,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 34.4,
+   "hitter": [
+    1.88,
+    13.52
+   ],
+   "landing": [
+    2.859999895095825,
+    6.269999980926514
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 25240,
+   "time_s": 841.33,
+   "player": "1",
+   "rally": 36,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 53.4,
+   "hitter": [
+    0.41,
+    12.28
+   ],
+   "landing": [
+    4.25,
+    -0.49000000953674316
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 25273,
+   "time_s": 842.43,
+   "player": "4",
+   "rally": 36,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    4.89,
+    -0.2
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 25325,
+   "time_s": 844.17,
+   "player": "1",
+   "rally": 36,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 30.5,
+   "hitter": [
+    -0.27,
+    11.64
+   ],
+   "landing": [
+    3.569999933242798,
+    -3.0999999046325684
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 25725,
+   "time_s": 857.5,
+   "player": "1",
+   "rally": 37,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 66.2,
+   "hitter": [
+    5.43,
+    13.55
+   ],
+   "landing": [
+    0.1599999964237213,
+    -0.8299999833106995
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 25757,
+   "time_s": 858.57,
+   "player": "3",
+   "rally": 37,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 39.5,
+   "hitter": [
+    0.57,
+    -0.27
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 25805,
+   "time_s": 860.17,
+   "player": "1",
+   "rally": 37,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 53.4,
+   "hitter": [
+    1.74,
+    12.56
+   ],
+   "landing": [
+    1.659999966621399,
+    -0.7799999713897705
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 26242,
+   "time_s": 874.73,
+   "player": "1",
+   "rally": 38,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 57.2,
+   "hitter": [
+    0.83,
+    13.36
+   ],
+   "landing": [
+    4.670000076293945,
+    1.2300000190734863
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 26274,
+   "time_s": 875.8,
+   "player": "4",
+   "rally": 38,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 37.4,
+   "hitter": [
+    5.47,
+    -0.26
+   ],
+   "landing": [
+    3.7899999618530273,
+    10.699999809265137
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 26316,
+   "time_s": 877.2,
+   "player": "1",
+   "rally": 38,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 4.4,
+   "hitter": [
+    2.97,
+    13.19
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 26692,
+   "time_s": 889.73,
+   "player": "3",
+   "rally": 39,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 43.7,
+   "hitter": [
+    2.21,
+    -0.03
+   ],
+   "landing": [
+    4.420000076293945,
+    10.65999984741211
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 26729,
+   "time_s": 890.97,
+   "player": "2",
+   "rally": 39,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 44.3,
+   "hitter": [
+    4.41,
+    13.58
+   ],
+   "landing": [
+    5.159999847412109,
+    1.7000000476837158
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 26767,
+   "time_s": 892.23,
+   "player": "3",
+   "rally": 39,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    5.42,
+    0.26
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 27255,
+   "time_s": 908.5,
+   "player": "4",
+   "rally": 40,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 1394.7,
+   "hitter": [
+    3.71,
+    -0.32
+   ],
+   "landing": [
+    3.440000057220459,
+    -13.229999542236328
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 27290,
+   "time_s": 909.67,
+   "player": "1",
+   "rally": 40,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 29.9,
+   "hitter": [
+    -0.65,
+    10.89
+   ],
+   "landing": [
+    0.15000000596046448,
+    2.3299999237060547
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 27331,
+   "time_s": 911.03,
+   "player": "4",
+   "rally": 40,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    0.65,
+    0.12
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 27954,
+   "time_s": 931.8,
+   "player": "4",
+   "rally": 41,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 42.4,
+   "hitter": [
+    1.29,
+    0.17
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 27988,
+   "time_s": 932.93,
+   "player": "2",
+   "rally": 41,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 25.3,
+   "hitter": [
+    5.96,
+    12.67
+   ],
+   "landing": [
+    2.4000000953674316,
+    4.239999771118164
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 28036,
+   "time_s": 934.53,
+   "player": "4",
+   "rally": 41,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    1.29,
+    0.95
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 28370,
+   "time_s": 945.67,
+   "player": "4",
+   "rally": 42,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 1395.7,
+   "hitter": [
+    3.81,
+    -0.59
+   ],
+   "landing": [
+    3.6600000858306885,
+    -13.510000228881836
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 28408,
+   "time_s": 946.93,
+   "player": "1",
+   "rally": 42,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 33.4,
+   "hitter": [
+    0.6,
+    12.91
+   ],
+   "landing": [
+    1.5199999809265137,
+    1.8300000429153442
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 28453,
+   "time_s": 948.43,
+   "player": "4",
+   "rally": 42,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 134.2,
+   "hitter": [
+    1.89,
+    0.0
+   ],
+   "landing": [
+    6.090000152587891,
+    -21.959999084472656
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 28862,
+   "time_s": 962.07,
+   "player": "2",
+   "rally": 43,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 61.1,
+   "hitter": [
+    4.55,
+    13.59
+   ],
+   "landing": [
+    1.5800000429153442,
+    -1.399999976158142
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 28896,
+   "time_s": 963.2,
+   "player": "3",
+   "rally": 43,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 38.4,
+   "hitter": [
+    2.37,
+    -0.93
+   ],
+   "landing": [
+    3.180000066757202,
+    11.130000114440918
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 28942,
+   "time_s": 964.73,
+   "player": "1",
+   "rally": 43,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    2.83,
+    13.54
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 29348,
+   "time_s": 978.27,
+   "player": "2",
+   "rally": 44,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 65.7,
+   "hitter": [
+    2.31,
+    13.53
+   ],
+   "landing": [
+    5.010000228881836,
+    -0.800000011920929
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 29381,
+   "time_s": 979.37,
+   "player": "4",
+   "rally": 44,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 40.0,
+   "hitter": [
+    5.63,
+    -0.32
+   ],
+   "landing": [
+    3.6700000762939453,
+    11.350000381469727
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 29423,
+   "time_s": 980.77,
+   "player": "1",
+   "rally": 44,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 8.6,
+   "hitter": [
+    2.92,
+    13.53
+   ],
+   "landing": [
+    6.789999961853027,
+    11.15999984741211
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 29644,
+   "time_s": 988.13,
+   "player": "1",
+   "rally": 45,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 59.9,
+   "hitter": [
+    5.2,
+    13.56
+   ],
+   "landing": [
+    0.27000001072883606,
+    1.7799999713897705
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 29682,
+   "time_s": 989.4,
+   "player": "3",
+   "rally": 45,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 30.7,
+   "hitter": [
+    -0.07,
+    -0.88
+   ],
+   "landing": [
+    1.5,
+    9.819999694824219
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 29729,
+   "time_s": 990.97,
+   "player": "1",
+   "rally": 45,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 88.0,
+   "hitter": [
+    1.59,
+    12.38
+   ],
+   "landing": [
+    2.0299999713897705,
+    -1.4600000381469727
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 30075,
+   "time_s": 1002.5,
+   "player": "3",
+   "rally": 46,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 42.5,
+   "hitter": [
+    2.31,
+    -0.21
+   ],
+   "landing": [
+    4.940000057220459,
+    11.3100004196167
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 30116,
+   "time_s": 1003.87,
+   "player": "1",
+   "rally": 46,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 101.1,
+   "hitter": [
+    5.17,
+    13.57
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 30159,
+   "time_s": 1005.3,
+   "player": "3",
+   "rally": 46,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 40.3,
+   "hitter": [
+    4.41,
+    0.85
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 30496,
+   "time_s": 1016.53,
+   "player": "3",
+   "rally": 47,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 57.4,
+   "hitter": [
+    6.26,
+    0.13
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 30531,
+   "time_s": 1017.7,
+   "player": "1",
+   "rally": 47,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 11.1,
+   "hitter": [
+    0.91,
+    13.43
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 30582,
+   "time_s": 1019.4,
+   "player": "2",
+   "rally": 47,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    4.2,
+    3.14
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 30931,
+   "time_s": 1031.03,
+   "player": "4",
+   "rally": 48,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 64.8,
+   "hitter": [
+    4.98,
+    13.57
+   ],
+   "landing": [
+    0.33000001311302185,
+    -0.6899999976158142
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 30964,
+   "time_s": 1032.13,
+   "player": "3",
+   "rally": 48,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 35.0,
+   "hitter": [
+    0.59,
+    -0.04
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 31008,
+   "time_s": 1033.6,
+   "player": "1",
+   "rally": 48,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 7.1,
+   "hitter": [
+    5.22,
+    13.44
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 31324,
+   "time_s": 1044.13,
+   "player": "1",
+   "rally": 49,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": null,
+   "hitter": [
+    2.32,
+    13.54
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 31359,
+   "time_s": 1045.3,
+   "player": "3",
+   "rally": 49,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 26.2,
+   "hitter": [
+    1.32,
+    4.5
+   ],
+   "landing": [
+    3.2899999618530273,
+    11.989999771118164
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 31400,
+   "time_s": 1046.67,
+   "player": "4",
+   "rally": 49,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 33.9,
+   "hitter": [
+    2.67,
+    13.53
+   ],
+   "landing": [
+    4.349999904632568,
+    6.5
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 31709,
+   "time_s": 1056.97,
+   "player": "3",
+   "rally": 50,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 39.6,
+   "hitter": [
+    1.95,
+    -0.05
+   ],
+   "landing": [
+    5.199999809265137,
+    11.229999542236328
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 31752,
+   "time_s": 1058.4,
+   "player": "4",
+   "rally": 50,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 139.1,
+   "hitter": [
+    5.3,
+    13.56
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 31791,
+   "time_s": 1059.7,
+   "player": "1",
+   "rally": 50,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 56.7,
+   "hitter": [
+    1.43,
+    1.47
+   ],
+   "landing": [
+    3.6500000953674316,
+    -7.71999979019165
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 32129,
+   "time_s": 1070.97,
+   "player": "3",
+   "rally": 51,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 55.2,
+   "hitter": [
+    4.41,
+    -2.97
+   ],
+   "landing": [
+    1.8899999856948853,
+    11.109999656677246
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 32167,
+   "time_s": 1072.23,
+   "player": "2",
+   "rally": 51,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 46.2,
+   "hitter": [
+    1.14,
+    13.54
+   ],
+   "landing": [
+    2.180000066757202,
+    1.190000057220459
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 32204,
+   "time_s": 1073.47,
+   "player": "1",
+   "rally": 51,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 33.3,
+   "hitter": [
+    1.73,
+    0.76
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 32648,
+   "time_s": 1088.27,
+   "player": "4",
+   "rally": 52,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 38.7,
+   "hitter": [
+    1.88,
+    -0.21
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 32684,
+   "time_s": 1089.47,
+   "player": "1",
+   "rally": 52,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 35.9,
+   "hitter": [
+    6.34,
+    11.88
+   ],
+   "landing": [
+    2.7200000286102295,
+    -0.9100000262260437
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 32737,
+   "time_s": 1091.23,
+   "player": "3",
+   "rally": 52,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 5.9,
+   "hitter": [
+    3.07,
+    -1.85
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 33113,
+   "time_s": 1103.77,
+   "player": "1",
+   "rally": 53,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": null,
+   "hitter": [
+    4.65,
+    13.56
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 33145,
+   "time_s": 1104.83,
+   "player": "3",
+   "rally": 53,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    3.57,
+    3.96
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 33190,
+   "time_s": 1106.33,
+   "player": "1",
+   "rally": 53,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    4.29,
+    13.58
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 33540,
+   "time_s": 1118.0,
+   "player": "2",
+   "rally": 54,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 56.1,
+   "hitter": [
+    2.38,
+    13.53
+   ],
+   "landing": [
+    5.090000152587891,
+    1.3700000047683716
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 33576,
+   "time_s": 1119.2,
+   "player": "3",
+   "rally": 54,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 36.1,
+   "hitter": [
+    5.91,
+    -0.21
+   ],
+   "landing": [
+    4.199999809265137,
+    11.699999809265137
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 33621,
+   "time_s": 1120.7,
+   "player": "1",
+   "rally": 54,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    3.5,
+    13.56
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 33953,
+   "time_s": 1131.77,
+   "player": "3",
+   "rally": 55,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 45.6,
+   "hitter": [
+    4.21,
+    0.27
+   ],
+   "landing": [
+    5.190000057220459,
+    11.640000343322754
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 33988,
+   "time_s": 1132.93,
+   "player": "2",
+   "rally": 55,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 22.5,
+   "hitter": [
+    1.43,
+    9.36
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 34032,
+   "time_s": 1134.4,
+   "player": "3",
+   "rally": 55,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    3.48,
+    0.41
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 34279,
+   "time_s": 1142.63,
+   "player": "1",
+   "rally": 56,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 42.6,
+   "hitter": [
+    4.37,
+    0.09
+   ],
+   "landing": [
+    2.0,
+    11.270000457763672
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 34318,
+   "time_s": 1143.93,
+   "player": "2",
+   "rally": 56,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 49.4,
+   "hitter": [
+    1.02,
+    13.27
+   ],
+   "landing": [
+    2.880000114440918,
+    -0.7799999713897705
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 34361,
+   "time_s": 1145.37,
+   "player": "1",
+   "rally": 56,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    3.89,
+    -0.18
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 41050,
+   "time_s": 1368.33,
+   "player": "1",
+   "rally": 57,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 54.2,
+   "hitter": [
+    4.72,
+    13.58
+   ],
+   "landing": [
+    1.350000023841858,
+    0.46000000834465027
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 41086,
+   "time_s": 1369.53,
+   "player": "2",
+   "rally": 57,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 33.2,
+   "hitter": [
+    0.12,
+    -0.81
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 41133,
+   "time_s": 1371.1,
+   "player": "4",
+   "rally": 57,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 16.5,
+   "hitter": [
+    1.95,
+    13.52
+   ],
+   "landing": [
+    1.7599999904632568,
+    5.269999980926514
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 41364,
+   "time_s": 1378.8,
+   "player": "1",
+   "rally": 58,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 61.9,
+   "hitter": [
+    1.82,
+    13.53
+   ],
+   "landing": [
+    5.980000019073486,
+    -0.7699999809265137
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 41398,
+   "time_s": 1379.93,
+   "player": "3",
+   "rally": 58,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 31.4,
+   "hitter": [
+    6.79,
+    -0.27
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 41448,
+   "time_s": 1381.6,
+   "player": "4",
+   "rally": 58,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    2.2,
+    13.53
+   ],
+   "landing": null,
+   "role": "third"
+  },
+  {
+   "frame": 41602,
+   "time_s": 1386.73,
+   "player": "1",
+   "rally": 59,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 10.9,
+   "hitter": [
+    4.67,
+    13.57
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 41635,
+   "time_s": 1387.83,
+   "player": "2",
+   "rally": 59,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 38.3,
+   "hitter": [
+    0.26,
+    0.18
+   ],
+   "landing": [
+    4.420000076293945,
+    12.260000228881836
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 41682,
+   "time_s": 1389.4,
+   "player": "1",
+   "rally": 59,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 47.0,
+   "hitter": [
+    5.08,
+    13.53
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 41951,
+   "time_s": 1398.37,
+   "player": "2",
+   "rally": 60,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 46.2,
+   "hitter": [
+    2.39,
+    -0.02
+   ],
+   "landing": [
+    4.139999866485596,
+    11.390000343322754
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 41990,
+   "time_s": 1399.67,
+   "player": "1",
+   "rally": 60,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 112.1,
+   "hitter": [
+    5.22,
+    13.58
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 42057,
+   "time_s": 1401.9,
+   "player": "3",
+   "rally": 60,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 3.6,
+   "hitter": [
+    4.47,
+    -2.07
+   ],
+   "landing": [
+    3.059999942779541,
+    -0.949999988079071
+   ],
+   "role": "third"
+  },
+  {
+   "frame": 42187,
+   "time_s": 1406.23,
+   "player": "2",
+   "rally": 61,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 45.2,
+   "hitter": [
+    3.75,
+    -0.01
+   ],
+   "landing": [
+    1.409999966621399,
+    9.75
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 42224,
+   "time_s": 1407.47,
+   "player": "4",
+   "rally": 61,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 44.3,
+   "hitter": [
+    0.97,
+    13.48
+   ],
+   "landing": [
+    1.7599999904632568,
+    2.440000057220459
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 42261,
+   "time_s": 1408.7,
+   "player": "2",
+   "rally": 61,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 18.1,
+   "hitter": [
+    1.51,
+    0.29
+   ],
+   "landing": [
+    4.599999904632568,
+    -3.25
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 42590,
+   "time_s": 1419.67,
+   "player": "3",
+   "rally": 62,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 1871.4,
+   "hitter": [
+    1.94,
+    0.01
+   ],
+   "landing": [
+    0.07000000029802322,
+    -17.219999313354492
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 42625,
+   "time_s": 1420.83,
+   "player": "1",
+   "rally": 62,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 45.7,
+   "hitter": [
+    5.27,
+    13.57
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 42663,
+   "time_s": 1422.1,
+   "player": "2",
+   "rally": 62,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    0.38,
+    -1.73
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 43270,
+   "time_s": 1442.33,
+   "player": "1",
+   "rally": 63,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 58.0,
+   "hitter": [
+    4.78,
+    13.58
+   ],
+   "landing": [
+    0.49000000953674316,
+    0.28999999165534973
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 43305,
+   "time_s": 1443.5,
+   "player": "3",
+   "rally": 63,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 41.3,
+   "hitter": [
+    0.63,
+    -0.22
+   ],
+   "landing": [
+    4.690000057220459,
+    12.109999656677246
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 43347,
+   "time_s": 1444.9,
+   "player": "1",
+   "rally": 63,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 58.8,
+   "hitter": [
+    5.05,
+    13.57
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 43766,
+   "time_s": 1458.87,
+   "player": "1",
+   "rally": 64,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 58.5,
+   "hitter": [
+    2.29,
+    13.55
+   ],
+   "landing": [
+    3.7200000286102295,
+    2.259999990463257
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 43798,
+   "time_s": 1459.93,
+   "player": "2",
+   "rally": 64,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    4.34,
+    -0.02
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 43850,
+   "time_s": 1461.67,
+   "player": "4",
+   "rally": 64,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    2.84,
+    13.56
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 44393,
+   "time_s": 1479.77,
+   "player": "4",
+   "rally": 65,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 45.6,
+   "hitter": [
+    3.85,
+    13.56
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 44429,
+   "time_s": 1480.97,
+   "player": "3",
+   "rally": 65,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 42.5,
+   "hitter": [
+    0.5,
+    -1.27
+   ],
+   "landing": [
+    0.03999999910593033,
+    9.729999542236328
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 44467,
+   "time_s": 1482.23,
+   "player": "4",
+   "rally": 65,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 12.9,
+   "hitter": [
+    1.18,
+    13.44
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 44812,
+   "time_s": 1493.73,
+   "player": "3",
+   "rally": 66,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 1788.4,
+   "hitter": [
+    1.14,
+    0.14
+   ],
+   "landing": [
+    -1.4900000095367432,
+    -16.209999084472656
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 44846,
+   "time_s": 1494.87,
+   "player": "4",
+   "rally": 66,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    6.91,
+    11.45
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 44886,
+   "time_s": 1496.2,
+   "player": "3",
+   "rally": 66,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    4.26,
+    1.21
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 45226,
+   "time_s": 1507.53,
+   "player": "2",
+   "rally": 67,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 53.6,
+   "hitter": [
+    3.84,
+    0.1
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 45262,
+   "time_s": 1508.73,
+   "player": "1",
+   "rally": 67,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 26.0,
+   "hitter": [
+    0.41,
+    12.56
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 45319,
+   "time_s": 1510.63,
+   "player": "2",
+   "rally": 67,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    1.39,
+    -1.14
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 45621,
+   "time_s": 1520.7,
+   "player": "4",
+   "rally": 68,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 131.1,
+   "hitter": [
+    3.74,
+    13.56
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 45658,
+   "time_s": 1521.93,
+   "player": "3",
+   "rally": 68,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 41.9,
+   "hitter": [
+    0.39,
+    -0.62
+   ],
+   "landing": [
+    1.9900000095367432,
+    9.739999771118164
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 45698,
+   "time_s": 1523.27,
+   "player": "4",
+   "rally": 68,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 39.7,
+   "hitter": [
+    2.07,
+    13.27
+   ],
+   "landing": [
+    5.070000171661377,
+    3.4200000762939453
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 46023,
+   "time_s": 1534.1,
+   "player": "4",
+   "rally": 69,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 61.6,
+   "hitter": [
+    1.81,
+    13.54
+   ],
+   "landing": [
+    4.800000190734863,
+    -0.4099999964237213
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 46057,
+   "time_s": 1535.23,
+   "player": "2",
+   "rally": 69,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 40.2,
+   "hitter": [
+    4.46,
+    -0.22
+   ],
+   "landing": [
+    1.9800000190734863,
+    11.800000190734863
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 46100,
+   "time_s": 1536.67,
+   "player": "4",
+   "rally": 69,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 30.4,
+   "hitter": [
+    1.86,
+    13.54
+   ],
+   "landing": [
+    4.579999923706055,
+    6.440000057220459
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 46463,
+   "time_s": 1548.77,
+   "player": "3",
+   "rally": 70,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": null,
+   "hitter": [
+    2.81,
+    -0.68
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 46554,
+   "time_s": 1551.8,
+   "player": "3",
+   "rally": 70,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    1.38,
+    -0.17
+   ],
+   "landing": null,
+   "role": "third"
+  },
+  {
+   "frame": 47052,
+   "time_s": 1568.4,
+   "player": "4",
+   "rally": 71,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 56.6,
+   "hitter": [
+    1.3,
+    0.11
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 47084,
+   "time_s": 1569.47,
+   "player": "1",
+   "rally": 71,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 27.5,
+   "hitter": [
+    5.84,
+    12.96
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 47136,
+   "time_s": 1571.2,
+   "player": "4",
+   "rally": 71,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    3.21,
+    -0.04
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 47364,
+   "time_s": 1578.8,
+   "player": "4",
+   "rally": 72,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 510.3,
+   "hitter": [
+    3.38,
+    -0.68
+   ],
+   "landing": [
+    2.890000104904175,
+    -14.84000015258789
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 47399,
+   "time_s": 1579.97,
+   "player": "3",
+   "rally": 72,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 41.4,
+   "hitter": [
+    1.28,
+    13.55
+   ],
+   "landing": [
+    2.180000066757202,
+    1.309999942779541
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 47440,
+   "time_s": 1581.33,
+   "player": "4",
+   "rally": 72,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    2.8,
+    -0.3
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 47694,
+   "time_s": 1589.8,
+   "player": "3",
+   "rally": 73,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": null,
+   "hitter": [
+    3.19,
+    13.55
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 47755,
+   "time_s": 1591.83,
+   "player": "3",
+   "rally": 73,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 43.2,
+   "hitter": [
+    2.4,
+    12.26
+   ],
+   "landing": [
+    2.069999933242798,
+    -2.1500000953674316
+   ],
+   "role": "third"
+  },
+  {
+   "frame": 47832,
+   "time_s": 1594.4,
+   "player": "4",
+   "rally": 74,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 28.4,
+   "hitter": [
+    4.29,
+    0.08
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 47869,
+   "time_s": 1595.63,
+   "player": "3",
+   "rally": 74,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 66.5,
+   "hitter": [
+    1.71,
+    9.45
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 47911,
+   "time_s": 1597.03,
+   "player": "4",
+   "rally": 74,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 19.4,
+   "hitter": [
+    4.01,
+    0.25
+   ],
+   "landing": [
+    5.269999980926514,
+    6.400000095367432
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 48139,
+   "time_s": 1604.63,
+   "player": "1",
+   "rally": 75,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 56.9,
+   "hitter": [
+    4.73,
+    13.58
+   ],
+   "landing": [
+    1.4299999475479126,
+    1.3799999952316284
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 48172,
+   "time_s": 1605.73,
+   "player": "4",
+   "rally": 75,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 40.7,
+   "hitter": [
+    0.99,
+    -1.24
+   ],
+   "landing": [
+    3.7899999618530273,
+    12.050000190734863
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 48216,
+   "time_s": 1607.2,
+   "player": "3",
+   "rally": 75,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 35.9,
+   "hitter": [
+    3.68,
+    13.58
+   ],
+   "landing": [
+    1.7699999809265137,
+    -6.96999979019165
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 48531,
+   "time_s": 1617.7,
+   "player": "4",
+   "rally": 76,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 58.8,
+   "hitter": [
+    1.53,
+    13.54
+   ],
+   "landing": [
+    4.329999923706055,
+    1.3300000429153442
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 48564,
+   "time_s": 1618.8,
+   "player": "2",
+   "rally": 76,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 37.6,
+   "hitter": [
+    5.4,
+    -0.34
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 48604,
+   "time_s": 1620.13,
+   "player": "1",
+   "rally": 76,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 75.8,
+   "hitter": [
+    4.39,
+    13.56
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 48957,
+   "time_s": 1631.9,
+   "player": "3",
+   "rally": 77,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 47.1,
+   "hitter": [
+    2.37,
+    0.08
+   ],
+   "landing": [
+    4.489999771118164,
+    10.760000228881836
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 48995,
+   "time_s": 1633.17,
+   "player": "1",
+   "rally": 77,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 107.6,
+   "hitter": [
+    6.51,
+    12.11
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 49040,
+   "time_s": 1634.67,
+   "player": "2",
+   "rally": 77,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    2.83,
+    -0.24
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 49643,
+   "time_s": 1654.77,
+   "player": "3",
+   "rally": 78,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 1711.1,
+   "hitter": [
+    1.22,
+    -0.07
+   ],
+   "landing": [
+    -1.2599999904632568,
+    -15.720000267028809
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 49677,
+   "time_s": 1655.9,
+   "player": "1",
+   "rally": 78,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 124.1,
+   "hitter": [
+    5.2,
+    13.57
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 49716,
+   "time_s": 1657.2,
+   "player": "3",
+   "rally": 78,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    2.62,
+    -0.36
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 50104,
+   "time_s": 1670.13,
+   "player": "3",
+   "rally": 79,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 865.2,
+   "hitter": [
+    3.51,
+    -0.22
+   ],
+   "landing": [
+    3.069999933242798,
+    -16.239999771118164
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 50139,
+   "time_s": 1671.3,
+   "player": "4",
+   "rally": 79,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 108.0,
+   "hitter": [
+    0.93,
+    13.38
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 50182,
+   "time_s": 1672.73,
+   "player": "2",
+   "rally": 79,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    1.32,
+    -0.93
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 50460,
+   "time_s": 1682.0,
+   "player": "1",
+   "rally": 80,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 60.2,
+   "hitter": [
+    4.57,
+    13.58
+   ],
+   "landing": [
+    1.1100000143051147,
+    1.2400000095367432
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 50492,
+   "time_s": 1683.07,
+   "player": "2",
+   "rally": 80,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 41.0,
+   "hitter": [
+    0.16,
+    0.83
+   ],
+   "landing": [
+    4.099999904632568,
+    12.699999809265137
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 50536,
+   "time_s": 1684.53,
+   "player": "1",
+   "rally": 80,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 27.7,
+   "hitter": [
+    5.33,
+    13.56
+   ],
+   "landing": [
+    3.200000047683716,
+    1.9700000286102295
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 50814,
+   "time_s": 1693.8,
+   "player": "1",
+   "rally": 81,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 60.1,
+   "hitter": [
+    1.6,
+    13.53
+   ],
+   "landing": [
+    4.840000152587891,
+    1.7300000190734863
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 50848,
+   "time_s": 1694.93,
+   "player": "3",
+   "rally": 81,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 37.1,
+   "hitter": [
+    5.29,
+    -0.7
+   ],
+   "landing": [
+    1.8799999952316284,
+    11.90999984741211
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 50895,
+   "time_s": 1696.5,
+   "player": "4",
+   "rally": 81,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 91.1,
+   "hitter": [
+    1.21,
+    13.51
+   ],
+   "landing": [
+    6.869999885559082,
+    -8.5600004196167
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 51417,
+   "time_s": 1713.9,
+   "player": "4",
+   "rally": 82,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": null,
+   "hitter": [
+    4.01,
+    13.58
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 51449,
+   "time_s": 1714.97,
+   "player": "2",
+   "rally": 82,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 39.5,
+   "hitter": [
+    0.79,
+    -0.21
+   ],
+   "landing": [
+    4.46999979019165,
+    11.649999618530273
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 51494,
+   "time_s": 1716.47,
+   "player": "1",
+   "rally": 82,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 8.4,
+   "hitter": [
+    6.17,
+    12.61
+   ],
+   "landing": [
+    3.3499999046325684,
+    11.300000190734863
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 51992,
+   "time_s": 1733.07,
+   "player": "2",
+   "rally": 83,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 42.6,
+   "hitter": [
+    2.53,
+    0.14
+   ],
+   "landing": [
+    4.320000171661377,
+    10.640000343322754
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 52032,
+   "time_s": 1734.4,
+   "player": "4",
+   "rally": 83,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    5.27,
+    13.58
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 52069,
+   "time_s": 1735.63,
+   "player": "3",
+   "rally": 83,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 38.3,
+   "hitter": [
+    5.17,
+    0.61
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 52348,
+   "time_s": 1744.93,
+   "player": "3",
+   "rally": 84,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 43.3,
+   "hitter": [
+    3.8,
+    0.08
+   ],
+   "landing": [
+    1.7599999904632568,
+    11.520000457763672
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 52388,
+   "time_s": 1746.27,
+   "player": "1",
+   "rally": 84,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 48.2,
+   "hitter": [
+    1.01,
+    13.53
+   ],
+   "landing": [
+    1.5800000429153442,
+    1.4800000190734863
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 52423,
+   "time_s": 1747.43,
+   "player": "3",
+   "rally": 84,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 0.7,
+   "hitter": [
+    1.27,
+    0.67
+   ],
+   "landing": [
+    1.690000057220459,
+    2.740000009536743
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 52869,
+   "time_s": 1762.3,
+   "player": "4",
+   "rally": 85,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 47.1,
+   "hitter": [
+    1.68,
+    -0.37
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 52902,
+   "time_s": 1763.4,
+   "player": "3",
+   "rally": 85,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 121.2,
+   "hitter": [
+    5.34,
+    13.56
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 52942,
+   "time_s": 1764.73,
+   "player": "2",
+   "rally": 85,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    0.3,
+    -2.99
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 53339,
+   "time_s": 1777.97,
+   "player": "4",
+   "rally": 86,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 584.5,
+   "hitter": [
+    3.44,
+    -0.08
+   ],
+   "landing": [
+    2.930000066757202,
+    -16.309999465942383
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 53374,
+   "time_s": 1779.13,
+   "player": "1",
+   "rally": 86,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 139.7,
+   "hitter": [
+    1.43,
+    13.52
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 53412,
+   "time_s": 1780.4,
+   "player": "2",
+   "rally": 86,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    0.14,
+    1.25
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 53906,
+   "time_s": 1796.87,
+   "player": "4",
+   "rally": 87,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": null,
+   "hitter": [
+    3.73,
+    13.58
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 53938,
+   "time_s": 1797.93,
+   "player": "2",
+   "rally": 87,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 49.1,
+   "hitter": [
+    0.42,
+    -2.98
+   ],
+   "landing": [
+    3.0999999046325684,
+    10.869999885559082
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 53980,
+   "time_s": 1799.33,
+   "player": "4",
+   "rally": 87,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 61.8,
+   "hitter": [
+    2.79,
+    13.56
+   ],
+   "landing": [
+    5.679999828338623,
+    -0.44999998807907104
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 54550,
+   "time_s": 1818.33,
+   "player": "4",
+   "rally": 88,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 46.5,
+   "hitter": [
+    1.74,
+    13.54
+   ],
+   "landing": [
+    4.329999923706055,
+    5.329999923706055
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 54649,
+   "time_s": 1821.63,
+   "player": "1",
+   "rally": 88,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 3.1,
+   "hitter": [
+    5.78,
+    12.64
+   ],
+   "landing": [
+    4.730000019073486,
+    12.279999732971191
+   ],
+   "role": "third"
+  },
+  {
+   "frame": 55216,
+   "time_s": 1840.53,
+   "player": "2",
+   "rally": 89,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 42.7,
+   "hitter": [
+    2.46,
+    0.12
+   ],
+   "landing": [
+    4.320000171661377,
+    9.829999923706055
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 55258,
+   "time_s": 1841.93,
+   "player": "1",
+   "rally": 89,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 15.8,
+   "hitter": [
+    4.81,
+    13.58
+   ],
+   "landing": [
+    3.690000057220459,
+    -6.150000095367432
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 55422,
+   "time_s": 1847.4,
+   "player": "2",
+   "rally": 90,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 41.0,
+   "hitter": [
+    3.62,
+    -0.0
+   ],
+   "landing": [
+    0.9399999976158142,
+    11.0600004196167
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 55461,
+   "time_s": 1848.7,
+   "player": "4",
+   "rally": 90,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 117.3,
+   "hitter": [
+    0.86,
+    13.4
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 55497,
+   "time_s": 1849.9,
+   "player": "3",
+   "rally": 90,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 44.5,
+   "hitter": [
+    4.44,
+    0.19
+   ],
+   "landing": [
+    4.369999885559082,
+    -12.15999984741211
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 55805,
+   "time_s": 1860.17,
+   "player": "3",
+   "rally": 91,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 2418.2,
+   "hitter": [
+    0.97,
+    0.33
+   ],
+   "landing": [
+    -2.609999895095825,
+    -21.770000457763672
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 55842,
+   "time_s": 1861.4,
+   "player": "1",
+   "rally": 91,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 126.1,
+   "hitter": [
+    5.19,
+    13.55
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 55882,
+   "time_s": 1862.73,
+   "player": "2",
+   "rally": 91,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 41.3,
+   "hitter": [
+    0.37,
+    0.62
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 56320,
+   "time_s": 1877.33,
+   "player": "1",
+   "rally": 92,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 63.0,
+   "hitter": [
+    4.76,
+    13.58
+   ],
+   "landing": [
+    1.4900000095367432,
+    -0.029999999329447746
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 56356,
+   "time_s": 1878.53,
+   "player": "3",
+   "rally": 92,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 32.3,
+   "hitter": [
+    1.44,
+    -1.4
+   ],
+   "landing": [
+    1.2300000190734863,
+    -2.5799999237060547
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 56400,
+   "time_s": 1880.0,
+   "player": "4",
+   "rally": 92,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 141.9,
+   "hitter": [
+    2.14,
+    13.54
+   ],
+   "landing": [
+    8.239999771118164,
+    -10.670000076293945
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 56855,
+   "time_s": 1895.17,
+   "player": "4",
+   "rally": 93,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 125.4,
+   "hitter": [
+    2.23,
+    13.55
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 56888,
+   "time_s": 1896.27,
+   "player": "2",
+   "rally": 93,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 27.1,
+   "hitter": [
+    4.39,
+    -0.12
+   ],
+   "landing": [
+    4.190000057220459,
+    6.400000095367432
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 57136,
+   "time_s": 1904.53,
+   "player": "4",
+   "rally": 94,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 54.4,
+   "hitter": [
+    3.62,
+    13.57
+   ],
+   "landing": [
+    0.6200000047683716,
+    -0.20999999344348907
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 57174,
+   "time_s": 1905.8,
+   "player": "3",
+   "rally": 94,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 39.8,
+   "hitter": [
+    0.9,
+    0.08
+   ],
+   "landing": [
+    4.670000076293945,
+    11.260000228881836
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 57218,
+   "time_s": 1907.27,
+   "player": "1",
+   "rally": 94,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 59.3,
+   "hitter": [
+    5.14,
+    13.56
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 57565,
+   "time_s": 1918.83,
+   "player": "3",
+   "rally": 95,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 1959.4,
+   "hitter": [
+    1.71,
+    -0.14
+   ],
+   "landing": [
+    -0.4699999988079071,
+    -18.149999618530273
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 57598,
+   "time_s": 1919.93,
+   "player": "4",
+   "rally": 95,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 96.1,
+   "hitter": [
+    6.97,
+    11.29
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 57641,
+   "time_s": 1921.37,
+   "player": "2",
+   "rally": 95,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 40.7,
+   "hitter": [
+    5.04,
+    -1.02
+   ],
+   "landing": [
+    4.960000038146973,
+    13.289999961853027
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 57972,
+   "time_s": 1932.4,
+   "player": "2",
+   "rally": 96,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 40.8,
+   "hitter": [
+    3.38,
+    0.09
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 58004,
+   "time_s": 1933.47,
+   "player": "1",
+   "rally": 96,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    -0.16,
+    11.66
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 58054,
+   "time_s": 1935.13,
+   "player": "2",
+   "rally": 96,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    3.81,
+    -1.68
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 58827,
+   "time_s": 1960.9,
+   "player": "2",
+   "rally": 97,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 45.2,
+   "hitter": [
+    2.42,
+    0.06
+   ],
+   "landing": [
+    4.789999961853027,
+    11.970000267028809
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 58866,
+   "time_s": 1962.2,
+   "player": "4",
+   "rally": 97,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 143.7,
+   "hitter": [
+    5.11,
+    13.54
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 58911,
+   "time_s": 1963.7,
+   "player": "2",
+   "rally": 97,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    1.48,
+    -2.24
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 59698,
+   "time_s": 1989.93,
+   "player": "3",
+   "rally": 98,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 45.1,
+   "hitter": [
+    3.48,
+    -0.01
+   ],
+   "landing": [
+    1.159999966621399,
+    10.170000076293945
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 59735,
+   "time_s": 1991.17,
+   "player": "1",
+   "rally": 98,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 69.5,
+   "hitter": [
+    -0.63,
+    10.96
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 59777,
+   "time_s": 1992.57,
+   "player": "2",
+   "rally": 98,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 11.2,
+   "hitter": [
+    3.51,
+    -0.27
+   ],
+   "landing": [
+    4.139999866485596,
+    9.579999923706055
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 60250,
+   "time_s": 2008.33,
+   "player": "2",
+   "rally": 99,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 46.9,
+   "hitter": [
+    2.48,
+    0.02
+   ],
+   "landing": [
+    5.760000228881836,
+    12.630000114440918
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 60285,
+   "time_s": 2009.5,
+   "player": "4",
+   "rally": 99,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 35.3,
+   "hitter": [
+    5.36,
+    13.57
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 60326,
+   "time_s": 2010.87,
+   "player": "3",
+   "rally": 99,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 57.4,
+   "hitter": [
+    3.91,
+    0.25
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 61076,
+   "time_s": 2035.87,
+   "player": "2",
+   "rally": 100,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 43.2,
+   "hitter": [
+    3.65,
+    -0.04
+   ],
+   "landing": [
+    1.2699999809265137,
+    12.140000343322754
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 61115,
+   "time_s": 2037.17,
+   "player": "1",
+   "rally": 100,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 38.8,
+   "hitter": [
+    0.87,
+    13.31
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 61153,
+   "time_s": 2038.43,
+   "player": "3",
+   "rally": 100,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    4.34,
+    0.1
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 61156,
+   "time_s": 2038.53,
+   "player": "2",
+   "rally": 101,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 50.8,
+   "hitter": [
+    5.62,
+    0.01
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 61185,
+   "time_s": 2039.5,
+   "player": "1",
+   "rally": 101,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 10.2,
+   "hitter": [
+    4.3,
+    13.59
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 61233,
+   "time_s": 2041.1,
+   "player": "2",
+   "rally": 101,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    3.95,
+    4.46
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 61522,
+   "time_s": 2050.73,
+   "player": "2",
+   "rally": 102,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 44.0,
+   "hitter": [
+    2.3,
+    0.18
+   ],
+   "landing": [
+    4.880000114440918,
+    11.289999961853027
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 61560,
+   "time_s": 2052.0,
+   "player": "4",
+   "rally": 102,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 49.0,
+   "hitter": [
+    5.02,
+    13.56
+   ],
+   "landing": [
+    0.9200000166893005,
+    1.5499999523162842
+   ],
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 61597,
+   "time_s": 2053.23,
+   "player": "2",
+   "rally": 102,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    0.86,
+    0.5
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 61851,
+   "time_s": 2061.7,
+   "player": "2",
+   "rally": 103,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 48.6,
+   "hitter": [
+    3.64,
+    -0.09
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 61890,
+   "time_s": 2063.0,
+   "player": "1",
+   "rally": 103,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 93.4,
+   "hitter": [
+    0.82,
+    13.11
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 61933,
+   "time_s": 2064.43,
+   "player": "3",
+   "rally": 103,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": null,
+   "hitter": [
+    5.75,
+    0.33
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 62223,
+   "time_s": 2074.1,
+   "player": "2",
+   "rally": 104,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 45.7,
+   "hitter": [
+    2.49,
+    0.06
+   ],
+   "landing": null,
+   "role": "serve"
+  },
+  {
+   "frame": 62261,
+   "time_s": 2075.37,
+   "player": "4",
+   "rally": 104,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": 22.3,
+   "hitter": [
+    6.83,
+    11.54
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 62300,
+   "time_s": 2076.67,
+   "player": "2",
+   "rally": 104,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 14.0,
+   "hitter": [
+    1.53,
+    5.49
+   ],
+   "landing": [
+    4.690000057220459,
+    8.930000305175781
+   ],
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 70500,
+   "time_s": 2350.0,
+   "player": "1",
+   "rally": 105,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 46.8,
+   "hitter": [
+    1.9,
+    0.15
+   ],
+   "landing": [
+    4.96999979019165,
+    11.880000114440918
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 70535,
+   "time_s": 2351.17,
+   "player": "2",
+   "rally": 105,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    5.99,
+    12.59
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 70579,
+   "time_s": 2352.63,
+   "player": "4",
+   "rally": 105,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 31.8,
+   "hitter": [
+    3.35,
+    0.06
+   ],
+   "landing": null,
+   "model_third": true,
+   "role": "third"
+  },
+  {
+   "frame": 70972,
+   "time_s": 2365.73,
+   "player": "2",
+   "rally": 106,
+   "n_in_rally": 1,
+   "type": "serve",
+   "speed_kmh": 47.2,
+   "hitter": [
+    3.93,
+    13.56
+   ],
+   "landing": [
+    1.309999942779541,
+    -1.0499999523162842
+   ],
+   "role": "serve"
+  },
+  {
+   "frame": 71013,
+   "time_s": 2367.1,
+   "player": "1",
+   "rally": 106,
+   "n_in_rally": 2,
+   "type": "return",
+   "speed_kmh": null,
+   "hitter": [
+    1.59,
+    3.03
+   ],
+   "landing": null,
+   "model_return": true,
+   "role": "return"
+  },
+  {
+   "frame": 71066,
+   "time_s": 2368.87,
+   "player": "2",
+   "rally": 106,
+   "n_in_rally": 3,
+   "type": "third",
+   "speed_kmh": 174.1,
+   "hitter": [
+    4.64,
+    13.48
+   ],
+   "landing": [
+    -3.75,
+    -29.229999542236328
+   ],
+   "model_third": true,
+   "role": "third"
+  }
+ ],
+ "events": [
+  {
+   "frame": 3920,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1739.7,
+    661.9
+   ],
+   "serve": true
+  },
+  {
+   "frame": 3941,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    777.8,
+    510.0
+   ]
+  },
+  {
+   "frame": 3942,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    775.0,
+    501.5
+   ]
+  },
+  {
+   "frame": 3962,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    654.0,
+    746.0
+   ]
+  },
+  {
+   "frame": 3983,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    319.2,
+    1015.0
+   ]
+  },
+  {
+   "frame": 6121,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    393.8,
+    783.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 6147,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1052.5,
+    546.0
+   ]
+  },
+  {
+   "frame": 6159,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1068.0,
+    417.0
+   ]
+  },
+  {
+   "frame": 6197,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1177.0,
+    792.5
+   ]
+  },
+  {
+   "frame": 6209,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1290.0,
+    792.0
+   ]
+  },
+  {
+   "frame": 6226,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    781.0,
+    504.0
+   ]
+  },
+  {
+   "frame": 7248,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1682.0,
+    754.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 7280,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    232.1,
+    723.0
+   ]
+  },
+  {
+   "frame": 7347,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1052.0,
+    630.5
+   ]
+  },
+  {
+   "frame": 7370,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    755.5,
+    503.5
+   ]
+  },
+  {
+   "frame": 7492,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    905.5,
+    799.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 7519,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    995.8,
+    511.5
+   ]
+  },
+  {
+   "frame": 7579,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    901.5,
+    779.0
+   ]
+  },
+  {
+   "frame": 7606,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    907.5,
+    898.2
+   ]
+  },
+  {
+   "frame": 7731,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    881.0,
+    830.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 7755,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    882.0,
+    679.0
+   ]
+  },
+  {
+   "frame": 7764,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1015.9,
+    478.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 7773,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    996.0,
+    343.5
+   ]
+  },
+  {
+   "frame": 7819,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    758.0,
+    482.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 8720,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1037.6,
+    483.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 8760,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 11446,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1338.0,
+    695.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 11838,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1015.0,
+    458.2
+   ]
+  },
+  {
+   "frame": 11872,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    787.0,
+    531.0
+   ]
+  },
+  {
+   "frame": 12266,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    782.0,
+    491.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 12294,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1216.0,
+    755.0
+   ]
+  },
+  {
+   "frame": 12305,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1501.0,
+    798.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 12332,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    884.0,
+    548.0
+   ]
+  },
+  {
+   "frame": 12340,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    871.5,
+    494.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 12394,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1020.0,
+    568.0
+   ]
+  },
+  {
+   "frame": 12662,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1512.2,
+    819.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 12685,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    788.5,
+    534.0
+   ]
+  },
+  {
+   "frame": 12695,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    778.0,
+    483.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 12725,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    808.0,
+    756.0
+   ]
+  },
+  {
+   "frame": 12736,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    762.0,
+    737.8
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 12793,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1110.0,
+    787.0
+   ]
+  },
+  {
+   "frame": 13155,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    462.5,
+    826.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 13185,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1132.0,
+    529.5
+   ]
+  },
+  {
+   "frame": 13189,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1142.0,
+    501.8
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 13214,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1308.0,
+    596.0
+   ]
+  },
+  {
+   "frame": 13224,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1283.2,
+    596.3
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 13236,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1096.0,
+    547.0
+   ]
+  },
+  {
+   "frame": 13436,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 13462,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1222.0,
+    785.0
+   ]
+  },
+  {
+   "frame": 13473,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1538.0,
+    839.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 13506,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1034.0,
+    537.5
+   ]
+  },
+  {
+   "frame": 13513,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1030.0,
+    489.8
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 13540,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1180.0,
+    521.0
+   ]
+  },
+  {
+   "frame": 13933,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    983.7,
+    486.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 13958,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    563.0,
+    788.0
+   ]
+  },
+  {
+   "frame": 13968,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 13981,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    814.0,
+    390.8
+   ]
+  },
+  {
+   "frame": 14002,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1014.0,
+    532.5
+   ]
+  },
+  {
+   "frame": 14008,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1027.8,
+    493.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 14283,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1510.0,
+    813.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 14308,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    805.0,
+    535.0
+   ]
+  },
+  {
+   "frame": 14318,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    803.5,
+    481.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 14354,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    984.0,
+    739.0
+   ]
+  },
+  {
+   "frame": 14365,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1044.5,
+    717.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 14380,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1136.2,
+    462.0
+   ]
+  },
+  {
+   "frame": 14693,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    737.0,
+    795.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 14719,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1014.0,
+    531.5
+   ]
+  },
+  {
+   "frame": 14727,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1096.0,
+    512.9
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 14758,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1252.0,
+    808.5
+   ]
+  },
+  {
+   "frame": 14767,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1321.0,
+    677.7
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 14792,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1036.0,
+    520.0
+   ]
+  },
+  {
+   "frame": 15225,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1617.0,
+    805.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 15253,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    780.0,
+    522.0
+   ]
+  },
+  {
+   "frame": 15259,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    783.5,
+    476.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 15295,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1142.0,
+    817.0
+   ]
+  },
+  {
+   "frame": 15305,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1271.2,
+    730.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 15566,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    539.0,
+    807.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 15593,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1060.0,
+    538.5
+   ]
+  },
+  {
+   "frame": 15600,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1064.8,
+    472.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 15633,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1240.0,
+    756.0
+   ]
+  },
+  {
+   "frame": 15642,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1332.0,
+    723.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 16112,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    797.1,
+    484.1
+   ],
+   "serve": true
+  },
+  {
+   "frame": 16139,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1151.0,
+    729.0
+   ]
+  },
+  {
+   "frame": 16153,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1448.2,
+    722.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 16183,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1068.0,
+    537.0
+   ]
+  },
+  {
+   "frame": 16190,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1068.5,
+    492.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 16424,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1003.9,
+    490.8
+   ],
+   "serve": true
+  },
+  {
+   "frame": 16450,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    680.5,
+    703.0
+   ]
+  },
+  {
+   "frame": 16465,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    294.6,
+    752.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 16490,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    775.0,
+    564.0
+   ]
+  },
+  {
+   "frame": 16500,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    789.5,
+    516.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 16820,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 16842,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1184.0,
+    780.0
+   ]
+  },
+  {
+   "frame": 16851,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1606.0,
+    842.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 16883,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    965.0,
+    541.0
+   ]
+  },
+  {
+   "frame": 16893,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    959.5,
+    490.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 17392,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    990.0,
+    482.2
+   ],
+   "serve": true
+  },
+  {
+   "frame": 17393,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    987.5,
+    485.0
+   ]
+  },
+  {
+   "frame": 17417,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    550.0,
+    760.0
+   ]
+  },
+  {
+   "frame": 17428,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 17486,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    278.8,
+    512.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 17768,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1529.8,
+    813.8
+   ],
+   "serve": true
+  },
+  {
+   "frame": 17793,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    824.0,
+    541.0
+   ]
+  },
+  {
+   "frame": 17803,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    821.0,
+    489.2
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 17839,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1142.0,
+    765.0
+   ]
+  },
+  {
+   "frame": 17849,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1252.0,
+    741.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 18629,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    508.0,
+    845.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 18650,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1030.0,
+    556.0
+   ]
+  },
+  {
+   "frame": 18660,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1038.0,
+    484.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 18688,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    995.0,
+    744.0
+   ]
+  },
+  {
+   "frame": 18698,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    994.5,
+    733.2
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 19116,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 19140,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1191.2,
+    711.0
+   ]
+  },
+  {
+   "frame": 19154,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1510.5,
+    751.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 19167,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1034.0,
+    445.5
+   ]
+  },
+  {
+   "frame": 19181,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    932.0,
+    528.5
+   ]
+  },
+  {
+   "frame": 19188,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    972.0,
+    507.8
+   ]
+  },
+  {
+   "frame": 19192,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    912.0,
+    498.6
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 19240,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    994.0,
+    532.0
+   ]
+  },
+  {
+   "frame": 19753,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    982.0,
+    488.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 19763,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    865.5,
+    393.5
+   ]
+  },
+  {
+   "frame": 19780,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    159.4,
+    832.0
+   ]
+  },
+  {
+   "frame": 19789,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    958.6,
+    505.2
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 19822,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1014.0,
+    566.0
+   ]
+  },
+  {
+   "frame": 19832,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1043.0,
+    504.2
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 19864,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    759.5,
+    510.0
+   ]
+  },
+  {
+   "frame": 20392,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1577.0,
+    819.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 20419,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    815.5,
+    530.5
+   ]
+  },
+  {
+   "frame": 20427,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    811.0,
+    477.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 20461,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    936.0,
+    754.0
+   ]
+  },
+  {
+   "frame": 20471,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    957.0,
+    699.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 20543,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1405.0,
+    756.0
+   ]
+  },
+  {
+   "frame": 20549,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1392.0,
+    748.0
+   ]
+  },
+  {
+   "frame": 20723,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    485.0,
+    889.0
+   ]
+  },
+  {
+   "frame": 20777,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    484.0,
+    830.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 20799,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    972.2,
+    554.0
+   ]
+  },
+  {
+   "frame": 20809,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    974.5,
+    473.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 20845,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    838.0,
+    966.5
+   ]
+  },
+  {
+   "frame": 20852,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    813.5,
+    919.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 20919,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1510.0,
+    881.0
+   ]
+  },
+  {
+   "frame": 20929,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1501.0,
+    753.5
+   ]
+  },
+  {
+   "frame": 21058,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    786.0,
+    491.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 21086,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1216.0,
+    761.0
+   ]
+  },
+  {
+   "frame": 21097,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1400.0,
+    658.8
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 21120,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1012.0,
+    537.0
+   ]
+  },
+  {
+   "frame": 21130,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1000.0,
+    505.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 21153,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1076.0,
+    523.0
+   ]
+  },
+  {
+   "frame": 21565,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1016.5,
+    482.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 21566,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1014.5,
+    488.0
+   ]
+  },
+  {
+   "frame": 21599,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 21612,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    792.5,
+    403.0
+   ]
+  },
+  {
+   "frame": 21632,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1080.0,
+    552.5
+   ]
+  },
+  {
+   "frame": 21639,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1104.0,
+    501.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 21892,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1468.0,
+    803.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 21922,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    838.0,
+    520.0
+   ]
+  },
+  {
+   "frame": 21926,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    842.8,
+    503.6
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 21949,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    963.0,
+    612.5
+   ]
+  },
+  {
+   "frame": 22138,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    559.0,
+    804.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 22166,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1067.9,
+    541.5
+   ]
+  },
+  {
+   "frame": 22173,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1064.0,
+    481.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 22190,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    932.1,
+    507.0
+   ]
+  },
+  {
+   "frame": 22209,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    803.5,
+    631.0
+   ]
+  },
+  {
+   "frame": 22516,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 22542,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1229.8,
+    762.0
+   ]
+  },
+  {
+   "frame": 22553,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1478.0,
+    705.3
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 22563,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1038.5,
+    446.5
+   ]
+  },
+  {
+   "frame": 22596,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 22637,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1286.0,
+    627.0
+   ]
+  },
+  {
+   "frame": 22959,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    986.0,
+    489.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 22960,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    980.8,
+    489.5
+   ]
+  },
+  {
+   "frame": 22970,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    863.8,
+    420.8
+   ]
+  },
+  {
+   "frame": 22992,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 23032,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    989.0,
+    550.0
+   ]
+  },
+  {
+   "frame": 23040,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1003.0,
+    486.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 23623,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1566.0,
+    811.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 23648,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    843.5,
+    547.0
+   ]
+  },
+  {
+   "frame": 23659,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    836.0,
+    489.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 23695,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    895.0,
+    783.5
+   ]
+  },
+  {
+   "frame": 23707,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    854.5,
+    707.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 23728,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    878.0,
+    507.0
+   ]
+  },
+  {
+   "frame": 24098,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    834.0,
+    807.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 24123,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1067.5,
+    552.5
+   ]
+  },
+  {
+   "frame": 24132,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1097.0,
+    489.6
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 24166,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1076.0,
+    774.0
+   ]
+  },
+  {
+   "frame": 24177,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1033.0,
+    703.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 24194,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1095.0,
+    473.5
+   ]
+  },
+  {
+   "frame": 24889,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1442.8,
+    752.2
+   ],
+   "serve": true
+  },
+  {
+   "frame": 24912,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    871.0,
+    532.0
+   ]
+  },
+  {
+   "frame": 24924,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    859.0,
+    496.2
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 24928,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    862.0,
+    467.5
+   ]
+  },
+  {
+   "frame": 24963,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    823.0,
+    783.0
+   ]
+  },
+  {
+   "frame": 24975,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    764.0,
+    702.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 24998,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    900.0,
+    611.2
+   ]
+  },
+  {
+   "frame": 25015,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    899.0,
+    634.0
+   ]
+  },
+  {
+   "frame": 25240,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    408.2,
+    852.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 25267,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1012.0,
+    536.0
+   ]
+  },
+  {
+   "frame": 25273,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1005.9,
+    469.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 25279,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    978.5,
+    400.2
+   ]
+  },
+  {
+   "frame": 25314,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    478.5,
+    941.5
+   ]
+  },
+  {
+   "frame": 25325,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    275.0,
+    778.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 25379,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    957.0,
+    520.0
+   ]
+  },
+  {
+   "frame": 25725,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 25750,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    712.5,
+    530.5
+   ]
+  },
+  {
+   "frame": 25757,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    669.5,
+    482.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 25794,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    692.0,
+    737.0
+   ]
+  },
+  {
+   "frame": 25805,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    694.5,
+    654.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 25832,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    822.0,
+    532.0
+   ]
+  },
+  {
+   "frame": 26242,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    329.0,
+    857.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 26266,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1056.5,
+    549.5
+   ]
+  },
+  {
+   "frame": 26274,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1064.0,
+    471.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 26306,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1081.0,
+    757.0
+   ]
+  },
+  {
+   "frame": 26316,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1130.2,
+    697.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 26692,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    844.0,
+    478.2
+   ],
+   "serve": true
+  },
+  {
+   "frame": 26719,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1213.0,
+    755.0
+   ]
+  },
+  {
+   "frame": 26729,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1404.6,
+    760.2
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 26758,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1101.0,
+    554.0
+   ]
+  },
+  {
+   "frame": 26767,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1101.0,
+    506.8
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 27255,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    941.5,
+    480.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 27256,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    940.1,
+    485.5
+   ]
+  },
+  {
+   "frame": 27280,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    398.2,
+    739.5
+   ]
+  },
+  {
+   "frame": 27290,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 27321,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    664.5,
+    555.5
+   ]
+  },
+  {
+   "frame": 27331,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    685.5,
+    496.8
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 27954,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    765.0,
+    485.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 27988,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 28027,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    857.0,
+    579.0
+   ]
+  },
+  {
+   "frame": 28036,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    819.0,
+    495.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 28370,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    952.0,
+    480.8
+   ],
+   "serve": true
+  },
+  {
+   "frame": 28371,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    949.2,
+    485.0
+   ]
+  },
+  {
+   "frame": 28408,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 28444,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    792.0,
+    552.0
+   ]
+  },
+  {
+   "frame": 28453,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    808.0,
+    488.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 28471,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1023.0,
+    471.5
+   ]
+  },
+  {
+   "frame": 28495,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    888.0,
+    553.0
+   ]
+  },
+  {
+   "frame": 28523,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    967.0,
+    510.1
+   ]
+  },
+  {
+   "frame": 28862,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1436.0,
+    808.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 28889,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    820.0,
+    528.0
+   ]
+  },
+  {
+   "frame": 28896,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    817.0,
+    488.2
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 28930,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    952.0,
+    783.0
+   ]
+  },
+  {
+   "frame": 28942,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    985.0,
+    761.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 29348,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    769.5,
+    795.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 29372,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1065.0,
+    534.5
+   ]
+  },
+  {
+   "frame": 29381,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1094.4,
+    493.2
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 29413,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1072.0,
+    799.0
+   ]
+  },
+  {
+   "frame": 29423,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1111.0,
+    765.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 29480,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1767.5,
+    787.0
+   ]
+  },
+  {
+   "frame": 29644,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 29667,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    684.5,
+    550.5
+   ]
+  },
+  {
+   "frame": 29682,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    606.8,
+    476.8
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 29720,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    631.5,
+    711.0
+   ]
+  },
+  {
+   "frame": 29729,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    658.0,
+    651.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 29746,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    852.0,
+    528.0
+   ]
+  },
+  {
+   "frame": 29777,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    998.5,
+    612.0
+   ]
+  },
+  {
+   "frame": 30075,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    851.0,
+    488.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 30105,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1368.0,
+    796.5
+   ]
+  },
+  {
+   "frame": 30116,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1646.3,
+    742.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 30130,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1047.9,
+    367.1
+   ]
+  },
+  {
+   "frame": 30149,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    888.5,
+    531.0
+   ]
+  },
+  {
+   "frame": 30159,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 30496,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    988.0,
+    479.2
+   ],
+   "serve": true
+  },
+  {
+   "frame": 30523,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    531.5,
+    790.5
+   ]
+  },
+  {
+   "frame": 30531,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    53.6,
+    820.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 30574,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    805.0,
+    531.5
+   ]
+  },
+  {
+   "frame": 30582,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    808.0,
+    476.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 30931,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 30956,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    723.0,
+    531.5
+   ]
+  },
+  {
+   "frame": 30964,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    682.5,
+    479.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 31008,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 31324,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    770.8,
+    750.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 31351,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1028.4,
+    543.2
+   ]
+  },
+  {
+   "frame": 31359,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1048.2,
+    492.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 31391,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    988.0,
+    851.5
+   ]
+  },
+  {
+   "frame": 31400,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    951.0,
+    823.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 31423,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1085.5,
+    617.0
+   ]
+  },
+  {
+   "frame": 31709,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    820.5,
+    480.8
+   ],
+   "serve": true
+  },
+  {
+   "frame": 31741,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1421.0,
+    791.0
+   ]
+  },
+  {
+   "frame": 31752,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1729.5,
+    754.2
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 31762,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1038.3,
+    398.8
+   ]
+  },
+  {
+   "frame": 31784,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    750.0,
+    532.0
+   ]
+  },
+  {
+   "frame": 31791,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    730.0,
+    489.2
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 31809,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    954.6,
+    500.8
+   ]
+  },
+  {
+   "frame": 31828,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    995.6,
+    565.5
+   ]
+  },
+  {
+   "frame": 32129,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    974.3,
+    485.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 32157,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    654.0,
+    781.0
+   ]
+  },
+  {
+   "frame": 32167,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    336.5,
+    766.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 32196,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    852.0,
+    547.0
+   ]
+  },
+  {
+   "frame": 32204,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    866.0,
+    493.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 32648,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    807.5,
+    488.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 32684,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 32724,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    900.0,
+    532.0
+   ]
+  },
+  {
+   "frame": 32737,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    858.0,
+    465.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 33113,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 33138,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    771.0,
+    550.0
+   ]
+  },
+  {
+   "frame": 33145,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    750.0,
+    487.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 33155,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    843.0,
+    373.0
+   ]
+  },
+  {
+   "frame": 33190,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 33540,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    817.0,
+    773.2
+   ],
+   "serve": true
+  },
+  {
+   "frame": 33564,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1092.0,
+    551.0
+   ]
+  },
+  {
+   "frame": 33576,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1124.3,
+    483.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 33612,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1217.0,
+    826.0
+   ]
+  },
+  {
+   "frame": 33621,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1229.5,
+    737.8
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 33953,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    802.5,
+    482.2
+   ],
+   "serve": true
+  },
+  {
+   "frame": 33980,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1460.0,
+    821.5
+   ]
+  },
+  {
+   "frame": 33988,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 34032,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    906.0,
+    493.8
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 34279,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    991.9,
+    486.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 34308,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    672.0,
+    792.5
+   ]
+  },
+  {
+   "frame": 34318,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    337.5,
+    771.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 34349,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    911.0,
+    533.0
+   ]
+  },
+  {
+   "frame": 34361,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    931.0,
+    485.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 41050,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1060.8,
+    692.8
+   ],
+   "serve": true
+  },
+  {
+   "frame": 41077,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    789.5,
+    540.5
+   ]
+  },
+  {
+   "frame": 41086,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    763.0,
+    488.2
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 41133,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 41187,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    779.0,
+    593.0
+   ]
+  },
+  {
+   "frame": 41364,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    730.5,
+    645.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 41390,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1135.0,
+    535.5
+   ]
+  },
+  {
+   "frame": 41398,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1161.2,
+    484.2
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 41448,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    721.0,
+    837.0
+   ]
+  },
+  {
+   "frame": 41602,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 41626,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    771.0,
+    548.5
+   ]
+  },
+  {
+   "frame": 41635,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    750.0,
+    476.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 41671,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1318.0,
+    877.5
+   ]
+  },
+  {
+   "frame": 41682,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1597.6,
+    705.6
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 41951,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    915.0,
+    476.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 41978,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1186.0,
+    802.0
+   ]
+  },
+  {
+   "frame": 41990,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1565.0,
+    890.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 42003,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1053.9,
+    507.5
+   ]
+  },
+  {
+   "frame": 42057,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1018.0,
+    464.8
+   ]
+  },
+  {
+   "frame": 42111,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    924.0,
+    532.0
+   ]
+  },
+  {
+   "frame": 42187,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1001.0,
+    483.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 42211,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    617.5,
+    708.0
+   ]
+  },
+  {
+   "frame": 42224,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    15.3,
+    827.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 42251,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    808.0,
+    558.0
+   ]
+  },
+  {
+   "frame": 42261,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    826.0,
+    504.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 42289,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1022.0,
+    520.0
+   ]
+  },
+  {
+   "frame": 42304,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    890.5,
+    490.0
+   ]
+  },
+  {
+   "frame": 42590,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    813.0,
+    469.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 42591,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    812.0,
+    476.0
+   ]
+  },
+  {
+   "frame": 42625,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1609.0,
+    776.1
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 42663,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    785.6,
+    503.9
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 43270,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 43296,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    724.0,
+    538.5
+   ]
+  },
+  {
+   "frame": 43305,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    698.5,
+    479.8
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 43339,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1380.0,
+    863.0
+   ]
+  },
+  {
+   "frame": 43347,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1574.6,
+    742.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 43766,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    911.0,
+    610.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 43787,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    982.0,
+    558.0
+   ]
+  },
+  {
+   "frame": 43798,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    998.0,
+    488.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 43803,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1004.5,
+    439.5
+   ]
+  },
+  {
+   "frame": 43839,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1072.5,
+    918.5
+   ]
+  },
+  {
+   "frame": 43850,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1102.0,
+    818.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 44393,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1433.0,
+    1019.8
+   ],
+   "serve": true
+  },
+  {
+   "frame": 44429,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    693.8,
+    491.3
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 44457,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    357.0,
+    706.0
+   ]
+  },
+  {
+   "frame": 44467,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    570.7,
+    581.8
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 44812,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    748.0,
+    470.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 44813,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    747.5,
+    477.0
+   ]
+  },
+  {
+   "frame": 44846,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 44877,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1078.8,
+    541.0
+   ]
+  },
+  {
+   "frame": 44886,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1081.6,
+    489.7
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 45226,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1007.8,
+    484.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 45252,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    463.5,
+    704.0
+   ]
+  },
+  {
+   "frame": 45262,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 45319,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    878.0,
+    495.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 45621,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 45633,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    783.0,
+    439.8
+   ]
+  },
+  {
+   "frame": 45648,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    702.0,
+    532.0
+   ]
+  },
+  {
+   "frame": 45658,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    695.3,
+    470.8
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 45685,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    726.0,
+    708.0
+   ]
+  },
+  {
+   "frame": 45698,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    726.0,
+    752.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 45726,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1116.0,
+    571.5
+   ]
+  },
+  {
+   "frame": 46023,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    676.8,
+    817.8
+   ],
+   "serve": true
+  },
+  {
+   "frame": 46048,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1053.0,
+    537.0
+   ]
+  },
+  {
+   "frame": 46057,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1064.0,
+    476.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 46090,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    638.0,
+    834.0
+   ]
+  },
+  {
+   "frame": 46100,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    819.5,
+    579.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 46127,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1112.9,
+    616.2
+   ]
+  },
+  {
+   "frame": 46463,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1162.4,
+    483.8
+   ],
+   "serve": true
+  },
+  {
+   "frame": 46554,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    745.0,
+    505.8
+   ]
+  },
+  {
+   "frame": 47052,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    763.0,
+    476.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 47078,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1648.0,
+    914.0
+   ]
+  },
+  {
+   "frame": 47084,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1432.3,
+    487.2
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 47136,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1381.0,
+    456.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 47364,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    919.5,
+    461.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 47367,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    917.0,
+    481.8
+   ]
+  },
+  {
+   "frame": 47387,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    785.5,
+    724.0
+   ]
+  },
+  {
+   "frame": 47399,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    469.5,
+    954.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 47431,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    851.0,
+    548.0
+   ]
+  },
+  {
+   "frame": 47440,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    856.0,
+    491.8
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 47694,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1188.0,
+    815.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 47755,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    804.5,
+    456.5
+   ]
+  },
+  {
+   "frame": 47791,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    857.0,
+    524.0
+   ]
+  },
+  {
+   "frame": 47832,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    934.2,
+    451.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 47869,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 47884,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1035.6,
+    427.0
+   ]
+  },
+  {
+   "frame": 47901,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    832.5,
+    542.0
+   ]
+  },
+  {
+   "frame": 47911,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    826.0,
+    483.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 47946,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1196.0,
+    616.0
+   ]
+  },
+  {
+   "frame": 47964,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1242.0,
+    592.5
+   ]
+  },
+  {
+   "frame": 48139,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 48163,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    788.5,
+    548.0
+   ]
+  },
+  {
+   "frame": 48172,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    759.0,
+    483.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 48208,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1126.0,
+    856.5
+   ]
+  },
+  {
+   "frame": 48216,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1354.0,
+    791.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 48278,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    855.0,
+    502.2
+   ]
+  },
+  {
+   "frame": 48300,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    852.0,
+    443.5
+   ]
+  },
+  {
+   "frame": 48531,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    524.0,
+    886.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 48554,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1029.0,
+    550.0
+   ]
+  },
+  {
+   "frame": 48564,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1055.5,
+    493.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 48604,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 48957,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    912.0,
+    477.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 48982,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1232.0,
+    761.0
+   ]
+  },
+  {
+   "frame": 48995,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1591.7,
+    779.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 49007,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1091.8,
+    377.6
+   ]
+  },
+  {
+   "frame": 49034,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    893.5,
+    525.0
+   ]
+  },
+  {
+   "frame": 49040,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    880.0,
+    488.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 49643,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    756.0,
+    472.2
+   ],
+   "serve": true
+  },
+  {
+   "frame": 49644,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    754.0,
+    478.0
+   ]
+  },
+  {
+   "frame": 49677,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 49689,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1011.5,
+    421.2
+   ]
+  },
+  {
+   "frame": 49706,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    876.0,
+    553.0
+   ]
+  },
+  {
+   "frame": 49716,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    861.0,
+    496.8
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 50104,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    926.5,
+    466.2
+   ],
+   "serve": true
+  },
+  {
+   "frame": 50106,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    924.5,
+    479.2
+   ]
+  },
+  {
+   "frame": 50128,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    613.0,
+    787.8
+   ]
+  },
+  {
+   "frame": 50139,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    11.0,
+    936.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 50152,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    704.5,
+    371.0
+   ]
+  },
+  {
+   "frame": 50171,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    830.0,
+    524.0
+   ]
+  },
+  {
+   "frame": 50182,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    844.0,
+    483.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 50460,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 50483,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    763.0,
+    546.5
+   ]
+  },
+  {
+   "frame": 50492,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    742.5,
+    478.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 50525,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1262.0,
+    930.0
+   ]
+  },
+  {
+   "frame": 50536,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1884.0,
+    900.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 50582,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    936.3,
+    554.8
+   ]
+  },
+  {
+   "frame": 50602,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    860.0,
+    592.5
+   ]
+  },
+  {
+   "frame": 50814,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    664.0,
+    634.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 50836,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1075.2,
+    554.0
+   ]
+  },
+  {
+   "frame": 50848,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1110.0,
+    488.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 50886,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    603.5,
+    843.5
+   ]
+  },
+  {
+   "frame": 50895,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    343.5,
+    857.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 50922,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1114.0,
+    500.0
+   ]
+  },
+  {
+   "frame": 50986,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1124.0,
+    586.5
+   ]
+  },
+  {
+   "frame": 51417,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 51439,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    830.0,
+    550.0
+   ]
+  },
+  {
+   "frame": 51449,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    819.0,
+    489.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 51483,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1282.5,
+    822.2
+   ]
+  },
+  {
+   "frame": 51494,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1726.0,
+    852.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 51534,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    995.0,
+    795.0
+   ]
+  },
+  {
+   "frame": 51992,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    923.5,
+    473.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 52019,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1189.8,
+    754.0
+   ]
+  },
+  {
+   "frame": 52032,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1505.5,
+    882.3
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 52057,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1076.4,
+    540.5
+   ]
+  },
+  {
+   "frame": 52069,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1062.8,
+    508.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 52348,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1008.0,
+    478.2
+   ],
+   "serve": true
+  },
+  {
+   "frame": 52377,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    597.0,
+    811.0
+   ]
+  },
+  {
+   "frame": 52388,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    31.8,
+    828.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 52415,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    800.0,
+    549.0
+   ]
+  },
+  {
+   "frame": 52423,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    822.5,
+    501.8
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 52740,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    799.0,
+    561.0
+   ]
+  },
+  {
+   "frame": 52869,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    795.0,
+    478.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 52902,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 52914,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    988.0,
+    425.0
+   ]
+  },
+  {
+   "frame": 52933,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    819.0,
+    547.0
+   ]
+  },
+  {
+   "frame": 52942,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    802.0,
+    494.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 53339,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    922.5,
+    465.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 53342,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    919.0,
+    479.0
+   ]
+  },
+  {
+   "frame": 53374,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 53384,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    658.0,
+    432.0
+   ]
+  },
+  {
+   "frame": 53402,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    711.0,
+    553.0
+   ]
+  },
+  {
+   "frame": 53412,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    705.2,
+    498.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 53906,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 53926,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    828.0,
+    541.5
+   ]
+  },
+  {
+   "frame": 53938,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    813.5,
+    494.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 53969,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    933.0,
+    766.5
+   ]
+  },
+  {
+   "frame": 53980,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1011.0,
+    749.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 54005,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1117.5,
+    537.4
+   ]
+  },
+  {
+   "frame": 54550,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    620.0,
+    856.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 54570,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1066.0,
+    596.5
+   ]
+  },
+  {
+   "frame": 54649,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1747.0,
+    835.0
+   ]
+  },
+  {
+   "frame": 54688,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1408.0,
+    880.0
+   ]
+  },
+  {
+   "frame": 55216,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    915.0,
+    482.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 55241,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1158.0,
+    714.0
+   ]
+  },
+  {
+   "frame": 55258,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1451.3,
+    953.8
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 55393,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    959.0,
+    506.5
+   ]
+  },
+  {
+   "frame": 55422,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    995.5,
+    477.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 55452,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    433.6,
+    777.0
+   ]
+  },
+  {
+   "frame": 55461,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 55473,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    751.5,
+    453.8
+   ]
+  },
+  {
+   "frame": 55492,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1209.0,
+    552.0
+   ]
+  },
+  {
+   "frame": 55497,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    977.0,
+    501.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 55527,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    981.5,
+    488.5
+   ]
+  },
+  {
+   "frame": 55570,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    692.5,
+    593.5
+   ]
+  },
+  {
+   "frame": 55805,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    736.0,
+    461.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 55806,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    736.0,
+    468.0
+   ]
+  },
+  {
+   "frame": 55830,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1184.0,
+    744.5
+   ]
+  },
+  {
+   "frame": 55842,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1601.0,
+    755.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 55854,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    945.0,
+    442.5
+   ]
+  },
+  {
+   "frame": 55882,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 56320,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 56344,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    804.5,
+    537.0
+   ]
+  },
+  {
+   "frame": 56356,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    768.5,
+    482.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 56360,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    803.0,
+    521.0
+   ]
+  },
+  {
+   "frame": 56361,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    810.8,
+    478.5
+   ]
+  },
+  {
+   "frame": 56389,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1481.5,
+    738.0
+   ]
+  },
+  {
+   "frame": 56400,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 56419,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1162.0,
+    494.5
+   ]
+  },
+  {
+   "frame": 56855,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    791.0,
+    836.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 56867,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    991.0,
+    465.2
+   ]
+  },
+  {
+   "frame": 56880,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1040.0,
+    548.5
+   ]
+  },
+  {
+   "frame": 56888,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1055.0,
+    498.8
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 56914,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1064.0,
+    615.0
+   ]
+  },
+  {
+   "frame": 57136,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1192.1,
+    836.6
+   ],
+   "serve": true
+  },
+  {
+   "frame": 57164,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    739.5,
+    535.0
+   ]
+  },
+  {
+   "frame": 57174,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    734.4,
+    482.4
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 57206,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1302.0,
+    792.5
+   ]
+  },
+  {
+   "frame": 57218,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1576.5,
+    694.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 57565,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    796.0,
+    469.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 57566,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    795.0,
+    474.2
+   ]
+  },
+  {
+   "frame": 57592,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1473.0,
+    881.0
+   ]
+  },
+  {
+   "frame": 57598,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 57612,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1141.2,
+    398.0
+   ]
+  },
+  {
+   "frame": 57641,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 57679,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1635.5,
+    1018.0
+   ]
+  },
+  {
+   "frame": 57972,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    906.0,
+    473.8
+   ],
+   "serve": true
+  },
+  {
+   "frame": 58004,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    244.3,
+    813.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 58042,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    798.5,
+    509.1
+   ]
+  },
+  {
+   "frame": 58054,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    933.0,
+    478.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 58827,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    918.5,
+    467.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 58856,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1390.0,
+    849.0
+   ]
+  },
+  {
+   "frame": 58866,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1715.0,
+    712.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 58876,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1088.0,
+    345.0
+   ]
+  },
+  {
+   "frame": 58902,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    872.0,
+    532.0
+   ]
+  },
+  {
+   "frame": 58911,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    861.0,
+    476.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 59698,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    990.0,
+    483.2
+   ],
+   "serve": true
+  },
+  {
+   "frame": 59723,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    545.9,
+    727.0
+   ]
+  },
+  {
+   "frame": 59735,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 59752,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    734.5,
+    435.6
+   ]
+  },
+  {
+   "frame": 59777,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 59872,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1119.2,
+    703.5
+   ]
+  },
+  {
+   "frame": 60250,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    934.0,
+    457.5
+   ],
+   "serve": true
+  },
+  {
+   "frame": 60280,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1764.0,
+    919.0
+   ]
+  },
+  {
+   "frame": 60285,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1483.0,
+    563.5
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 60326,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 61076,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    996.0,
+    476.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 61107,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    407.5,
+    866.0
+   ]
+  },
+  {
+   "frame": 61115,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 61153,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1066.0,
+    499.2
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 61156,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1076.0,
+    493.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 61185,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    1432.3,
+    760.4
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 61222,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    439.8,
+    685.0
+   ]
+  },
+  {
+   "frame": 61233,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 61522,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    909.0,
+    472.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 61550,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1352.0,
+    795.0
+   ]
+  },
+  {
+   "frame": 61560,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1651.2,
+    727.3
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 61588,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    743.5,
+    549.0
+   ]
+  },
+  {
+   "frame": 61597,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    741.0,
+    530.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 61851,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    989.5,
+    488.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 61881,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    330.8,
+    790.5
+   ]
+  },
+  {
+   "frame": 61890,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 61905,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    748.0,
+    430.5
+   ]
+  },
+  {
+   "frame": 61926,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1065.0,
+    555.5
+   ]
+  },
+  {
+   "frame": 61933,
+   "type": "hit",
+   "player": "3",
+   "px": [
+    1086.0,
+    512.0
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 62223,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    924.8,
+    468.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 62252,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    1576.0,
+    813.5
+   ]
+  },
+  {
+   "frame": 62261,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 62300,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    677.0,
+    487.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 62336,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1192.0,
+    680.0
+   ]
+  },
+  {
+   "frame": 70500,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    812.0,
+    487.8
+   ],
+   "serve": true
+  },
+  {
+   "frame": 70528,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1430.0,
+    841.0
+   ]
+  },
+  {
+   "frame": 70535,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    0.0,
+    0.0
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 70571,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1460.0,
+    562.0
+   ]
+  },
+  {
+   "frame": 70579,
+   "type": "hit",
+   "player": "4",
+   "px": [
+    918.6,
+    475.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 70972,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1070.0,
+    816.0
+   ],
+   "serve": true
+  },
+  {
+   "frame": 71006,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    798.0,
+    530.0
+   ]
+  },
+  {
+   "frame": 71013,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    800.0,
+    469.8
+   ],
+   "model_return": true
+  },
+  {
+   "frame": 71018,
+   "type": "hit",
+   "player": "1",
+   "px": [
+    816.0,
+    413.0
+   ]
+  },
+  {
+   "frame": 71053,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    1130.0,
+    793.0
+   ]
+  },
+  {
+   "frame": 71066,
+   "type": "hit",
+   "player": "2",
+   "px": [
+    1275.0,
+    682.5
+   ],
+   "model_third": true
+  },
+  {
+   "frame": 71093,
+   "type": "bounce",
+   "player": null,
+   "px": [
+    735.0,
+    459.5
+   ]
+  }
+ ]
+}

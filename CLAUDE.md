@@ -43,10 +43,18 @@ and the loaders must read them from there with defaults that match older checkpo
   inputs in `outputs/<run>/` (`tracking.json`, `court.json`, `stats.json`, `audio_feats.npy`, `pose.npz`), so
   training works from a clone without the videos. `outputs/` is otherwise ignored: when a new game is labelled,
   `git add -f` those five files. Built datasets (`ds-*`) and scan output (`train-*`, `test-*`) stay out.
-- Labels removed from training go to `training/data/removed/` (not committed), outside the training globs.
+- Labels removed from training go to `training/data/removed/`, outside the training globs, and are committed too:
+  uncommitted labels have been lost before (11-11-BBB segments 4–7, 2026-11-17).
 - Each label file names its run in `meta.run` (an `outputs/<run>` folder, absolute path) and its source video in
-  `meta.video` (absolute path on D). Moving videos means rewriting those paths and `video` in `outputs/*/stats.json`. Training skips labels whose run folder is gone.
-  `removed/openings-bbb1..7` label `11-11-BBB.mp4`, whose video and runs no longer exist.
+  `meta.video` (absolute path on D). Moving videos means rewriting those paths and `video` in `outputs/*/stats.json`.
+  Training skips labels whose run folder is gone.
+- A long video can be analysed in segments (`--start` seconds, `--max-frames`) straight from the file; nothing is
+  cut. The start is kept in `tracking.json` `params` and `stats.json` `start_s`, and label frames count from it.
+  Split where the camera moves: each segment needs its own `court.json`, and a court that fits another camera
+  position silently ruins tracking and serve detection. `11-11-BBB.mp4` is run as `outputs/11-11-BBB-s1..s3`
+  (labelled, in training); s4 and s6 are tracked with their own courts but their labels were lost.
+- Run segments of one large video on `/mnt/d` one at a time: parallel reads stall. `--no-render` skips the
+  annotated and dashboard videos (about 1 GB per 40 minutes), which training doesn't need.
 - `train_hits.py` caches per-run features next to the run (`openings_feats.npy`, `audio_feats.npy`,
   `pose_feats.npy`). Delete them after changing the feature code.
 

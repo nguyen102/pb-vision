@@ -58,6 +58,11 @@ def track(video, court, start, args):
     for _ in tqdm(range(n), desc="tracking", mininterval=PROGRESS_S):
         ok, frame = cap.read()
         if not ok:
+            # A file the reader can't keep up with (e.g. several runs reading one large video on /mnt/d) also ends
+            # in a failed read: stop rather than save a short run as finished. The frame count in the header can
+            # be off by a few frames at the true end.
+            if n - len(people) > 30:
+                raise RuntimeError(f"video read failed at frame {start + len(people)} of {start + n}")
             break
         people.append(players_model.track_pov(frame) if court is None else players_model.people_near_court(frame, court))
         c, p = ball_model.candidates(frame)
@@ -367,6 +372,8 @@ def main():
     ap.add_argument("--start", type=float, default=0.0, help="seconds into the video to start at")
     ap.add_argument("--max-frames", type=int)
     ap.add_argument("--force", action="store_true", help="re-run tracking even if tracking.json matches")
+    ap.add_argument("--no-render", action="store_true", help="skip annotated.mp4 and dashboard.mp4 (training only "
+                    "needs the data files; the videos take about 1 GB per 40 minutes of play)")
     args = ap.parse_args()
     if not args.video.exists():
         ap.error(f"{args.video} not found")
@@ -440,11 +447,12 @@ def main():
         for pid in player_stats:
             cv2.imwrite(str(out / f"heatmap_P{pid}.png"),
                         draw.heatmap_image([fp[pid]["court"] for fp in players if pid in fp]))
-    render(args.video, out / "annotated.mp4", start, players, ball, evs, shots, court, data["fps"],
-           dash_dst=out / "dashboard.mp4", hit_frames=hit_frames,
-           # the soundtrack runs sound_offset s late (or early): start it that much later, so pops play with hits
-           dash_sound=(args.video, args.start + args.sound_offset) if getattr(args, "sound_offset", None) is not None
-           else None)
+    if not args.no_render:
+        render(args.video, out / "annotated.mp4", start, players, ball, evs, shots, court, data["fps"],
+               dash_dst=out / "dashboard.mp4", hit_frames=hit_frames,
+               # the soundtrack runs sound_offset s late (or early): start it that much later, so pops play with hits
+               dash_sound=(args.video, args.start + args.sound_offset) if getattr(args, "sound_offset", None) is not None
+               else None)
     print(f"done ({args.mode}): {len(player_stats)} players, {len(rallies)} rallies, {len(shots)} shots -> {out}")
 
 
