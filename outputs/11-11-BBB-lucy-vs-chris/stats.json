@@ -15,7 +15,25 @@
    "kitchen_serving_pct": 58.8,
    "kitchen_receiving_pct": 95.7,
    "kitchen_serving_of": 17,
-   "kitchen_receiving_of": 23
+   "kitchen_receiving_of": 23,
+   "return_n": 14,
+   "return_depth_m": 2.02,
+   "return_won_pct": 64.3,
+   "return_short_n": 2,
+   "return_short_won_pct": 100.0,
+   "return_medium_n": 8,
+   "return_medium_won_pct": 50.0,
+   "return_deep_n": 4,
+   "return_deep_won_pct": 75.0,
+   "serve_n": 10,
+   "serve_depth_m": 0.74,
+   "serve_won_pct": 25.0,
+   "serve_short_n": 0,
+   "serve_short_won_pct": null,
+   "serve_medium_n": 2,
+   "serve_medium_won_pct": 50.0,
+   "serve_deep_n": 8,
+   "serve_deep_won_pct": 16.7
   },
   "3": {
    "seconds": 547.3,
@@ -27,7 +45,25 @@
    "kitchen_serving_pct": 64.7,
    "kitchen_receiving_pct": 100.0,
    "kitchen_serving_of": 17,
-   "kitchen_receiving_of": 18
+   "kitchen_receiving_of": 18,
+   "return_n": 10,
+   "return_depth_m": 2.35,
+   "return_won_pct": 55.6,
+   "return_short_n": 2,
+   "return_short_won_pct": 50.0,
+   "return_medium_n": 7,
+   "return_medium_won_pct": 66.7,
+   "return_deep_n": 1,
+   "return_deep_won_pct": 0.0,
+   "serve_n": 10,
+   "serve_depth_m": 2.47,
+   "serve_won_pct": 40.0,
+   "serve_short_n": 3,
+   "serve_short_won_pct": 0.0,
+   "serve_medium_n": 7,
+   "serve_medium_won_pct": 57.1,
+   "serve_deep_n": 0,
+   "serve_deep_won_pct": null
   },
   "4": {
    "seconds": 529.9,
@@ -39,7 +75,25 @@
    "kitchen_serving_pct": 64.7,
    "kitchen_receiving_pct": 94.4,
    "kitchen_serving_of": 17,
-   "kitchen_receiving_of": 18
+   "kitchen_receiving_of": 18,
+   "serve_n": 15,
+   "serve_depth_m": 1.71,
+   "serve_won_pct": 53.3,
+   "serve_short_n": 4,
+   "serve_short_won_pct": 75.0,
+   "serve_medium_n": 8,
+   "serve_medium_won_pct": 50.0,
+   "serve_deep_n": 3,
+   "serve_deep_won_pct": 33.3,
+   "return_n": 8,
+   "return_depth_m": 2.41,
+   "return_won_pct": 100.0,
+   "return_short_n": 1,
+   "return_short_won_pct": 100.0,
+   "return_medium_n": 7,
+   "return_medium_won_pct": 100.0,
+   "return_deep_n": 0,
+   "return_deep_won_pct": null
   },
   "2": {
    "seconds": 595.0,
@@ -51,7 +105,25 @@
    "kitchen_serving_pct": 47.1,
    "kitchen_receiving_pct": 86.4,
    "kitchen_serving_of": 17,
-   "kitchen_receiving_of": 22
+   "kitchen_receiving_of": 22,
+   "return_n": 11,
+   "return_depth_m": 2.75,
+   "return_won_pct": 36.4,
+   "return_short_n": 1,
+   "return_short_won_pct": 100.0,
+   "return_medium_n": 8,
+   "return_medium_won_pct": 37.5,
+   "return_deep_n": 2,
+   "return_deep_won_pct": 0.0,
+   "serve_n": 8,
+   "serve_depth_m": 2.1,
+   "serve_won_pct": 25.0,
+   "serve_short_n": 0,
+   "serve_short_won_pct": null,
+   "serve_medium_n": 7,
+   "serve_medium_won_pct": 28.6,
+   "serve_deep_n": 1,
+   "serve_deep_won_pct": 0.0
   }
  },
  "shot_summary": {
@@ -116,308 +188,396 @@
    "end": 265,
    "shots": 3,
    "served": true,
-   "duration_s": 2.83
+   "duration_s": 2.83,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 471,
    "end": 669,
    "shots": 6,
    "served": true,
-   "duration_s": 6.6
+   "duration_s": 6.6,
+   "winner": null,
+   "serving_team": 0
   },
   {
    "start": 927,
    "end": 1145,
    "shots": 8,
    "served": true,
-   "duration_s": 7.27
+   "duration_s": 7.27,
+   "winner": 0,
+   "serving_team": 0
   },
   {
    "start": 1372,
    "end": 1507,
    "shots": 5,
    "served": true,
-   "duration_s": 4.5
+   "duration_s": 4.5,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 1753,
    "end": 2064,
    "shots": 11,
    "served": true,
-   "duration_s": 10.37
+   "duration_s": 10.37,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 2292,
    "end": 2543,
    "shots": 10,
    "served": true,
-   "duration_s": 8.37
+   "duration_s": 8.37,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 2862,
    "end": 3092,
    "shots": 9,
    "served": true,
-   "duration_s": 7.67
+   "duration_s": 7.67,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 3327,
    "end": 4325,
    "shots": 33,
    "served": true,
-   "duration_s": 33.27
+   "duration_s": 33.27,
+   "winner": 0,
+   "serving_team": 0
   },
   {
    "start": 4684,
    "end": 4899,
    "shots": 10,
    "served": true,
-   "duration_s": 7.17
+   "duration_s": 7.17,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 5100,
    "end": 5249,
    "shots": 5,
    "served": true,
-   "duration_s": 4.97
+   "duration_s": 4.97,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 5565,
    "end": 5838,
    "shots": 10,
    "served": true,
-   "duration_s": 9.1
+   "duration_s": 9.1,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 6094,
    "end": 6203,
    "shots": 4,
    "served": true,
-   "duration_s": 3.63
+   "duration_s": 3.63,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 6392,
    "end": 6432,
    "shots": 2,
    "served": true,
-   "duration_s": 1.33
+   "duration_s": 1.33,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 6652,
    "end": 7164,
    "shots": 17,
    "served": true,
-   "duration_s": 17.07
+   "duration_s": 17.07,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 7384,
    "end": 7384,
    "shots": 1,
    "served": true,
-   "duration_s": 0.0
+   "duration_s": 0.0,
+   "winner": null,
+   "serving_team": 0
   },
   {
    "start": 7445,
    "end": 7575,
    "shots": 5,
    "served": true,
-   "duration_s": 4.33
+   "duration_s": 4.33,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 7764,
    "end": 7964,
    "shots": 9,
    "served": true,
-   "duration_s": 6.67
+   "duration_s": 6.67,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 8185,
    "end": 8262,
    "shots": 3,
    "served": true,
-   "duration_s": 2.57
+   "duration_s": 2.57,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 9044,
    "end": 9211,
    "shots": 7,
    "served": true,
-   "duration_s": 5.57
+   "duration_s": 5.57,
+   "winner": 0,
+   "serving_team": 0
   },
   {
    "start": 9516,
    "end": 9975,
    "shots": 14,
    "served": true,
-   "duration_s": 15.3
+   "duration_s": 15.3,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 10215,
    "end": 10328,
    "shots": 5,
    "served": true,
-   "duration_s": 3.77
+   "duration_s": 3.77,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 10561,
    "end": 10963,
    "shots": 14,
    "served": true,
-   "duration_s": 13.4
+   "duration_s": 13.4,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 11263,
    "end": 11402,
    "shots": 5,
    "served": true,
-   "duration_s": 4.63
+   "duration_s": 4.63,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 11642,
    "end": 11729,
    "shots": 3,
    "served": true,
-   "duration_s": 2.9
+   "duration_s": 2.9,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 11933,
    "end": 12022,
    "shots": 3,
    "served": true,
-   "duration_s": 2.97
+   "duration_s": 2.97,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 12222,
    "end": 12362,
    "shots": 5,
    "served": true,
-   "duration_s": 4.67
+   "duration_s": 4.67,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 12592,
    "end": 12799,
    "shots": 8,
    "served": true,
-   "duration_s": 6.9
+   "duration_s": 6.9,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 13066,
    "end": 13609,
    "shots": 19,
    "served": true,
-   "duration_s": 18.1
+   "duration_s": 18.1,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 13804,
    "end": 14004,
    "shots": 8,
    "served": true,
-   "duration_s": 6.67
+   "duration_s": 6.67,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 14289,
    "end": 14449,
    "shots": 4,
    "served": true,
-   "duration_s": 5.33
+   "duration_s": 5.33,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 14729,
    "end": 14899,
    "shots": 6,
    "served": true,
-   "duration_s": 5.67
+   "duration_s": 5.67,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 15142,
    "end": 15255,
    "shots": 4,
    "served": true,
-   "duration_s": 3.77
+   "duration_s": 3.77,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 15457,
    "end": 15803,
    "shots": 13,
    "served": true,
-   "duration_s": 11.53
+   "duration_s": 11.53,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 16142,
    "end": 16541,
    "shots": 16,
    "served": true,
-   "duration_s": 13.3
+   "duration_s": 13.3,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 16791,
    "end": 16832,
    "shots": 2,
    "served": true,
-   "duration_s": 1.37
+   "duration_s": 1.37,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 17078,
    "end": 17283,
    "shots": 8,
    "served": true,
-   "duration_s": 6.83
+   "duration_s": 6.83,
+   "winner": 0,
+   "serving_team": 0
   },
   {
    "start": 17556,
    "end": 18003,
    "shots": 21,
    "served": true,
-   "duration_s": 14.9
+   "duration_s": 14.9,
+   "winner": 1,
+   "serving_team": 0
   },
   {
    "start": 18348,
    "end": 18478,
    "shots": 5,
    "served": true,
-   "duration_s": 4.33
+   "duration_s": 4.33,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 18705,
    "end": 19012,
    "shots": 12,
    "served": true,
-   "duration_s": 10.23
+   "duration_s": 10.23,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 19231,
    "end": 19597,
    "shots": 15,
    "served": true,
-   "duration_s": 12.2
+   "duration_s": 12.2,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 19831,
    "end": 20009,
    "shots": 6,
    "served": true,
-   "duration_s": 5.93
+   "duration_s": 5.93,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 20225,
    "end": 20594,
    "shots": 17,
    "served": true,
-   "duration_s": 12.3
+   "duration_s": 12.3,
+   "winner": 1,
+   "serving_team": 1
   },
   {
    "start": 20826,
    "end": 20948,
    "shots": 5,
    "served": true,
-   "duration_s": 4.07
+   "duration_s": 4.07,
+   "winner": 0,
+   "serving_team": 1
   },
   {
    "start": 21136,
    "end": 21344,
    "shots": 8,
    "served": true,
-   "duration_s": 6.93
+   "duration_s": 6.93,
+   "winner": null,
+   "serving_team": 0
   }
  ],
  "shots": [
@@ -437,7 +597,11 @@
     5.53000020980835,
     11.899999618530273
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.51,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 219,
@@ -453,7 +617,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.22,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 264,
@@ -487,7 +655,11 @@
     1.5700000524520874,
     -0.05999999865889549
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 0.0,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": null
   },
   {
    "frame": 513,
@@ -506,7 +678,11 @@
     11.220000267028809
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.19,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": null
   },
   {
    "frame": 556,
@@ -543,7 +719,11 @@
     5.380000114440918,
     -0.3799999952316284
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 0.0,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 961,
@@ -562,7 +742,11 @@
     10.270000457763672
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 3.14,
+   "depth": "short",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 1007,
@@ -599,7 +783,11 @@
     1.2999999523162842,
     1.100000023841858
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.1,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 1412,
@@ -615,7 +803,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.53,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 1459,
@@ -649,7 +841,11 @@
     5.369999885559082,
     11.699999809265137
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.71,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 1791,
@@ -665,7 +861,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 4.48,
+   "depth": "short",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 1854,
@@ -698,7 +898,11 @@
     3.2699999809265137,
     -8.489999771118164
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.67,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 2326,
@@ -714,7 +918,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.84,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 2365,
@@ -745,7 +953,11 @@
     0.87
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 3.13,
+   "depth": "short",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 2896,
@@ -764,7 +976,11 @@
     1.590000033378601
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.97,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 2942,
@@ -798,7 +1014,11 @@
     1.1100000143051147,
     1.7999999523162842
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.8,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 3363,
@@ -817,7 +1037,11 @@
     12.699999809265137
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 0.71,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 3410,
@@ -854,7 +1078,11 @@
     4.900000095367432,
     0.7099999785423279
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 0.71,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 4719,
@@ -873,7 +1101,11 @@
     10.699999809265137
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.71,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 4761,
@@ -907,7 +1139,11 @@
     1.7999999523162842,
     1.7300000190734863
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.73,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 5137,
@@ -926,7 +1162,11 @@
     10.920000076293945
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.49,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 5181,
@@ -957,7 +1197,11 @@
     0.91
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.59,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 5600,
@@ -973,7 +1217,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.75,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 5642,
@@ -1004,7 +1252,11 @@
     0.28
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 5.25,
+   "depth": "short",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 6132,
@@ -1023,7 +1275,11 @@
     1.9700000286102295
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.97,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 6178,
@@ -1054,7 +1310,11 @@
     0.25
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.14,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 6423,
@@ -1070,7 +1330,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.64,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 6489,
@@ -1107,7 +1371,11 @@
     3.5299999713897705,
     -10.449999809265137
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.6,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 6690,
@@ -1123,7 +1391,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.15,
+   "depth": "deep",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 6733,
@@ -1175,7 +1447,11 @@
     2.0,
     1.75
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.75,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 7482,
@@ -1194,7 +1470,11 @@
     10.180000305175781
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 3.23,
+   "depth": "short",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 7523,
@@ -1228,7 +1508,11 @@
     4.710000038146973,
     0.5099999904632568
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 0.51,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 7799,
@@ -1247,7 +1531,11 @@
     11.720000267028809
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.69,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 7846,
@@ -1284,7 +1572,11 @@
     1.0399999618530273,
     -10.270000457763672
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.54,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 8221,
@@ -1300,7 +1592,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.63,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 8261,
@@ -1334,7 +1630,11 @@
     1.6100000143051147,
     2.1600000858306885
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.16,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 9080,
@@ -1353,7 +1653,11 @@
     11.489999771118164
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.92,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 9122,
@@ -1387,7 +1691,11 @@
     13.62
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 0.0,
+   "depth": "deep",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 9555,
@@ -1406,7 +1714,11 @@
     10.510000228881836
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.9,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 9599,
@@ -1440,7 +1752,11 @@
     1.7000000476837158,
     1.649999976158142
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.65,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 10249,
@@ -1459,7 +1775,11 @@
     11.0
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.41,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 10286,
@@ -1493,7 +1813,11 @@
     0.9599999785423279,
     -9.850000381469727
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.57,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 10596,
@@ -1509,7 +1833,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.3,
+   "depth": "deep",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 10640,
@@ -1540,7 +1868,11 @@
     0.8
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.59,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 11296,
@@ -1556,7 +1888,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.82,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 11343,
@@ -1590,7 +1926,11 @@
     4.880000114440918,
     11.869999885559082
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.54,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 11680,
@@ -1606,7 +1946,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 0.0,
+   "depth": "deep",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 11727,
@@ -1643,7 +1987,11 @@
     1.149999976158142,
     0.7699999809265137
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 0.77,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 11976,
@@ -1662,7 +2010,11 @@
     9.979999542236328
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 3.43,
+   "depth": "short",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 12022,
@@ -1696,7 +2048,11 @@
     5.579999923706055,
     -2.0299999713897705
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.98,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 12260,
@@ -1715,7 +2071,11 @@
     11.199999809265137
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.21,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 12297,
@@ -1749,7 +2109,11 @@
     -1.41
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 5.67,
+   "depth": "short",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 12628,
@@ -1765,7 +2129,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.51,
+   "depth": "deep",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 12670,
@@ -1799,7 +2167,11 @@
     2.109999895095825,
     11.890000343322754
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.52,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 13106,
@@ -1815,7 +2187,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.87,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 13156,
@@ -1852,7 +2228,11 @@
     4.699999809265137,
     12.100000381469727
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.31,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 13840,
@@ -1868,7 +2248,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.66,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 13883,
@@ -1902,7 +2286,11 @@
     3.9200000762939453,
     -10.739999771118164
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.58,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 14327,
@@ -1918,7 +2306,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 0.68,
+   "depth": "deep",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 14373,
@@ -1955,7 +2347,11 @@
     4.71999979019165,
     12.100000381469727
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.31,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 14767,
@@ -1971,7 +2367,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.66,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 14814,
@@ -2008,7 +2408,11 @@
     3.549999952316284,
     -11.279999732971191
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 3.06,
+   "depth": "short",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 15183,
@@ -2027,7 +2431,11 @@
     3.6600000858306885
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 3.66,
+   "depth": "short",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 15225,
@@ -2058,7 +2466,11 @@
     13.67
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 0.0,
+   "depth": "deep",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 15495,
@@ -2074,7 +2486,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.6,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 15541,
@@ -2108,7 +2524,11 @@
     13.62
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.48,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 16183,
@@ -2127,7 +2547,11 @@
     11.109999656677246
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.3,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 16228,
@@ -2164,7 +2588,11 @@
     3.5199999809265137,
     11.09000015258789
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.32,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 16832,
@@ -2182,7 +2610,11 @@
     4.53000020980835,
     5.53000020980835
    ],
-   "role": "return"
+   "role": "return",
+   "depth_m": 5.53,
+   "depth": "short",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 16865,
@@ -2215,7 +2647,11 @@
     13.61
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.87,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 17116,
@@ -2234,7 +2670,11 @@
     10.449999809265137
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.96,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 17154,
@@ -2271,7 +2711,11 @@
     1.2999999523162842,
     2.0399999618530273
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.04,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 17593,
@@ -2290,7 +2734,11 @@
     11.1899995803833
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.22,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 17634,
@@ -2324,7 +2772,11 @@
     5.400000095367432,
     10.489999771118164
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.92,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 18383,
@@ -2343,7 +2795,11 @@
     1.5499999523162842
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.55,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 18428,
@@ -2377,7 +2833,11 @@
     4.110000133514404,
     -11.319999694824219
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 3.41,
+   "depth": "short",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 18744,
@@ -2396,7 +2856,11 @@
     2.069999933242798
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.07,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 18784,
@@ -2430,7 +2894,11 @@
     0.46
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 5.19,
+   "depth": "short",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 19269,
@@ -2449,7 +2917,11 @@
     1.309999942779541
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.31,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": true
   },
   {
    "frame": 19314,
@@ -2483,7 +2955,11 @@
     3.3499999046325684,
     -9.0
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.34,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 19867,
@@ -2502,7 +2978,11 @@
     2.2100000381469727
    ],
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 2.21,
+   "depth": "medium",
+   "depth_from": "bounce",
+   "won": false
   },
   {
    "frame": 19907,
@@ -2533,7 +3013,11 @@
     0.78
    ],
    "landing": null,
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 2.6,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 20261,
@@ -2549,7 +3033,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 3.0,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 20308,
@@ -2583,7 +3071,11 @@
     3.180000066757202,
     -7.590000152587891
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 4.82,
+   "depth": "short",
+   "depth_from": "receiver",
+   "won": false
   },
   {
    "frame": 20859,
@@ -2599,7 +3091,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.61,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": true
   },
   {
    "frame": 20905,
@@ -2633,7 +3129,11 @@
     1.7200000286102295,
     1.2400000095367432
    ],
-   "role": "serve"
+   "role": "serve",
+   "depth_m": 1.24,
+   "depth": "deep",
+   "depth_from": "bounce",
+   "won": null
   },
   {
    "frame": 21174,
@@ -2649,7 +3149,11 @@
    ],
    "landing": null,
    "model_return": true,
-   "role": "return"
+   "role": "return",
+   "depth_m": 1.54,
+   "depth": "medium",
+   "depth_from": "receiver",
+   "won": null
   },
   {
    "frame": 21217,

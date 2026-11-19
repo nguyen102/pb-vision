@@ -723,12 +723,6 @@ def test_openings_model_decode_and_cross_court_hitters():
     assert om.decode(prob, fps) == [((100, "near"), None, (180, "near"))]
 
 
-if __name__ == "__main__":
-    for name, fn in list(globals().items()):
-        if name.startswith("test_"):
-            fn()
-            print("ok", name)
-
 
 def test_full_rallies_count_every_hit_after_the_opening_shots():
     fps = 30
@@ -785,3 +779,42 @@ def test_kitchen_line_follows_the_clicked_painted_line_not_the_fit():
         assert not court.at_kitchen_line(p)                          # standing on the painted line
         assert court.at_kitchen_line((p[0], p[1] - 0.05))            # just behind it
         assert not court.at_kitchen_line((p[0], p[1] - 3 * FT - 0.05))  # past 3 ft from the painted line
+
+
+def test_serve_and_return_depth_and_who_won_from_the_next_server():
+    fps = 30
+    teams = [{"players": ["1", "2"]}, {"players": ["3", "4"]}]
+    # 1 serves from the near right half (x > 3.05) into the far court; the bounce is found 1 m from the far baseline
+    # (deep). The return isn't found landing: 2 hits the third shot 0.5 m inside the near baseline (deep).
+    shots = [
+        {"frame": 0, "rally": 1, "player": "1", "role": "serve", "hitter": [5.0, 13.6], "landing": [1.5, 1.0]},
+        {"frame": 30, "rally": 1, "player": "3", "role": "return", "hitter": [1.0, 0.3], "landing": None},
+        {"frame": 60, "rally": 1, "player": "2", "role": "third", "hitter": [1.5, COURT_L - 0.5]},
+        # 1 serves again from the other half: the serving team won rally 1. A short serve (bounce 4 m in).
+        {"frame": 300, "rally": 2, "player": "1", "role": "serve", "hitter": [1.0, 13.6], "landing": [4.0, 4.0]},
+        {"frame": 330, "rally": 2, "player": "4", "role": "return", "hitter": [5.0, 2.0], "landing": None},
+        # the partner serves next, from the other half: rally 2 lost
+        {"frame": 600, "rally": 3, "player": "2", "role": "serve", "hitter": [5.0, 13.6], "landing": [9.0, 3.0]},
+        # the other team serves next, but 2 minutes later (a new game): rally 3's winner isn't known
+        {"frame": 600 + 120 * fps, "rally": 4, "player": "3", "role": "serve", "hitter": [1.0, -0.2], "landing": None},
+    ]
+    rallies = [{"start": s["frame"]} for s in shots if s["role"] == "serve"]
+    per = analytics.serve_return_depth(rallies, shots, teams, fps)
+    assert [r["winner"] for r in rallies] == [0, 1, None, None]
+    assert [r["serving_team"] for r in rallies] == [0, 0, 0, 1]
+    serve, ret = shots[0], shots[1]
+    assert serve["depth_from"] == "bounce" and serve["depth_m"] == 1.0 and serve["depth"] == "deep" and serve["won"]
+    assert ret["depth_from"] == "receiver" and abs(ret["depth_m"] - 2.3) < 1e-6 and ret["depth"] == "medium"
+    assert ret["won"] is False
+    assert shots[3]["depth"] == "short" and shots[3]["won"] is False
+    assert "depth_m" not in shots[4]  # no bounce found and no third shot: no depth
+    assert "depth_m" not in shots[5]  # landing off the court and no return to fall back on
+    assert per["1"]["serve_n"] == 2 and per["1"]["serve_won_pct"] == 50.0 and per["1"]["serve_deep_won_pct"] == 100.0
+    assert per["1"]["serve_medium_n"] == 0 and per["1"]["serve_medium_won_pct"] is None
+
+
+if __name__ == "__main__":
+    for name, fn in list(globals().items()):
+        if name.startswith("test_"):
+            fn()
+            print("ok", name)

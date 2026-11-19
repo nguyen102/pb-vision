@@ -447,6 +447,9 @@ def main():
         kitchen, teams = analytics.kitchen_arrival(players, rallies, shots, data["fps"], court=court)
         for pid, k in kitchen.items():
             player_stats.setdefault(pid, {}).update(k)
+        # serve and return depth, and who won each point (from who serves next)
+        for pid, d in analytics.serve_return_depth(rallies, shots, teams, data["fps"]).items():
+            player_stats.setdefault(pid, {}).update(d)
     stats = {
         "video": str(args.video), "mode": args.mode, "start_s": args.start, "fps": data["fps"], "frames": len(players),
         "players": player_stats, "shot_summary": summary, **({"teams": teams} if teams is not None else {}),

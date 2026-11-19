@@ -80,6 +80,9 @@ st.markdown("""<style>
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; vertical-align: middle;}
 .pbv-team-0 {background: rgba(26, 115, 232, 0.2); color: #1a73e8;}
 .pbv-team-1 {background: rgba(230, 120, 20, 0.22); color: #d36a00;}
+.pbv-won {color: #1e8e3e; font-weight: 600;}
+.pbv-lost {color: #d93025; font-weight: 600;}
+.pbv-unknown {color: #888;}
 </style>""", unsafe_allow_html=True)
 jump = st.session_state.setdefault("jump", {})  # run name -> (rally start in s, clicks)
 
@@ -105,14 +108,24 @@ def serving_tag(i):
     return f'<span class="pbv-team pbv-team-{k % 2}" title="{label} serving ({name(pid)} served)">{label}</span>'
 
 
-WIDTHS = [0.8, 1.8, 1.1, 1.4, 2.6]
+def won_tag(r):
+    """Whether the serving team won the point (from who served next: app.py), else ? when it couldn't be told."""
+    w, k = r.get("winner"), r.get("serving_team")
+    if w is None or k is None:
+        return '<span class="pbv-unknown" title="winner not known">?</span>' if "winner" in r else ""
+    who = " & ".join(name(p) for p in s["teams"][w]["players"])
+    return (f'<span class="pbv-won" title="serving team won: {who}">won</span>' if w == k
+            else f'<span class="pbv-lost" title="serving team lost: point to {who}">lost</span>')
+
+
+WIDTHS = [0.7, 1.6, 1.0, 1.2, 2.4, 1.0]
 col_video, col_rallies = st.columns([3, 1.6]) if s["rallies"] else (st.container(), None)
 if col_rallies is not None:
     with col_rallies:
         st.markdown("**Rallies**")
         with st.container(height=440, key="rally-table"):
             for c, h in zip(st.columns(WIDTHS, vertical_alignment="center"),
-                            ("#", "start", "shots", "length (s)", "serving")):
+                            ("#", "start", "shots", "length (s)", "serving", "point")):
                 c.markdown(f"**{h}**")
             for i, r in enumerate(s["rallies"], 1):
                 at = r["start"] / s["fps"]
@@ -123,6 +136,7 @@ if col_rallies is not None:
                 c[2].markdown(str(r.get("shots", "")))
                 c[3].markdown(str(r.get("duration_s", "")))
                 c[4].markdown(serving_tag(i), unsafe_allow_html=True)
+                c[5].markdown(won_tag(r), unsafe_allow_html=True)
 # playback controls for the video, all in the browser (a Streamlit widget would rerun the page and reload the
 # video from the start): 0.5x / 1x speed; d steps forward one frame (hold to keep going slowly), a jumps back to
 # the previous keyframe (dashboard.mp4 has one every DASHBOARD_KEYFRAME_S s: a keyframe shows at once, while an
@@ -232,9 +246,10 @@ def with_kitchen(row, prefix=""):
 
 st.subheader("Players")
 SPEED = ("avg_speed_ms", "max_speed_ms", "avg_shot_kmh", "max_shot_kmh")  # not shown: not reliable yet
+DEPTH_KEYS = ("serve_", "return_")  # shown in their own table below
 st.dataframe(pd.DataFrame([with_kitchen({"player": name(pid), **{k: v for k, v in {**s["players"].get(pid, {}),
                                                                                    **s["shot_summary"].get(pid, {})}.items()
-                                                                  if k not in SPEED}})
+                                                                  if k not in SPEED and not k.startswith(DEPTH_KEYS)}})
                            for pid in pids]).fillna(0), hide_index=True)
 st.caption("Kitchen, serving / receiving: how often the player got up to the kitchen line when their team served "
            "or received, of the rallies long enough to get there (5+ shots serving, 3+ receiving).")
@@ -246,6 +261,32 @@ if s.get("teams"):
     st.dataframe(pd.DataFrame([with_kitchen({"team": " & ".join(name(p) for p in t["players"]),
                                              **{k: v for k, v in t.items() if k != "players"}}, prefix="both_")
                                for t in s["teams"]]), hide_index=True)
+
+DEPTH_ROLES = (("serve", "Serve"), ("return", "Return"))
+if any(f"{role}_n" in s["players"].get(pid, {}) for pid in pids for role, _ in DEPTH_ROLES):
+    st.subheader("Serve & return")
+    st.caption("How deep each player's serves and returns went, and how often their team won the point after "
+               "them. Each cell: how many, and the points won. Short: more than 3 m in from the baseline; "
+               "medium: 1.5–3 m; deep: the back 1.5 m. Depth (m): the median, metres in from the baseline. "
+               "The bounce is used when the ball tracker found it, else where the next player hit the ball. Who "
+               "won is read from who serves next, so points before a gap or an undetected rally are left out.")
+
+    def cell(n, pct):
+        return "–" if not n else f"{n} · {pct:.0f}%" if pct is not None else f"{n} · ?"
+
+    rows = []
+    for pid in pids:
+        p = s["players"].get(pid, {})
+        row = {"player": name(pid)}
+        for role, label in DEPTH_ROLES:
+            for k in ("short", "medium", "deep"):
+                row[f"{label} {k}"] = cell(p.get(f"{role}_{k}_n", 0), p.get(f"{role}_{k}_won_pct"))
+            row[f"{label} all"] = cell(p.get(f"{role}_n", 0), p.get(f"{role}_won_pct"))
+            row[f"{label} depth (m)"] = p.get(f"{role}_depth_m")
+        rows.append(row)
+    st.dataframe(pd.DataFrame(rows), hide_index=True,
+                 column_config={f"{label} depth (m)": st.column_config.NumberColumn(format="%.1f")
+                                for _, label in DEPTH_ROLES})
 
 if shots:
     st.subheader("Shot mix")

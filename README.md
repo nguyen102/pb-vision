@@ -143,6 +143,14 @@ At every shot by a tracked player:
   when their team is serving and when it is receiving, and how often **both partners** are up there together.
   Only rallies long enough to get there count: 5+ shots when serving (the serving team moves in after its third
   shot), 3+ when receiving (in behind the return). "Got there" = 0.2 s there between the serve and the last hit.
+- **Serve and return depth, and points won**: how far in from the baseline each serve and return went (deep: the
+  back 1.5 m; medium: 1.5–3 m; short: nearer the net), and how often the player's team won the point after a
+  short, medium or deep one. Depth is the ball's bounce when the tracker found it (about half the time), else
+  where the next player hit it, plus the 1.8 m the ball typically carries on after bouncing. Who won is read
+  from who serves next: only the serving team scores, so the same server again (from the other half) means
+  the serving team won; the partner or the other team serving next means it lost. Points before a gap of more
+  than a minute (between games) or a misread serve are left unknown. The server is right for about 95% of
+  labelled serves, but an undetected rally makes the point before it wrong, so expect roughly 85% of winners right.
 - Court side
 - Positional **heatmap** per player
 
@@ -362,7 +370,10 @@ Each run writes to `outputs/<video name>[-pov]/`:
     "3": {"seconds": 28.1, "side": "near", "distance_m": 41.2,
           "avg_speed_ms": 1.46, "max_speed_ms": 4.9, "kitchen_pct": 37.5,   // fixed: % of total rally time within 3 ft behind the kitchen line (not inside it)
           "kitchen_serving_pct": 60.0, "kitchen_serving_of": 25,       // fixed: got up to the kitchen in 60% of 25 rallies their team served (5+ shots)
-          "kitchen_receiving_pct": 100.0, "kitchen_receiving_of": 25}  // ... and when receiving (3+ shots); pct null when _of is 0
+          "kitchen_receiving_pct": 100.0, "kitchen_receiving_of": 25,  // ... and when receiving (3+ shots); pct null when _of is 0
+          "serve_n": 17, "serve_depth_m": 1.6, "serve_won_pct": 38.9,   // fixed: serves with a depth, median metres from the baseline, % of points won
+          "serve_deep_n": 9, "serve_deep_won_pct": 44.4,              // ... per depth (short / medium / deep); won_pct null when no winner is known
+          "return_n": 15, "return_depth_m": 1.7, "return_won_pct": 71.4, "return_deep_n": 7, "return_deep_won_pct": 57.1}
   },
   "teams": [                           // fixed: both partners up at the kitchen together, same rallies as above
     {"players": ["1", "2"], "both_kitchen_serving_pct": 44.0, "both_kitchen_serving_of": 25,
@@ -373,11 +384,13 @@ Each run writes to `outputs/<video name>[-pov]/`:
           "avg_shot_kmh": 31.4, "max_shot_kmh": 52.0}
   },
   // fixed: every rally with a detected serve; "shots" counts all its shots (a run of hits by one side counts once), not just the three reported below
-  "rallies": [{"start": 120, "end": 410, "shots": 7, "served": true, "duration_s": 9.7}],
+  // serving_team / winner: index into teams (fixed; winner null when it can't be told)
+  "rallies": [{"start": 120, "end": 410, "shots": 7, "served": true, "duration_s": 9.7, "serving_team": 0, "winner": 1}],
   "shots": [{
     "frame": 120, "time_s": 4.0, "player": "3", "rally": 1, "n_in_rally": 1,
     "type": "serve", "speed_kmh": 38.2,
     "hitter": [3.1, 13.2], "landing": [1.9, 2.4],          // court metres (fixed)
+    "depth_m": 2.4, "depth": "medium", "depth_from": "bounce", "won": false,   // serve / return only (fixed)
     "form": {"arm": "right", "elbow_angle": 142.0,
              "contact_below_waist": true, "overhead": false}
   }],
@@ -394,8 +407,9 @@ Court coordinates: `x` runs across the court (0–6.10 m) and `y` along it (0 = 
 `uv run streamlit run dashboard.py` lists every analysed video in `outputs/` and shows:
 
 - **Headline numbers:** duration, rallies, shots
-- **Annotated replay** beside a rally table (#, start, shots, length): click a start time to jump the video to it (1 s before the serve)
+- **Annotated replay** beside a rally table (#, start, shots, length, serving team, whether it won the point): click a start time to jump the video to it (1 s before the serve)
 - **Player table:** movement metrics, shot counts by type, shot speeds
+- **Serve & return:** per player, how many serves and returns were short / medium / deep, with the share of points their team won after each, and the median depth
 - **Shot mix:** bar chart of shot types per player
 - **Court coverage:** heatmaps (fixed mode)
 - **Shot log:** every shot with timing, type, speed, landing spot, stroke form
