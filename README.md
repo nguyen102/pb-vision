@@ -407,7 +407,7 @@ Court coordinates: `x` runs across the court (0–6.10 m) and `y` along it (0 = 
 `uv run streamlit run dashboard.py` lists every analysed video in `outputs/` and shows:
 
 - **Headline numbers:** duration, rallies, shots
-- **Annotated replay** beside a rally table (#, start, shots, length, serving team, whether it won the point): click a start time to jump the video to it (1 s before the serve)
+- **Annotated replay** beside a rally table (#, start, shots, length in secs, serving team, whether it won the point: ✓ won, ✗ lost, ? unknown): click a start time to jump the video to it (1 s before the serve)
 - **Player table:** movement metrics, shot counts by type, shot speeds
 - **Serve & return:** per player, how many serves and returns were short / medium / deep, with the share of points their team won after each, and the median depth
 - **Shot mix:** bar chart of shot types per player

@@ -14,7 +14,10 @@ runs = sorted(p.parent for p in Path("outputs").glob("*/stats.json"))
 if not runs:
     st.info("No results yet. Run `python app.py <video>` first.")
     st.stop()
-run = st.sidebar.selectbox("Match", runs, format_func=lambda p: p.name)
+# ?run=<name> in the URL opens that match (a link to one game; also how screenshots pick one)
+want = st.query_params.get("run")
+run = st.sidebar.selectbox("Match", runs, format_func=lambda p: p.name,
+                           index=next((i for i, p in enumerate(runs) if p.name == want), 0))
 s = json.loads((run / "stats.json").read_text())
 shots = s["shots"]
 
@@ -112,20 +115,20 @@ def won_tag(r):
     """Whether the serving team won the point (from who served next: app.py), else ? when it couldn't be told."""
     w, k = r.get("winner"), r.get("serving_team")
     if w is None or k is None:
-        return '<span class="pbv-unknown" title="winner not known">?</span>' if "winner" in r else ""
+        return '<span class="pbv-unknown" title="winner not known (a gap or a missed rally follows)">?</span>' if "winner" in r else ""
     who = " & ".join(name(p) for p in s["teams"][w]["players"])
-    return (f'<span class="pbv-won" title="serving team won: {who}">won</span>' if w == k
-            else f'<span class="pbv-lost" title="serving team lost: point to {who}">lost</span>')
+    return (f'<span class="pbv-won" title="serving team won the point ({who})">✓ won</span>' if w == k
+            else f'<span class="pbv-lost" title="serving team lost the point (to {who})">✗ lost</span>')
 
 
-WIDTHS = [0.7, 1.6, 1.0, 1.2, 2.4, 1.0]
+WIDTHS = [0.6, 1.5, 1.2, 1.1, 2.3, 1.3]
 col_video, col_rallies = st.columns([3, 1.6]) if s["rallies"] else (st.container(), None)
 if col_rallies is not None:
     with col_rallies:
         st.markdown("**Rallies**")
         with st.container(height=440, key="rally-table"):
             for c, h in zip(st.columns(WIDTHS, vertical_alignment="center"),
-                            ("#", "start", "shots", "length (s)", "serving", "point")):
+                            ("#", "start", "shots", "secs", "serving", "point")):
                 c.markdown(f"**{h}**")
             for i, r in enumerate(s["rallies"], 1):
                 at = r["start"] / s["fps"]
